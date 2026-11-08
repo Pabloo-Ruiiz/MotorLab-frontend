@@ -1,0 +1,123 @@
+:host {
+  display: block;
+}
+
+.solicitud,
+.formulario,
+.paso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+// «display: flex» anularía el atributo hidden
+.paso[hidden] {
+  display: none;
+}
+
+.progreso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+}
+
+.progreso__textos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--mo-esp-8);
+}
+
+.progreso__actual {
+  font-size: var(--mo-tipo-14);
+  font-weight: 700;
+}
+
+.progreso__otros {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-13);
+}
+
+// Mismo aspecto que el <label> de .campo, para los grupos que no tienen un único control
+.campo__etiqueta {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+  font-weight: 600;
+}
+
+.contador {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-13);
+  text-align: right;
+}
+
+.contador--ok {
+  color: var(--mo-verde-oscuro);
+}
+
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  min-height: var(--mo-tactil);
+  cursor: pointer;
+
+  input {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.resumen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+  margin: 0;
+}
+
+.resumen__fila {
+  dt {
+    color: var(--mo-gris-oscuro);
+    font-size: var(--mo-tipo-13);
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.acciones {
+  display: flex;
+  gap: var(--mo-esp-8);
+}
+
+.acciones__avanzar {
+  flex: 1;
+}
+
+.exito {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+}
+
+.exito__urgencia {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  font-size: var(--mo-tipo-14);
+}
+
+.exito__enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-8);
+
+  .btn {
+    flex: 1;
+  }
+}

@@ -8,6 +8,7 @@ import type { Pagina, Vehiculo } from '@core/models';
 import { ToastService } from '@core/services/toast.service';
 import { VehiculosService } from '@core/services/vehiculos.service';
 import { aApiError, mensajeDeError } from '@core/util/api-error';
+import { matriculaLegible } from '@core/util/matricula';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacion/modal-confirmacion.component';
 import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
@@ -34,6 +35,8 @@ export class VehiculosListaComponent {
   private readonly toast = inject(ToastService);
 
   private readonly paginaPedida = new Subject<number>();
+
+  protected readonly matriculaLegible = matriculaLegible;
 
   protected readonly cargando = signal(true);
   protected readonly errorCarga = signal<string | null>(null);
@@ -79,11 +82,6 @@ export class VehiculosListaComponent {
 
   protected reintentar(): void {
     this.cargar(this.resultado()?.pagina ?? 1);
-  }
-
-  // El servidor la guarda sin separador; la maqueta la muestra como «4821 KLB»
-  protected matriculaLegible(matricula: string): string {
-    return matricula.replace(/^(\d{4})([A-Z]{3})$/, '$1 $2');
   }
 
   protected confirmarBaja(): void {
