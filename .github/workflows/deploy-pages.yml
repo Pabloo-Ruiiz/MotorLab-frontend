@@ -1,0 +1,56 @@
+name: Desplegar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  compilar:
+    name: Compilar la web
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v6
+
+      - name: Preparar Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar para producción
+        run: npx ng build --configuration production --base-href /MotorLab-frontend/
+
+      # Pages no conoce las rutas de Angular: con esta copia, la SPA arranca al recargar cualquier ruta.
+      - name: Preparar las rutas de la SPA
+        run: cp dist/motorlab/browser/index.html dist/motorlab/browser/404.html
+
+      - name: Subir la web compilada
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist/motorlab/browser
+
+  desplegar:
+    name: Desplegar en Pages
+    needs: compilar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - name: Publicar en GitHub Pages
+        id: despliegue
+        uses: actions/deploy-pages@v4
