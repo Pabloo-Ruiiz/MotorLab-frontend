@@ -1,0 +1,76 @@
+:host {
+  display: block;
+}
+
+.detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.presupuesto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+  border: 1px solid var(--mo-naranja);
+  background-color: var(--mo-naranja-claro);
+}
+
+.presupuesto__total {
+  font-size: var(--mo-tipo-21);
+  font-weight: 800;
+}
+
+.estimado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+}
+
+.estimado__etiqueta {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.estimado__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--mo-esp-8);
+}
+
+.estimado__fecha {
+  font-size: var(--mo-tipo-21);
+  font-weight: 800;
+}
+
+.estimado__porcentaje {
+  color: var(--mo-naranja-oscuro);
+  font-size: var(--mo-tipo-16);
+}
+
+.tarjeta__titulo {
+  margin-bottom: var(--mo-esp-8);
+  font-size: var(--mo-tipo-16);
+}
+
+.datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+  margin: 0;
+
+  dt {
+    color: var(--mo-gris-oscuro);
+    font-size: var(--mo-tipo-13);
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}

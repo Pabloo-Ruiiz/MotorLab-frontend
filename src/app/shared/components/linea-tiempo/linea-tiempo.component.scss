@@ -1,0 +1,106 @@
+$marca: 28px;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.previos,
+.pasos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.previos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-4);
+  padding-bottom: var(--mo-esp-12);
+  border-bottom: 1px solid var(--mo-linea);
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-13);
+}
+
+.previo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--mo-esp-8);
+}
+
+.paso {
+  position: relative;
+  display: grid;
+  grid-template-columns: $marca minmax(0, 1fr) auto;
+  column-gap: var(--mo-esp-16);
+  padding-bottom: var(--mo-esp-24);
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  // Tramo vertical hasta el paso siguiente
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: $marca;
+    bottom: 0;
+    left: calc(#{$marca} / 2 - 1px);
+    width: 2px;
+    background-color: var(--mo-linea);
+  }
+}
+
+.paso--linea-hecha:not(:last-child)::before {
+  background-color: var(--mo-naranja);
+}
+
+// Pendiente: marcador hueco; hecho: relleno y con tic
+.paso__marca {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $marca;
+  height: $marca;
+  border: 2px solid var(--mo-gris);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-blanco);
+  color: var(--mo-sobre-naranja);
+  font-size: var(--mo-tipo-14);
+  font-weight: 800;
+}
+
+.paso--hecho .paso__marca {
+  border-color: var(--mo-naranja);
+  background-color: var(--mo-naranja);
+}
+
+.paso--actual .paso__marca {
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--mo-naranja) 30%, transparent);
+}
+
+.paso__textos {
+  overflow-wrap: anywhere;
+}
+
+.paso__titulo {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-16);
+}
+
+.paso--hecho .paso__titulo {
+  color: var(--mo-texto);
+  font-weight: 700;
+}
+
+.paso__descripcion,
+.paso__hora {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.paso__hora {
+  white-space: nowrap;
+}
