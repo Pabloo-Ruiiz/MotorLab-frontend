@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+.vehiculos,
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vehiculo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.vehiculo__datos {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-16);
+}
+
+.vehiculo__icono {
+  flex-shrink: 0;
+  color: var(--mo-naranja);
+}
+
+.vehiculo__titulo {
+  font-size: var(--mo-tipo-16);
+}
+
+.vehiculo__detalle {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.vehiculo__acciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mo-esp-8);
+
+  .btn {
+    padding-inline: var(--mo-esp-8);
+    font-size: var(--mo-tipo-14);
+  }
+}
+
+.vehiculo__acciones .vehiculo__baja {
+  color: var(--mo-rojo-oscuro);
+}

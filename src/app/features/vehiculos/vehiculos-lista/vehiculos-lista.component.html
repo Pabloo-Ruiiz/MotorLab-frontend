@@ -1,0 +1,99 @@
+<main class="vehiculos">
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario" (click)="reintentar()">Reintentar</button>
+  } @else if (resultado(); as resultado) {
+    @if (resultado.datos.length === 0) {
+      <app-vacio titulo="Aún no tienes vehículos" texto="Añade uno para pedir cita en el taller" />
+    } @else {
+      <ul class="lista">
+        @for (vehiculo of resultado.datos; track vehiculo.id) {
+          <li>
+            <article class="tarjeta vehiculo" [attr.aria-labelledby]="'vehiculo-' + vehiculo.id">
+              <div class="vehiculo__datos">
+                <svg
+                  class="vehiculo__icono"
+                  width="40"
+                  height="40"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M5.5 17H3v-5l2.5-6h13l2.5 6v5h-2.5M9.5 17h5M3 12h18M9.5 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM18.5 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"
+                  />
+                </svg>
+                <div>
+                  <h2 class="vehiculo__titulo" [id]="'vehiculo-' + vehiculo.id">
+                    {{ vehiculo.marca }} {{ vehiculo.modelo }} · {{ vehiculo.anio }}
+                  </h2>
+                  <p class="vehiculo__detalle">
+                    @if (vehiculo.version; as version) {
+                      {{ version }} ·
+                    }
+                    {{ matriculaLegible(vehiculo.matricula) }} ·
+                    {{ vehiculo.kilometros | number: '1.0-0' }} km
+                  </p>
+                </div>
+              </div>
+
+              <div class="vehiculo__acciones">
+                <a
+                  class="btn btn--primario"
+                  routerLink="/cliente/solicitud/nueva"
+                  [queryParams]="{ vehiculo: vehiculo.id }"
+                >
+                  Nueva solicitud
+                </a>
+                <a
+                  class="btn btn--secundario"
+                  [routerLink]="['/cliente/vehiculos', vehiculo.id, 'historial']"
+                >
+                  Historial
+                </a>
+                <a
+                  class="btn btn--secundario"
+                  [routerLink]="['/cliente/vehiculos', vehiculo.id, 'editar']"
+                >
+                  Editar
+                </a>
+                <button
+                  type="button"
+                  class="btn btn--secundario vehiculo__baja"
+                  (click)="aDarDeBaja.set(vehiculo)"
+                >
+                  Dar de baja
+                </button>
+              </div>
+            </article>
+          </li>
+        }
+      </ul>
+    }
+
+    <a class="btn btn--fantasma" routerLink="/cliente/vehiculos/nuevo">+ Añadir vehículo</a>
+
+    <app-paginador
+      [pagina]="resultado.pagina"
+      [totalPaginas]="resultado.totalPaginas"
+      [total]="resultado.total"
+      (cambiarPagina)="cargar($event)"
+    />
+  }
+</main>
+
+<app-modal-confirmacion
+  [abierto]="aDarDeBaja() !== null"
+  titulo="Dar de baja el vehículo"
+  [mensaje]="mensajeBaja()"
+  textoConfirmar="Dar de baja"
+  peligro
+  (confirmar)="confirmarBaja()"
+  (cancelar)="aDarDeBaja.set(null)"
+/>

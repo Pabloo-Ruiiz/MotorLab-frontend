@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.formulario__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: var(--mo-esp-16);
+}
+
+// Mismo aspecto que un campo deshabilitado de _componentes.scss
+.campo input[readonly] {
+  background-color: var(--mo-fondo);
+  color: var(--mo-gris-oscuro);
+  cursor: not-allowed;
+}
