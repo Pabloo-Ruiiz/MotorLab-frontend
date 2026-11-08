@@ -26,7 +26,7 @@ export function fechaHoyOPosteriorValidator(control: AbstractControl): Validatio
 }
 
 // toISOString no sirve: usa UTC y de madrugada devolvería el día anterior
-function fechaLocalDeHoy(): string {
+export function fechaLocalDeHoy(): string {
   const hoy = new Date();
   const mes = String(hoy.getMonth() + 1).padStart(2, '0');
   const dia = String(hoy.getDate()).padStart(2, '0');

@@ -77,7 +77,14 @@ export const routes: Routes = [
         data: { titulo: 'Historial del vehículo' },
         loadComponent: pendiente
       },
-      { path: 'solicitud/nueva', data: { titulo: 'Nueva solicitud' }, loadComponent: pendiente },
+      {
+        path: 'solicitud/nueva',
+        data: { titulo: 'Nueva solicitud' },
+        loadComponent: () =>
+          import('@features/ordenes/solicitud-nueva/solicitud-nueva.component').then(
+            (m) => m.SolicitudNuevaComponent
+          )
+      },
       { path: 'ordenes', data: { titulo: 'Mis órdenes' }, loadComponent: pendiente },
       { path: 'ordenes/:id', data: { titulo: 'Seguimiento' }, loadComponent: pendiente },
       {
