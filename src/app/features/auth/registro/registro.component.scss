@@ -1,0 +1,15 @@
+@use '../auth';
+
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  min-height: var(--mo-tactil);
+  cursor: pointer;
+
+  input {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+  }
+}

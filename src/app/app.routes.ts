@@ -27,8 +27,18 @@ function rutaDeInicioTaller(): string {
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: rutaDeInicio },
 
-  { path: 'login', canActivate: [invitadoGuard], loadComponent: pendiente },
-  { path: 'registro', canActivate: [invitadoGuard], loadComponent: pendiente },
+  {
+    path: 'login',
+    canActivate: [invitadoGuard],
+    loadComponent: () =>
+      import('@features/auth/login/login.component').then((m) => m.LoginComponent)
+  },
+  {
+    path: 'registro',
+    canActivate: [invitadoGuard],
+    loadComponent: () =>
+      import('@features/auth/registro/registro.component').then((m) => m.RegistroComponent)
+  },
 
   // Sin componente hasta que exista el layout: los hijos se muestran directamente
   {

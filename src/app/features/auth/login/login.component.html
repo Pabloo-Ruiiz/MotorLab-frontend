@@ -1,0 +1,53 @@
+<header class="cabecera">
+  <p class="cabecera__titulo">Taller Martínez</p>
+  <p class="cabecera__subtitulo">Área de clientes</p>
+</header>
+
+<main class="pagina">
+  <div class="logo" aria-hidden="true">T</div>
+  <h1 class="titulo">Bienvenido</h1>
+  <p class="subtitulo">Sigue tus reparaciones sin llamar al taller</p>
+
+  <nav class="segmentado" aria-label="Acceso">
+    <a class="segmentado__opcion segmentado__opcion--activa pestana" routerLink="/login" aria-current="page">
+      Iniciar sesión
+    </a>
+    <a class="segmentado__opcion pestana" routerLink="/registro">Crear cuenta</a>
+  </nav>
+
+  @if (errorGeneral(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+  }
+
+  <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()">
+    <div class="campo" [class.campo--error]="campoConError(form.controls.email)">
+      <label for="login-email">Correo electrónico</label>
+      <input
+        id="login-email"
+        type="email"
+        autocomplete="email"
+        formControlName="email"
+        [attr.aria-invalid]="campoConError(form.controls.email)"
+      />
+      <app-errores-campo [control]="form.controls.email" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.password)">
+      <label for="login-password">Contraseña</label>
+      <input
+        id="login-password"
+        type="password"
+        autocomplete="current-password"
+        formControlName="password"
+        [attr.aria-invalid]="campoConError(form.controls.password)"
+      />
+      <app-errores-campo [control]="form.controls.password" />
+    </div>
+
+    <button type="submit" class="btn btn--primario" [disabled]="enviando()">
+      {{ enviando() ? 'Entrando…' : 'Iniciar sesión' }}
+    </button>
+  </form>
+
+  <p class="nota">Al registrarte aceptas la política de privacidad del taller.</p>
+</main>

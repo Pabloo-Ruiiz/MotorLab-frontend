@@ -1,0 +1,87 @@
+<header class="cabecera">
+  <p class="cabecera__titulo">Taller Martínez</p>
+  <p class="cabecera__subtitulo">Área de clientes</p>
+</header>
+
+<main class="pagina">
+  <div class="logo" aria-hidden="true">T</div>
+  <h1 class="titulo">Crea tu cuenta</h1>
+  <p class="subtitulo">Sigue tus reparaciones sin llamar al taller</p>
+
+  <nav class="segmentado" aria-label="Acceso">
+    <a class="segmentado__opcion pestana" routerLink="/login">Iniciar sesión</a>
+    <a class="segmentado__opcion segmentado__opcion--activa pestana" routerLink="/registro" aria-current="page">
+      Crear cuenta
+    </a>
+  </nav>
+
+  @if (errorGeneral(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+  }
+
+  <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()">
+    <div class="campo" [class.campo--error]="campoConError(form.controls.nombre)">
+      <label for="registro-nombre">Nombre</label>
+      <input
+        id="registro-nombre"
+        type="text"
+        autocomplete="name"
+        formControlName="nombre"
+        [attr.aria-invalid]="campoConError(form.controls.nombre)"
+      />
+      <app-errores-campo [control]="form.controls.nombre" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.email)">
+      <label for="registro-email">Correo electrónico</label>
+      <input
+        id="registro-email"
+        type="email"
+        autocomplete="email"
+        formControlName="email"
+        [attr.aria-invalid]="campoConError(form.controls.email)"
+      />
+      <app-errores-campo [control]="form.controls.email" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.telefono)">
+      <label for="registro-telefono">Teléfono</label>
+      <input
+        id="registro-telefono"
+        type="tel"
+        autocomplete="tel"
+        formControlName="telefono"
+        [attr.aria-invalid]="campoConError(form.controls.telefono)"
+      />
+      <app-errores-campo [control]="form.controls.telefono" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.password)">
+      <label for="registro-password">Contraseña</label>
+      <input
+        id="registro-password"
+        type="password"
+        autocomplete="new-password"
+        formControlName="password"
+        [attr.aria-invalid]="campoConError(form.controls.password)"
+      />
+      <app-errores-campo [control]="form.controls.password" />
+    </div>
+
+    <div class="campo">
+      <label class="casilla">
+        <input
+          type="checkbox"
+          formControlName="aceptaPrivacidad"
+          [attr.aria-invalid]="campoConError(form.controls.aceptaPrivacidad)"
+        />
+        <span>Acepto la política de privacidad del taller</span>
+      </label>
+      <app-errores-campo [control]="form.controls.aceptaPrivacidad" />
+    </div>
+
+    <button type="submit" class="btn btn--primario" [disabled]="enviando()">
+      {{ enviando() ? 'Creando cuenta…' : 'Crear cuenta' }}
+    </button>
+  </form>
+</main>
