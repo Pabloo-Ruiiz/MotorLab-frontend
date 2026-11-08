@@ -1,0 +1,63 @@
+// Estilos comunes de las pantallas de acceso (Figura 3). Móvil primero.
+
+.cabecera {
+  padding: var(--mo-esp-32) var(--mo-esp-24) var(--mo-esp-16);
+  background-color: var(--mo-naranja);
+  color: var(--mo-sobre-naranja);
+}
+
+.cabecera__titulo {
+  font-size: var(--mo-tipo-21);
+  font-weight: 800;
+}
+
+.cabecera__subtitulo {
+  font-size: var(--mo-tipo-14);
+}
+
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+  max-width: 440px;
+  margin: 0 auto;
+  padding: var(--mo-esp-24) var(--mo-esp-16);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border-radius: var(--mo-radio-12);
+  background-color: var(--mo-naranja);
+  color: var(--mo-sobre-naranja);
+  font-size: var(--mo-tipo-26);
+  font-weight: 800;
+}
+
+.titulo {
+  text-align: center;
+}
+
+.subtitulo,
+.nota {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+  text-align: center;
+}
+
+.pestana {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
