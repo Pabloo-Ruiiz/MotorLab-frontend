@@ -40,28 +40,45 @@ export const routes: Routes = [
       import('@features/auth/registro/registro.component').then((m) => m.RegistroComponent)
   },
 
-  // Sin componente hasta que exista el layout: los hijos se muestran directamente
   {
     path: 'cliente',
     canActivate: [authGuard, rolGuard(['cliente'])],
+    loadComponent: () =>
+      import('@layouts/cliente-layout/cliente-layout.component').then(
+        (m) => m.ClienteLayoutComponent
+      ),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'ordenes' },
-      { path: 'vehiculos', loadComponent: pendiente },
-      { path: 'vehiculos/nuevo', loadComponent: pendiente },
-      { path: 'vehiculos/:id/editar', loadComponent: pendiente },
-      { path: 'vehiculos/:id/historial', loadComponent: pendiente },
-      { path: 'solicitud/nueva', loadComponent: pendiente },
-      { path: 'ordenes', loadComponent: pendiente },
-      { path: 'ordenes/:id', loadComponent: pendiente },
-      { path: 'ordenes/:id/presupuesto', loadComponent: pendiente },
-      { path: 'avisos', loadComponent: pendiente },
-      { path: 'perfil', loadComponent: pendiente }
+      { path: 'vehiculos', data: { titulo: 'Mis vehículos' }, loadComponent: pendiente },
+      { path: 'vehiculos/nuevo', data: { titulo: 'Nuevo vehículo' }, loadComponent: pendiente },
+      {
+        path: 'vehiculos/:id/editar',
+        data: { titulo: 'Editar vehículo' },
+        loadComponent: pendiente
+      },
+      {
+        path: 'vehiculos/:id/historial',
+        data: { titulo: 'Historial del vehículo' },
+        loadComponent: pendiente
+      },
+      { path: 'solicitud/nueva', data: { titulo: 'Nueva solicitud' }, loadComponent: pendiente },
+      { path: 'ordenes', data: { titulo: 'Mis órdenes' }, loadComponent: pendiente },
+      { path: 'ordenes/:id', data: { titulo: 'Seguimiento' }, loadComponent: pendiente },
+      {
+        path: 'ordenes/:id/presupuesto',
+        data: { titulo: 'Presupuesto' },
+        loadComponent: pendiente
+      },
+      { path: 'avisos', data: { titulo: 'Avisos' }, loadComponent: pendiente },
+      { path: 'perfil', data: { titulo: 'Perfil' }, loadComponent: pendiente }
     ]
   },
 
   {
     path: 'taller',
     canActivate: [authGuard, rolGuard(['admin', 'mecanico'])],
+    loadComponent: () =>
+      import('@layouts/taller-layout/taller-layout.component').then((m) => m.TallerLayoutComponent),
     children: [
       { path: '', pathMatch: 'full', redirectTo: rutaDeInicioTaller },
       { path: 'solicitudes', canActivate: [soloAdmin], loadComponent: pendiente },

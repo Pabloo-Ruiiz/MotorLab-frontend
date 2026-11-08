@@ -1,0 +1,218 @@
+$ancho-lateral: 220px;
+$alto-barra: 60px;
+$texto-tenue: rgb(255 255 255 / 75%);
+
+// Móvil primero: barra superior con menú desplegable. Solo se desplaza el área principal
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.lateral {
+  position: relative;
+  z-index: 10; // el menú desplegable se superpone al área principal
+  flex-shrink: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+  background-color: var(--mo-noche);
+  color: var(--mo-blanco);
+}
+
+.lateral__barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: $alto-barra;
+  padding-inline: var(--mo-esp-16);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+  font-size: var(--mo-tipo-16);
+  font-weight: 700;
+}
+
+.logo__cuadrado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-naranja);
+  color: var(--mo-sobre-naranja);
+  font-weight: 800;
+}
+
+.hamburguesa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-tactil);
+  height: var(--mo-tactil);
+  border: 0;
+  border-radius: var(--mo-radio-8);
+  background: none;
+  color: var(--mo-blanco);
+  cursor: pointer;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  display: none;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+  max-height: calc(100dvh - #{$alto-barra} - env(safe-area-inset-top));
+  padding: var(--mo-esp-8) var(--mo-esp-16);
+  padding-bottom: calc(var(--mo-esp-16) + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  background-color: var(--mo-noche);
+  box-shadow: var(--mo-sombra-media);
+}
+
+.menu--abierto {
+  display: flex;
+}
+
+.menu__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+  min-height: var(--mo-tactil);
+  padding: var(--mo-esp-8) var(--mo-esp-12);
+  border-radius: var(--mo-radio-12);
+  color: $texto-tenue;
+  font-size: var(--mo-tipo-16);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--mo-blanco);
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.opcion--activa {
+  background-color: color-mix(in srgb, var(--mo-naranja) 25%, transparent);
+  color: var(--mo-blanco);
+  font-weight: 700;
+
+  svg {
+    color: var(--mo-naranja);
+  }
+}
+
+.usuario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+  padding-top: var(--mo-esp-16);
+  border-top: 1px solid rgb(255 255 255 / 15%);
+}
+
+.usuario__datos {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+}
+
+.usuario__avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--mo-radio-pildora);
+  background-color: rgb(255 255 255 / 15%);
+  font-weight: 700;
+}
+
+.usuario__texto {
+  min-width: 0;
+}
+
+.usuario__nombre {
+  overflow: hidden;
+  font-size: var(--mo-tipo-14);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usuario__rol {
+  color: $texto-tenue;
+  font-size: var(--mo-tipo-13);
+}
+
+.usuario__salir {
+  width: 100%;
+  border-color: rgb(255 255 255 / 30%);
+  background: none;
+  color: var(--mo-blanco);
+  font-size: var(--mo-tipo-14);
+
+  &:hover {
+    background-color: rgb(255 255 255 / 10%);
+  }
+}
+
+.contenido {
+  flex: 1;
+  min-width: 0; // sin esto, una tabla ancha estiraría la columna en lugar de desplazarse
+  min-height: 0;
+  padding: var(--mo-esp-24);
+  padding-right: calc(var(--mo-esp-24) + env(safe-area-inset-right));
+  padding-bottom: calc(var(--mo-esp-24) + env(safe-area-inset-bottom));
+  padding-left: calc(var(--mo-esp-24) + env(safe-area-inset-left));
+  overflow-y: auto;
+  background-color: var(--mo-blanco);
+}
+
+@media (min-width: 900px) {
+  :host {
+    flex-direction: row;
+  }
+
+  .lateral {
+    display: flex;
+    flex-direction: column;
+    width: calc(#{$ancho-lateral} + env(safe-area-inset-left));
+    padding-right: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .hamburguesa {
+    display: none;
+  }
+
+  .menu {
+    position: static;
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    max-height: none;
+    box-shadow: none;
+  }
+
+  .contenido {
+    padding-left: var(--mo-esp-24);
+  }
+}
