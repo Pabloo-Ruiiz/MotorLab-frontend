@@ -1,0 +1,77 @@
+<main class="ordenes">
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario" (click)="cargar()">Reintentar</button>
+  } @else {
+    <div class="segmentado" role="group" aria-label="Filtrar órdenes">
+      @for (opcion of pestanas; track opcion.valor) {
+        <button
+          type="button"
+          class="segmentado__opcion"
+          [attr.aria-pressed]="pestana() === opcion.valor"
+          (click)="pestana.set(opcion.valor)"
+        >
+          {{ opcion.texto }}
+        </button>
+      }
+    </div>
+
+    @if (visibles().length === 0) {
+      <app-vacio [titulo]="tituloVacio()">
+        <a routerLink="/cliente/solicitud/nueva">Nueva solicitud</a>
+      </app-vacio>
+    } @else {
+      <ul class="lista">
+        @for (orden of visibles(); track orden.ordenId) {
+          <li>
+            <article class="tarjeta orden" [class.orden--presupuesto]="presupuestoListo(orden)">
+              <div class="orden__cabecera">
+                <h2 class="orden__titulo">
+                  <a class="orden__enlace" [routerLink]="['/cliente/ordenes', orden.ordenId]">
+                    #{{ orden.ordenId }} · {{ orden.marca }} {{ orden.modelo }}
+                  </a>
+                </h2>
+                @if (presupuestoListo(orden)) {
+                  <span class="pill pill--naranja">Presupuesto listo</span>
+                } @else {
+                  <app-pill-estado [estado]="orden.estado" />
+                }
+              </div>
+
+              <p class="orden__detalle">
+                {{ matriculaLegible(orden.matricula) }} ·
+                {{ etiquetasServicio[orden.tipoServicio] }}
+              </p>
+
+              <app-barra-progreso
+                [progreso]="orden.progreso"
+                mostrarPorcentaje
+                [etiqueta]="'Progreso de la orden ' + orden.ordenId"
+              />
+
+              @if (orden.fechaEstimada; as fecha) {
+                <p class="orden__detalle">Listo estimado {{ fecha | fechaHora: 'completa' }}</p>
+              }
+
+              @if (presupuestoListo(orden)) {
+                <div class="orden__presupuesto">
+                  <strong class="orden__total">{{ orden.presupuestoTotal | euros }}</strong>
+                  <a
+                    class="btn btn--primario orden__ver"
+                    [routerLink]="['/cliente/ordenes', orden.ordenId, 'presupuesto']"
+                  >
+                    Ver presupuesto
+                  </a>
+                </div>
+              }
+            </article>
+          </li>
+        }
+      </ul>
+    }
+
+    <a class="btn btn--primario nueva" routerLink="/cliente/solicitud/nueva">Nueva solicitud</a>
+  }
+</main>

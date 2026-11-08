@@ -1,0 +1,63 @@
+:host {
+  display: block;
+}
+
+.historial,
+.lista,
+.orden {
+  display: flex;
+  flex-direction: column;
+}
+
+.historial,
+.lista {
+  gap: var(--mo-esp-16);
+}
+
+.historial__titulo {
+  font-size: var(--mo-tipo-21);
+}
+
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.orden {
+  position: relative; // referencia del área clicable de .orden__enlace
+  gap: var(--mo-esp-8);
+
+  &:hover {
+    box-shadow: var(--mo-sombra-media);
+  }
+}
+
+.orden__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mo-esp-8);
+}
+
+.orden__titulo {
+  font-size: var(--mo-tipo-16);
+}
+
+.orden__enlace {
+  color: inherit;
+  text-decoration: none;
+
+  // Extiende el enlace a toda la tarjeta
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--mo-radio-12);
+  }
+}
+
+.orden__detalle {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}

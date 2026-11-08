@@ -1,0 +1,54 @@
+<main class="historial">
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (noEncontrado()) {
+    <app-vacio titulo="No hemos encontrado este vehículo">
+      <a class="btn btn--primario" routerLink="/cliente/vehiculos">Volver a mis vehículos</a>
+    </app-vacio>
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario" (click)="reintentar()">Reintentar</button>
+  } @else if (datos(); as datos) {
+    <h2 class="historial__titulo">Historial · {{ matriculaLegible(datos.vehiculo.matricula) }}</h2>
+
+    @if (datos.historial.datos.length === 0) {
+      <app-vacio titulo="Este vehículo todavía no tiene órdenes" />
+    } @else {
+      <ul class="lista">
+        @for (orden of datos.historial.datos; track orden.ordenId) {
+          <li>
+            <article class="tarjeta orden">
+              <div class="orden__cabecera">
+                <h3 class="orden__titulo">
+                  <a class="orden__enlace" [routerLink]="['/cliente/ordenes', orden.ordenId]">
+                    #{{ orden.ordenId }} · {{ orden.marca }} {{ orden.modelo }}
+                  </a>
+                </h3>
+                <app-pill-estado [estado]="orden.estado" />
+              </div>
+
+              <p class="orden__detalle">{{ etiquetasServicio[orden.tipoServicio] }}</p>
+
+              <app-barra-progreso
+                [progreso]="orden.progreso"
+                mostrarPorcentaje
+                [etiqueta]="'Progreso de la orden ' + orden.ordenId"
+              />
+
+              @if (orden.fechaEstimada; as fecha) {
+                <p class="orden__detalle">Listo estimado {{ fecha | fechaHora: 'completa' }}</p>
+              }
+            </article>
+          </li>
+        }
+      </ul>
+
+      <app-paginador
+        [pagina]="datos.historial.pagina"
+        [totalPaginas]="datos.historial.totalPaginas"
+        [total]="datos.historial.total"
+        (cambiarPagina)="cargar($event)"
+      />
+    }
+  }
+</main>
