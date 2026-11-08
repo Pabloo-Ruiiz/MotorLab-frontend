@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { vi } from 'vitest';
 
 import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@core/services/toast.service';
 import { ApiError } from '@core/util/api-error';
 import { errorInterceptor } from './error.interceptor';
 
@@ -16,6 +17,7 @@ describe('errorInterceptor', () => {
 
   let authSimulado: { cerrarSesion: ReturnType<typeof vi.fn> };
   let routerSimulado: { url: string; navigate: ReturnType<typeof vi.fn> };
+  let toastSimulado: { error: ReturnType<typeof vi.fn> };
   let http: HttpClient;
   let httpSimulado: HttpTestingController;
   let recibido: unknown;
@@ -31,13 +33,15 @@ describe('errorInterceptor', () => {
       url: '/cliente/vehiculos?pagina=2',
       navigate: vi.fn().mockResolvedValue(true)
     };
+    toastSimulado = { error: vi.fn() };
 
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptors([errorInterceptor])),
         provideHttpClientTesting(),
         { provide: AuthService, useValue: authSimulado },
-        { provide: Router, useValue: routerSimulado }
+        { provide: Router, useValue: routerSimulado },
+        { provide: ToastService, useValue: toastSimulado }
       ]
     });
 
@@ -67,6 +71,7 @@ describe('errorInterceptor', () => {
     expect(error.detalles).toEqual(detalles);
     expect(error.detalleDe('matricula')).toBe('La matrícula no es válida');
     expect(authSimulado.cerrarSesion).not.toHaveBeenCalled();
+    expect(toastSimulado.error).not.toHaveBeenCalled();
   });
 
   it('un 401 en /api/v1/vehiculos cierra la sesión y navega a /login con returnUrl', () => {
@@ -108,5 +113,19 @@ describe('errorInterceptor', () => {
     const error = recibido as ApiError;
     expect(error.status).toBe(0);
     expect(error.mensaje).toBe('No se puede conectar con el servidor');
+    expect(toastSimulado.error).toHaveBeenCalledWith('No se puede conectar con el servidor');
+  });
+
+  it('un 500 muestra un toast y el error llega igualmente al suscriptor', () => {
+    capturarError('/api/v1/vehiculos');
+    httpSimulado
+      .expectOne('/api/v1/vehiculos')
+      .flush(
+        { error: { codigo: 'ERROR_INTERNO', mensaje: 'Error interno del servidor', detalles: [] } },
+        { status: 500, statusText: 'Internal Server Error' }
+      );
+
+    expect(toastSimulado.error).toHaveBeenCalledWith('Error interno del servidor');
+    expect(recibido).toBeInstanceOf(ApiError);
   });
 });

@@ -1,0 +1,11 @@
+<!-- La región debe existir antes que los avisos para que los lectores de pantalla los anuncien -->
+<div class="toasts" role="status" aria-live="polite">
+  @for (aviso of toast.avisos(); track aviso.id) {
+    <div [class]="'toast toast--' + aviso.tipo">
+      <p class="toast__mensaje">{{ aviso.mensaje }}</p>
+      <button type="button" class="toast__cerrar" aria-label="Cerrar aviso" (click)="toast.quitar(aviso.id)">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+  }
+</div>

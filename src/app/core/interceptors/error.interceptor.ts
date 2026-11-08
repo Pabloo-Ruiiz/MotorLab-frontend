@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 
 import { AuthService } from '@core/services/auth.service';
+import { ToastService } from '@core/services/toast.service';
 import { aApiError } from '@core/util/api-error';
 import { environment } from '@env/environment';
 import { URL_LOGIN, URL_REGISTRO } from './auth.interceptor';
@@ -15,6 +16,7 @@ const URLS_SIN_REDIRECCION = [URL_LOGIN, URL_REGISTRO, URL_USUARIO_ACTUAL];
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
+  const toast = inject(ToastService);
 
   return next(req).pipe(
     catchError((error: unknown) => {
@@ -28,6 +30,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         const returnUrl = router.url;
         auth.cerrarSesion(false);
         void router.navigate(['/login'], { queryParams: { returnUrl } });
+      }
+
+      if (apiError.status === 0 || apiError.status >= 500) {
+        toast.error(apiError.mensaje);
       }
 
       return throwError(() => apiError);
