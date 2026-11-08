@@ -1,0 +1,96 @@
+// Reset mínimo, estilos del documento, foco y utilidades globales.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--mo-fondo);
+  color: var(--mo-texto);
+  font-family: var(--mo-familia);
+  font-size: var(--mo-tipo-16);
+  line-height: 1.5;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--mo-naranja-oscuro);
+}
+
+h1 {
+  font-size: var(--mo-tipo-26);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: var(--mo-tipo-21);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: var(--mo-tipo-16);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+h4,
+h5,
+h6 {
+  font-size: var(--mo-tipo-14);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+// El halo blanco mantiene visible el foco también sobre fondos naranjas
+:focus-visible {
+  outline: 3px solid var(--mo-naranja);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--mo-blanco);
+}
+
+// Oculta el contenido visualmente, pero lo mantiene para los lectores de pantalla
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

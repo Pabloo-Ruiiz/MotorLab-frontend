@@ -1,1 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@fontsource/inter/latin-400.css';
+@use '@fontsource/inter/latin-ext-400.css';
+@use '@fontsource/inter/latin-600.css';
+@use '@fontsource/inter/latin-ext-600.css';
+@use '@fontsource/inter/latin-700.css';
+@use '@fontsource/inter/latin-ext-700.css';
+@use '@fontsource/inter/latin-800.css';
+@use '@fontsource/inter/latin-ext-800.css';
+@use 'styles/tokens';
+@use 'styles/base';
+@use 'styles/componentes';
