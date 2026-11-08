@@ -1,0 +1,93 @@
+<main>
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+  } @else {
+    <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()">
+      @if (errorGeneral(); as error) {
+        <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+      }
+
+      <div class="campo" [class.campo--error]="campoConError(form.controls.matricula)">
+        <label for="vehiculo-matricula">Matrícula</label>
+        <input
+          id="vehiculo-matricula"
+          type="text"
+          autocomplete="off"
+          autocapitalize="characters"
+          formControlName="matricula"
+          [readOnly]="esEdicion"
+          [attr.aria-invalid]="campoConError(form.controls.matricula)"
+        />
+        <app-errores-campo [control]="form.controls.matricula" [mensajes]="mensajesMatricula" />
+      </div>
+
+      <div class="campo" [class.campo--error]="campoConError(form.controls.marca)">
+        <label for="vehiculo-marca">Marca</label>
+        <input
+          id="vehiculo-marca"
+          type="text"
+          autocomplete="off"
+          formControlName="marca"
+          [attr.aria-invalid]="campoConError(form.controls.marca)"
+        />
+        <app-errores-campo [control]="form.controls.marca" />
+      </div>
+
+      <div class="campo" [class.campo--error]="campoConError(form.controls.modelo)">
+        <label for="vehiculo-modelo">Modelo</label>
+        <input
+          id="vehiculo-modelo"
+          type="text"
+          autocomplete="off"
+          formControlName="modelo"
+          [attr.aria-invalid]="campoConError(form.controls.modelo)"
+        />
+        <app-errores-campo [control]="form.controls.modelo" />
+      </div>
+
+      <div class="campo" [class.campo--error]="campoConError(form.controls.version)">
+        <label for="vehiculo-version">Versión (opcional)</label>
+        <input
+          id="vehiculo-version"
+          type="text"
+          autocomplete="off"
+          formControlName="version"
+          [attr.aria-invalid]="campoConError(form.controls.version)"
+        />
+        <app-errores-campo [control]="form.controls.version" />
+      </div>
+
+      <div class="formulario__fila">
+        <div class="campo" [class.campo--error]="campoConError(form.controls.anio)">
+          <label for="vehiculo-anio">Año</label>
+          <input
+            id="vehiculo-anio"
+            type="number"
+            inputmode="numeric"
+            formControlName="anio"
+            [attr.aria-invalid]="campoConError(form.controls.anio)"
+          />
+          <app-errores-campo [control]="form.controls.anio" [mensajes]="mensajesEntero" />
+        </div>
+
+        <div class="campo" [class.campo--error]="campoConError(form.controls.kilometros)">
+          <label for="vehiculo-kilometros">Kilómetros</label>
+          <input
+            id="vehiculo-kilometros"
+            type="number"
+            inputmode="numeric"
+            formControlName="kilometros"
+            [attr.aria-invalid]="campoConError(form.controls.kilometros)"
+          />
+          <app-errores-campo [control]="form.controls.kilometros" [mensajes]="mensajesEntero" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn--primario" [disabled]="enviando()">
+        {{ enviando() ? 'Guardando…' : 'Guardar' }}
+      </button>
+    </form>
+  }
+</main>

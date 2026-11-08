@@ -11,6 +11,11 @@ import { pantallaInicio } from '@core/util/rutas';
 const pendiente = () =>
   import('@shared/components/pendiente/pendiente.component').then((m) => m.PendienteComponent);
 
+const vehiculoForm = () =>
+  import('@features/vehiculos/vehiculo-form/vehiculo-form.component').then(
+    (m) => m.VehiculoFormComponent
+  );
+
 const soloAdmin = rolGuard(['admin']);
 const soloMecanico = rolGuard(['mecanico']);
 
@@ -49,12 +54,23 @@ export const routes: Routes = [
       ),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'ordenes' },
-      { path: 'vehiculos', data: { titulo: 'Mis vehículos' }, loadComponent: pendiente },
-      { path: 'vehiculos/nuevo', data: { titulo: 'Nuevo vehículo' }, loadComponent: pendiente },
+      {
+        path: 'vehiculos',
+        data: { titulo: 'Mis vehículos' },
+        loadComponent: () =>
+          import('@features/vehiculos/vehiculos-lista/vehiculos-lista.component').then(
+            (m) => m.VehiculosListaComponent
+          )
+      },
+      {
+        path: 'vehiculos/nuevo',
+        data: { titulo: 'Nuevo vehículo' },
+        loadComponent: vehiculoForm
+      },
       {
         path: 'vehiculos/:id/editar',
         data: { titulo: 'Editar vehículo' },
-        loadComponent: pendiente
+        loadComponent: vehiculoForm
       },
       {
         path: 'vehiculos/:id/historial',
