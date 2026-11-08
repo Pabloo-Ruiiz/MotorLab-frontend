@@ -1,0 +1,68 @@
+// Móvil primero: arriba y a ancho completo
+.toasts {
+  position: fixed;
+  top: var(--mo-esp-8);
+  right: var(--mo-esp-8);
+  left: var(--mo-esp-8);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+  pointer-events: none; // el contenedor vacío no debe bloquear los clics
+}
+
+@media (min-width: 768px) {
+  .toasts {
+    top: var(--mo-esp-16);
+    right: var(--mo-esp-16);
+    left: auto;
+    width: 360px;
+  }
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  padding-left: var(--mo-esp-16);
+  border-left: 4px solid;
+  border-radius: var(--mo-radio-12);
+  box-shadow: var(--mo-sombra-media);
+  font-size: var(--mo-tipo-14);
+  font-weight: 600;
+  pointer-events: auto;
+}
+
+.toast--exito {
+  border-left-color: var(--mo-verde);
+  background-color: var(--mo-verde-claro);
+  color: var(--mo-verde-oscuro);
+}
+
+.toast--error {
+  border-left-color: var(--mo-rojo);
+  background-color: var(--mo-rojo-claro);
+  color: var(--mo-rojo-oscuro);
+}
+
+.toast--info {
+  border-left-color: var(--mo-azul);
+  background-color: var(--mo-azul-claro);
+  color: var(--mo-azul-oscuro);
+}
+
+.toast__mensaje {
+  flex: 1;
+  padding: var(--mo-esp-12) 0;
+}
+
+.toast__cerrar {
+  flex-shrink: 0;
+  width: var(--mo-tactil);
+  height: var(--mo-tactil);
+  border: 0;
+  background: none;
+  font-size: var(--mo-tipo-21);
+  line-height: 1;
+  cursor: pointer;
+}
