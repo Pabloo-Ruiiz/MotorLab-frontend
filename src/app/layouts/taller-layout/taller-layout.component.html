@@ -1,0 +1,84 @@
+<aside class="lateral" (keydown.escape)="menuAbierto.set(false); hamburguesa.focus()">
+  <div class="lateral__barra">
+    <div class="logo">
+      <span class="logo__cuadrado" aria-hidden="true">M</span>
+      MotorLab
+    </div>
+
+    <button
+      #hamburguesa
+      type="button"
+      class="hamburguesa"
+      aria-label="Menú de navegación"
+      aria-controls="taller-menu"
+      [attr.aria-expanded]="menuAbierto()"
+      (click)="menuAbierto.set(!menuAbierto())"
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+
+  <div id="taller-menu" class="menu" [class.menu--abierto]="menuAbierto()">
+    <nav aria-label="Navegación del taller">
+      <ul class="menu__lista">
+        @for (opcion of opciones(); track opcion.ruta) {
+          <li>
+            <a
+              class="opcion"
+              [routerLink]="opcion.ruta"
+              routerLinkActive="opcion--activa"
+              ariaCurrentWhenActive="page"
+              (click)="menuAbierto.set(false)"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path [attr.d]="opcion.icono" />
+              </svg>
+              {{ opcion.texto }}
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    @if (auth.usuario(); as usuario) {
+      <div class="usuario">
+        <div class="usuario__datos">
+          <span class="usuario__avatar" aria-hidden="true">{{ usuario.nombre.charAt(0) }}</span>
+          <div class="usuario__texto">
+            <p class="usuario__nombre">{{ usuario.nombre }}</p>
+            <p class="usuario__rol">{{ etiquetasRol[usuario.rol] }}</p>
+          </div>
+        </div>
+        <button type="button" class="btn usuario__salir" (click)="auth.cerrarSesion()">
+          Cerrar sesión
+        </button>
+      </div>
+    }
+  </div>
+</aside>
+
+<!-- Cada pantalla aporta su propio <main>; al cambiar de pantalla el scroll vuelve arriba -->
+<div #contenido class="contenido">
+  <router-outlet (activate)="contenido.scrollTop = 0" />
+</div>

@@ -1,0 +1,106 @@
+$ancho-maximo: 640px;
+
+// La cabecera y las pestañas quedan fijas: solo se desplaza la zona central
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.cabecera {
+  flex-shrink: 0;
+  padding: calc(var(--mo-esp-24) + env(safe-area-inset-top)) var(--mo-esp-16) var(--mo-esp-16);
+  padding-right: calc(var(--mo-esp-16) + env(safe-area-inset-right));
+  padding-left: calc(var(--mo-esp-16) + env(safe-area-inset-left));
+  background-color: var(--mo-naranja);
+  color: var(--mo-sobre-naranja);
+}
+
+.cabecera__fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+  max-width: $ancho-maximo;
+  margin-inline: auto;
+}
+
+.campana {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-tactil);
+  height: var(--mo-tactil);
+}
+
+.campana__insignia {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 20px;
+  padding-inline: var(--mo-esp-4);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-noche);
+  color: var(--mo-blanco);
+  font-size: var(--mo-tipo-12);
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}
+
+.contenido {
+  flex: 1;
+  min-height: 0; // sin esto, el contenido largo estiraría la columna en lugar de desplazarse
+  overflow-y: auto;
+}
+
+.contenido__ancho {
+  max-width: $ancho-maximo;
+  margin-inline: auto;
+  padding: var(--mo-esp-16);
+}
+
+.pestanas {
+  flex-shrink: 0;
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  border-top: 1px solid var(--mo-linea);
+  background-color: var(--mo-blanco);
+}
+
+.pestanas__lista {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: $ancho-maximo;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.pestana {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--mo-tactil);
+  padding: var(--mo-esp-8) var(--mo-esp-4);
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-13);
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+// El texto usa la variante oscura del naranja para cumplir el contraste mínimo
+.pestana--activa {
+  color: var(--mo-naranja-oscuro);
+  font-weight: 700;
+
+  svg {
+    color: var(--mo-naranja);
+  }
+}

@@ -1,0 +1,59 @@
+<header class="cabecera">
+  <div class="cabecera__fila">
+    <h1>{{ titulo() }}</h1>
+
+    <div class="campana" role="img" [attr.aria-label]="'Avisos sin leer: ' + noLeidas()">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path [attr.d]="iconoCampana" />
+      </svg>
+      <span class="campana__insignia">{{ noLeidas() }}</span>
+    </div>
+  </div>
+</header>
+
+<!-- Cada pantalla aporta su propio <main>; al cambiar de pantalla el scroll vuelve arriba -->
+<div #contenido class="contenido">
+  <div class="contenido__ancho">
+    <router-outlet (activate)="contenido.scrollTop = 0" />
+  </div>
+</div>
+
+<nav class="pestanas" aria-label="Navegación principal">
+  <ul class="pestanas__lista">
+    @for (pestana of pestanas; track pestana.ruta) {
+      <li>
+        <a
+          class="pestana"
+          [routerLink]="pestana.ruta"
+          routerLinkActive="pestana--activa"
+          ariaCurrentWhenActive="page"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path [attr.d]="pestana.icono" />
+          </svg>
+          {{ pestana.texto }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
