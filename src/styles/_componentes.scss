@@ -1,0 +1,303 @@
+// Clases reutilizables del sistema de diseño de MotorLab.
+
+// Opción seleccionable compartida por .segmentado y .chips
+@mixin opcion($radio) {
+  min-height: var(--mo-tactil);
+  padding: var(--mo-esp-8) var(--mo-esp-16);
+  border: 1px solid var(--mo-linea);
+  border-radius: $radio;
+  background-color: var(--mo-blanco);
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--mo-naranja);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin opcion-activa {
+  border-color: var(--mo-naranja);
+  background-color: var(--mo-naranja-claro);
+  color: var(--mo-naranja-oscuro);
+  font-weight: 700;
+}
+
+@mixin pill-color($fondo, $texto) {
+  background-color: $fondo;
+  color: $texto;
+}
+
+@mixin aviso-color($fondo, $texto) {
+  background-color: $fondo;
+  color: $texto;
+}
+
+// Botones
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mo-esp-8);
+  min-height: var(--mo-tactil);
+  min-width: var(--mo-tactil);
+  padding: var(--mo-esp-8) var(--mo-esp-16);
+  border: 1px solid transparent;
+  border-radius: var(--mo-radio-12);
+  font-size: var(--mo-tipo-16);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.btn--primario {
+  background-color: var(--mo-naranja);
+  color: var(--mo-sobre-naranja);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+}
+
+.btn--secundario {
+  border-color: var(--mo-linea);
+  background-color: var(--mo-blanco);
+  color: var(--mo-gris-oscuro);
+
+  &:hover:not(:disabled) {
+    border-color: var(--mo-gris);
+    color: var(--mo-texto);
+  }
+}
+
+.btn--peligro {
+  background-color: var(--mo-rojo-oscuro);
+  color: var(--mo-blanco);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+}
+
+.btn--fantasma {
+  border: 1px dashed var(--mo-naranja);
+  background-color: transparent;
+  color: var(--mo-naranja-oscuro);
+
+  &:hover:not(:disabled) {
+    background-color: var(--mo-naranja-claro);
+  }
+}
+
+// Etiquetas de estado y urgencia
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--mo-esp-4) var(--mo-esp-12);
+  border-radius: var(--mo-radio-pildora);
+  font-size: var(--mo-tipo-13);
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.pill--naranja {
+  @include pill-color(var(--mo-naranja-claro), var(--mo-naranja-oscuro));
+}
+
+.pill--verde {
+  @include pill-color(var(--mo-verde-claro), var(--mo-verde-oscuro));
+}
+
+.pill--rojo {
+  @include pill-color(var(--mo-rojo-claro), var(--mo-rojo-oscuro));
+}
+
+.pill--ambar {
+  @include pill-color(var(--mo-ambar-claro), var(--mo-ambar));
+}
+
+.pill--azul {
+  @include pill-color(var(--mo-azul-claro), var(--mo-azul-oscuro));
+}
+
+.pill--gris {
+  @include pill-color(var(--mo-linea), var(--mo-gris-oscuro));
+}
+
+// Tarjetas
+.tarjeta {
+  padding: var(--mo-esp-16);
+  border-radius: var(--mo-radio-12);
+  background-color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-suave);
+}
+
+.tarjeta--fondo {
+  background-color: var(--mo-fondo);
+  box-shadow: none;
+}
+
+// Campos de formulario
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-4);
+
+  label {
+    color: var(--mo-gris-oscuro);
+    font-size: var(--mo-tipo-14);
+    font-weight: 600;
+  }
+
+  // El borde usa --mo-gris porque un control necesita 3:1 frente a su fondo
+  input:not([type='checkbox'], [type='radio']),
+  select,
+  textarea {
+    width: 100%;
+    min-height: var(--mo-tactil);
+    padding: var(--mo-esp-8) var(--mo-esp-12);
+    border: 1px solid var(--mo-gris);
+    border-radius: var(--mo-radio-12);
+    background-color: var(--mo-blanco);
+    font-size: var(--mo-tipo-16);
+
+    &::placeholder {
+      color: var(--mo-gris-oscuro);
+    }
+
+    &:disabled {
+      background-color: var(--mo-fondo);
+      color: var(--mo-gris-oscuro);
+      cursor: not-allowed;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.campo__error {
+  color: var(--mo-rojo-oscuro);
+  font-size: var(--mo-tipo-13);
+  font-weight: 600;
+}
+
+.campo--error {
+  input:not([type='checkbox'], [type='radio']),
+  select,
+  textarea {
+    border-width: 2px;
+    border-color: var(--mo-rojo);
+  }
+}
+
+// Selector de opciones excluyentes (Sí / No / No lo sé)
+.segmentado {
+  display: flex;
+  gap: var(--mo-esp-8);
+}
+
+.segmentado__opcion {
+  @include opcion(var(--mo-radio-12));
+  flex: 1;
+}
+
+.segmentado__opcion--activa,
+.segmentado__opcion[aria-pressed='true'] {
+  @include opcion-activa;
+}
+
+// Selección tipo chip
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-8);
+}
+
+.chip {
+  @include opcion(var(--mo-radio-pildora));
+}
+
+.chip--activo,
+.chip[aria-pressed='true'] {
+  @include opcion-activa;
+}
+
+// Tablas
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--mo-tipo-14);
+
+  th {
+    padding: var(--mo-esp-12) var(--mo-esp-16);
+    background-color: var(--mo-fondo);
+    color: var(--mo-gris-oscuro);
+    font-size: var(--mo-tipo-12);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: var(--mo-esp-12) var(--mo-esp-16);
+    border-bottom: 1px solid var(--mo-linea);
+  }
+}
+
+// Barra de progreso
+.barra-progreso {
+  width: 100%;
+  height: var(--mo-esp-8);
+  overflow: hidden;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-linea);
+}
+
+.barra-progreso__relleno {
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--mo-naranja);
+}
+
+// Avisos
+.aviso {
+  padding: var(--mo-esp-12) var(--mo-esp-16);
+  border-radius: var(--mo-radio-12);
+  font-size: var(--mo-tipo-14);
+}
+
+.aviso--info {
+  @include aviso-color(var(--mo-azul-claro), var(--mo-azul-oscuro));
+}
+
+.aviso--ambar {
+  @include aviso-color(var(--mo-ambar-claro), var(--mo-ambar));
+}
+
+.aviso--rojo {
+  @include aviso-color(var(--mo-rojo-claro), var(--mo-rojo-oscuro));
+}
+
+// Estado vacío de listados
+.vacio {
+  padding: var(--mo-esp-32) var(--mo-esp-16);
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+  text-align: center;
+}

@@ -1,0 +1,60 @@
+// Tokens de diseño de MotorLab, disponibles como variables CSS en toda la aplicación.
+
+:root {
+  // Colores de marca y de estado
+  --mo-naranja: #e8651a;
+  --mo-naranja-claro: #fdebdd;
+  --mo-noche: #1b1c2b;
+  --mo-fondo: #f4f5f7;
+  --mo-texto: #15151c;
+  --mo-gris: #7c808c;
+  --mo-linea: #e4e6eb;
+  --mo-verde: #1fa463;
+  --mo-verde-claro: #e3f5eb;
+  --mo-rojo: #e5383b;
+  --mo-rojo-claro: #fde8e8;
+  --mo-ambar: #8a5e06;
+  --mo-ambar-claro: #fff1d0;
+  --mo-azul: #2f6fde;
+  --mo-azul-claro: #e5eefd;
+  --mo-blanco: #ffffff;
+
+  // Variantes oscuras para texto: garantizan un contraste mínimo de 4,5:1 (WCAG AA)
+  --mo-naranja-oscuro: #b34709;
+  --mo-verde-oscuro: #14703f;
+  --mo-rojo-oscuro: #b42326;
+  --mo-azul-oscuro: #1f55b8;
+  --mo-gris-oscuro: #5c606b;
+
+  // Texto sobre fondo naranja: el blanco solo alcanza 3,33:1
+  --mo-sobre-naranja: var(--mo-noche);
+
+  // Espaciado
+  --mo-esp-4: 4px;
+  --mo-esp-8: 8px;
+  --mo-esp-12: 12px;
+  --mo-esp-16: 16px;
+  --mo-esp-24: 24px;
+  --mo-esp-32: 32px;
+
+  // Radios
+  --mo-radio-8: 8px;
+  --mo-radio-12: 12px;
+  --mo-radio-pildora: 999px;
+
+  // Sombras
+  --mo-sombra-suave: 0 1px 3px rgb(27 28 43 / 8%);
+  --mo-sombra-media: 0 4px 12px rgb(27 28 43 / 10%);
+
+  // Tipografía
+  --mo-familia: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mo-tipo-12: 12px;
+  --mo-tipo-13: 13px;
+  --mo-tipo-14: 14px;
+  --mo-tipo-16: 16px;
+  --mo-tipo-21: 21px;
+  --mo-tipo-26: 26px;
+
+  // Tamaño mínimo de los objetivos táctiles
+  --mo-tactil: 44px;
+}
