@@ -1,0 +1,31 @@
+.modal {
+  width: min(420px, calc(100% - var(--mo-esp-32)));
+  padding: var(--mo-esp-24);
+  border: 0;
+  border-radius: var(--mo-radio-12);
+  background-color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-media);
+  color: var(--mo-texto);
+
+  &::backdrop {
+    background-color: rgb(27 28 43 / 50%);
+  }
+}
+
+.modal__titulo {
+  margin-bottom: var(--mo-esp-8);
+}
+
+.modal__mensaje {
+  margin-bottom: var(--mo-esp-16);
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.modal__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--mo-esp-8);
+  margin-top: var(--mo-esp-16);
+}

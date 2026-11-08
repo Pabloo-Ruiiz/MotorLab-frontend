@@ -1,0 +1,16 @@
+.paginador {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-8);
+}
+
+.paginador__estado {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+  text-align: center;
+}
+
+.paginador__total {
+  white-space: nowrap;
+}

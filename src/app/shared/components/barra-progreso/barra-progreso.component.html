@@ -1,0 +1,13 @@
+<div
+  class="barra-progreso"
+  role="progressbar"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  [attr.aria-valuenow]="valor()"
+  [attr.aria-label]="etiqueta()"
+>
+  <div class="barra-progreso__relleno" [style.width.%]="valor()"></div>
+</div>
+@if (mostrarPorcentaje()) {
+  <span class="porcentaje">{{ valor() }} %</span>
+}

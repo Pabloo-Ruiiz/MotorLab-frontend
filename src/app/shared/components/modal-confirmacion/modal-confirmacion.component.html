@@ -1,0 +1,27 @@
+<dialog
+  #dialogo
+  class="modal"
+  [attr.aria-labelledby]="idTitulo"
+  [attr.aria-describedby]="mensaje() ? idMensaje : null"
+  (close)="alCerrar()"
+>
+  <h2 class="modal__titulo" [id]="idTitulo">{{ titulo() }}</h2>
+  @if (mensaje()) {
+    <p class="modal__mensaje" [id]="idMensaje">{{ mensaje() }}</p>
+  }
+  <ng-content />
+  <div class="modal__acciones">
+    <button type="button" class="btn btn--secundario" (click)="cancelar.emit()">
+      {{ textoCancelar() }}
+    </button>
+    <button
+      type="button"
+      class="btn"
+      [class.btn--primario]="!peligro()"
+      [class.btn--peligro]="peligro()"
+      (click)="confirmar.emit()"
+    >
+      {{ textoConfirmar() }}
+    </button>
+  </div>
+</dialog>
