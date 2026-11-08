@@ -1,0 +1,89 @@
+:host {
+  display: block;
+}
+
+.ordenes,
+.lista,
+.orden {
+  display: flex;
+  flex-direction: column;
+}
+
+.ordenes,
+.lista {
+  gap: var(--mo-esp-16);
+}
+
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.orden {
+  position: relative; // referencia del área clicable de .orden__enlace
+  gap: var(--mo-esp-8);
+
+  &:hover {
+    box-shadow: var(--mo-sombra-media);
+  }
+}
+
+.orden--presupuesto {
+  border: 2px solid var(--mo-naranja);
+}
+
+.orden__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mo-esp-8);
+}
+
+.orden__titulo {
+  font-size: var(--mo-tipo-16);
+}
+
+.orden__enlace {
+  color: inherit;
+  text-decoration: none;
+
+  // Extiende el enlace a toda la tarjeta sin anidar «Ver presupuesto» dentro de otro enlace
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--mo-radio-12);
+  }
+}
+
+.orden__detalle {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.orden__presupuesto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-8);
+}
+
+.orden__total {
+  font-size: var(--mo-tipo-21);
+  font-weight: 800;
+}
+
+// Por encima del área clicable de la tarjeta
+.orden__ver {
+  position: relative;
+}
+
+// Sticky dentro del scroll del layout: siempre visible y sin tapar la barra de pestañas
+.nueva {
+  position: sticky;
+  bottom: var(--mo-esp-16);
+  align-self: flex-end;
+  box-shadow: var(--mo-sombra-media);
+}

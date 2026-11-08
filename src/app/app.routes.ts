@@ -75,7 +75,10 @@ export const routes: Routes = [
       {
         path: 'vehiculos/:id/historial',
         data: { titulo: 'Historial del vehículo' },
-        loadComponent: pendiente
+        loadComponent: () =>
+          import('@features/vehiculos/vehiculo-historial/vehiculo-historial.component').then(
+            (m) => m.VehiculoHistorialComponent
+          )
       },
       {
         path: 'solicitud/nueva',
@@ -85,7 +88,14 @@ export const routes: Routes = [
             (m) => m.SolicitudNuevaComponent
           )
       },
-      { path: 'ordenes', data: { titulo: 'Mis órdenes' }, loadComponent: pendiente },
+      {
+        path: 'ordenes',
+        data: { titulo: 'Mis órdenes' },
+        loadComponent: () =>
+          import('@features/ordenes/ordenes-lista-cliente/ordenes-lista-cliente.component').then(
+            (m) => m.OrdenesListaClienteComponent
+          )
+      },
       { path: 'ordenes/:id', data: { titulo: 'Seguimiento' }, loadComponent: pendiente },
       {
         path: 'ordenes/:id/presupuesto',
