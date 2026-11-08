@@ -1,0 +1,17 @@
+.contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mo-esp-8);
+}
+
+.icono {
+  width: var(--mo-esp-32);
+  height: var(--mo-esp-32);
+}
+
+.titulo {
+  color: var(--mo-texto);
+  font-size: var(--mo-tipo-16);
+  font-weight: 700;
+}

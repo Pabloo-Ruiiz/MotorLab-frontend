@@ -1,0 +1,6 @@
+<!-- La región debe existir antes que los mensajes para que los lectores de pantalla los anuncien -->
+<div role="alert">
+  @for (error of errores(); track error) {
+    <p class="campo__error">{{ error }}</p>
+  }
+</div>

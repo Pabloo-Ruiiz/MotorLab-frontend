@@ -178,4 +178,120 @@
     <h2 id="titulo-vacio">Estado vacío</h2>
     <div class="tarjeta vacio">Todavía no hay órdenes.</div>
   </section>
+
+  <section class="estilos__seccion" aria-labelledby="titulo-pill-estado">
+    <h2 id="titulo-pill-estado">PillEstadoComponent</h2>
+    <div class="estilos__fila">
+      @for (estado of estados; track estado) {
+        <app-pill-estado [estado]="estado" />
+      }
+    </div>
+    <div class="estilos__fila">
+      @for (estado of estadosPresupuesto; track estado) {
+        <app-pill-estado [estadoPresupuesto]="estado" />
+      }
+    </div>
+  </section>
+
+  <section class="estilos__seccion" aria-labelledby="titulo-pill-urgencia">
+    <h2 id="titulo-pill-urgencia">PillUrgenciaComponent</h2>
+    <div class="estilos__fila">
+      @for (urgencia of urgencias; track urgencia) {
+        <app-pill-urgencia [urgencia]="urgencia" />
+      }
+    </div>
+  </section>
+
+  <section class="estilos__seccion" aria-labelledby="titulo-barra">
+    <h2 id="titulo-barra">BarraProgresoComponent</h2>
+    <app-barra-progreso [progreso]="40" />
+    <app-barra-progreso [progreso]="80" mostrarPorcentaje />
+  </section>
+
+  <section class="estilos__seccion" aria-labelledby="titulo-cargando">
+    <h2 id="titulo-cargando">CargandoComponent</h2>
+    <app-cargando />
+  </section>
+
+  <section class="estilos__seccion" aria-labelledby="titulo-vacio-componente">
+    <h2 id="titulo-vacio-componente">VacioComponent</h2>
+    <div class="tarjeta">
+      <app-vacio titulo="Todavía no tienes vehículos" texto="Añade uno para pedir una reparación.">
+        <button type="button" class="btn btn--primario">Añadir vehículo</button>
+      </app-vacio>
+    </div>
+  </section>
+
+  <section class="estilos__seccion" aria-labelledby="titulo-paginador">
+    <h2 id="titulo-paginador">PaginadorComponent</h2>
+    <app-paginador
+      [pagina]="paginaEjemplo()"
+      [totalPaginas]="5"
+      [total]="24"
+      (cambiarPagina)="paginaEjemplo.set($event)"
+    />
+  </section>
+
+  <section class="estilos__seccion" aria-labelledby="titulo-modal">
+    <h2 id="titulo-modal">ModalConfirmacionComponent</h2>
+    <div class="estilos__fila">
+      <button
+        id="abrir-modal-normal"
+        type="button"
+        class="btn btn--secundario"
+        (click)="modalAbierto.set('normal')"
+      >
+        Abrir modal
+      </button>
+      <button
+        id="abrir-modal-peligro"
+        type="button"
+        class="btn btn--peligro"
+        (click)="modalAbierto.set('peligro')"
+      >
+        Abrir modal de peligro
+      </button>
+    </div>
+    <app-modal-confirmacion
+      titulo="Enviar presupuesto"
+      mensaje="El cliente recibirá el presupuesto para autorizarlo."
+      textoConfirmar="Enviar"
+      [abierto]="modalAbierto() === 'normal'"
+      (confirmar)="confirmarModal()"
+      (cancelar)="modalAbierto.set(null)"
+    />
+    <app-modal-confirmacion
+      titulo="Rechazar presupuesto"
+      mensaje="Esta acción no se puede deshacer."
+      textoConfirmar="Rechazar"
+      peligro
+      [abierto]="modalAbierto() === 'peligro'"
+      (confirmar)="confirmarModal()"
+      (cancelar)="modalAbierto.set(null)"
+    >
+      <div class="campo">
+        <label for="modal-motivo">Motivo (opcional)</label>
+        <textarea id="modal-motivo" rows="2"></textarea>
+      </div>
+    </app-modal-confirmacion>
+  </section>
+
+  <section class="estilos__seccion" aria-labelledby="titulo-errores-campo">
+    <h2 id="titulo-errores-campo">ErroresCampoComponent</h2>
+    <div class="campo" [class.campo--error]="controlEjemplo.invalid && controlEjemplo.touched">
+      <label for="campo-errores">Correo electrónico</label>
+      <input id="campo-errores" type="email" [formControl]="controlEjemplo" />
+      <app-errores-campo [control]="controlEjemplo" />
+    </div>
+    <div class="estilos__fila">
+      <button
+        id="simular-error-servidor"
+        type="button"
+        class="btn btn--secundario"
+        (click)="simularErrorServidor()"
+      >
+        Simular error del servidor
+      </button>
+    </div>
+  </section>
 </main>

@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+}
+
+.barra-progreso {
+  flex: 1;
+}
+
+.porcentaje {
+  color: var(--mo-naranja-oscuro);
+  font-size: var(--mo-tipo-14);
+  font-weight: 700;
+  white-space: nowrap;
+}

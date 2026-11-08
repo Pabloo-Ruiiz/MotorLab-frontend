@@ -1,8 +1,38 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+
+import {
+  ETIQUETAS_ESTADO,
+  ETIQUETAS_ESTADO_PRESUPUESTO,
+  ETIQUETAS_URGENCIA,
+  type EstadoOrden,
+  type EstadoPresupuesto,
+  type Urgencia
+} from '@core/models';
+import { ToastService } from '@core/services/toast.service';
+import { BarraProgresoComponent } from '@shared/components/barra-progreso/barra-progreso.component';
+import { CargandoComponent } from '@shared/components/cargando/cargando.component';
+import { ErroresCampoComponent } from '@shared/components/errores-campo/errores-campo.component';
+import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacion/modal-confirmacion.component';
+import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
+import { PillEstadoComponent } from '@shared/components/pill-estado/pill-estado.component';
+import { PillUrgenciaComponent } from '@shared/components/pill-urgencia/pill-urgencia.component';
+import { VacioComponent } from '@shared/components/vacio/vacio.component';
 
 // TODO: esta página solo existe en desarrollo y se elimina en el paso de errores globales (F26).
 @Component({
   selector: 'app-estilos',
+  imports: [
+    BarraProgresoComponent,
+    CargandoComponent,
+    ErroresCampoComponent,
+    ModalConfirmacionComponent,
+    PaginadorComponent,
+    PillEstadoComponent,
+    PillUrgenciaComponent,
+    ReactiveFormsModule,
+    VacioComponent
+  ],
   templateUrl: './estilos.component.html',
   styleUrl: './estilos.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -53,4 +83,32 @@ export class EstilosComponent {
 
   protected readonly segmentoActivo = signal('Sí');
   protected readonly chipActivo = signal('Frenos');
+
+  protected readonly estados = Object.keys(ETIQUETAS_ESTADO) as EstadoOrden[];
+  protected readonly estadosPresupuesto = Object.keys(
+    ETIQUETAS_ESTADO_PRESUPUESTO
+  ) as EstadoPresupuesto[];
+  protected readonly urgencias = Object.keys(ETIQUETAS_URGENCIA) as Urgencia[];
+
+  protected readonly paginaEjemplo = signal(1);
+
+  private readonly toast = inject(ToastService);
+
+  protected readonly modalAbierto = signal<'normal' | 'peligro' | null>(null);
+
+  protected readonly controlEjemplo = new FormControl('', [
+    Validators.required,
+    Validators.minLength(3),
+    Validators.email
+  ]);
+
+  protected confirmarModal(): void {
+    this.modalAbierto.set(null);
+    this.toast.exito('Acción confirmada');
+  }
+
+  protected simularErrorServidor(): void {
+    this.controlEjemplo.setErrors({ servidor: 'Este correo ya está registrado' });
+    this.controlEjemplo.markAsTouched();
+  }
 }
