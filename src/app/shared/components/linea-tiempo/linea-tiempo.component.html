@@ -1,0 +1,44 @@
+@if (previos().length > 0) {
+  <ul class="previos" role="list" aria-label="Antes de recibir el vehículo">
+    @for (evento of previos(); track $index) {
+      <li class="previo">
+        <span>{{ etiquetas[evento.estado] }}</span>
+        <time [attr.datetime]="evento.fechaHora">{{
+          evento.fechaHora | fechaHora: 'completa'
+        }}</time>
+      </li>
+    }
+  </ul>
+}
+
+<ol class="pasos" role="list" aria-label="Progreso de la reparación">
+  @for (paso of pasos(); track paso.estado) {
+    <li
+      class="paso"
+      [class.paso--hecho]="paso.hecho"
+      [class.paso--actual]="paso.actual"
+      [class.paso--linea-hecha]="paso.lineaHecha"
+      [attr.aria-current]="paso.actual ? 'step' : null"
+    >
+      <span class="paso__marca" aria-hidden="true">
+        @if (paso.hecho) {
+          ✓
+        }
+      </span>
+
+      <div class="paso__textos">
+        <p class="paso__titulo">
+          {{ paso.titulo }}
+          <span class="sr-only">({{ paso.lectura }})</span>
+        </p>
+        <p class="paso__descripcion">{{ paso.descripcion }}</p>
+      </div>
+
+      @if (paso.fechaHora; as fechaHora) {
+        <time class="paso__hora" [attr.datetime]="fechaHora">{{
+          fechaHora | fechaHora: 'hora'
+        }}</time>
+      }
+    </li>
+  }
+</ol>

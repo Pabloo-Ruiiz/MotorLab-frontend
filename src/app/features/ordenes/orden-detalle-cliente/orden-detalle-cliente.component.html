@@ -1,0 +1,113 @@
+<main class="detalle">
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (noEncontrada()) {
+    <app-vacio titulo="Orden no encontrada" />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario" (click)="reintentar()">Reintentar</button>
+  } @else if (datos(); as datos) {
+    @if (datos.orden.presupuesto; as presupuesto) {
+      @if (presupuesto.estado === 'enviado') {
+        <section class="aviso presupuesto" aria-label="Presupuesto pendiente de respuesta">
+          <div>
+            <p>Tu presupuesto está listo</p>
+            <strong class="presupuesto__total">{{ presupuesto.total | euros }}</strong>
+          </div>
+          <a
+            class="btn btn--primario"
+            [routerLink]="['/cliente/ordenes', datos.orden.id, 'presupuesto']"
+          >
+            Ver presupuesto
+          </a>
+        </section>
+      } @else if (presupuesto.estado === 'autorizado') {
+        <a [routerLink]="['/cliente/ordenes', datos.orden.id, 'presupuesto']">
+          Ver presupuesto autorizado
+        </a>
+      }
+    }
+
+    <section class="tarjeta estimado" aria-label="Fecha estimada y progreso">
+      <p class="estimado__etiqueta">Listo estimado</p>
+      <div class="estimado__fila">
+        <strong class="estimado__fecha">{{
+          datos.seguimiento.listoEstimado | fechaHora: 'completa'
+        }}</strong>
+        <strong class="estimado__porcentaje">{{ datos.seguimiento.progreso }} %</strong>
+      </div>
+      <app-barra-progreso
+        [progreso]="datos.seguimiento.progreso"
+        etiqueta="Progreso de la reparación"
+      />
+    </section>
+
+    <app-linea-tiempo [eventos]="datos.seguimiento.eventos" [estado]="datos.orden.estado" />
+
+    <section class="tarjeta" aria-labelledby="orden-vehiculo">
+      <h2 class="tarjeta__titulo" id="orden-vehiculo">Vehículo</h2>
+      <p>
+        {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }} ·
+        {{ matriculaLegible(datos.orden.vehiculo.matricula) }}
+      </p>
+    </section>
+
+    <section class="tarjeta" aria-labelledby="orden-datos">
+      <h2 class="tarjeta__titulo" id="orden-datos">Orden #{{ datos.orden.id }}</h2>
+      <dl class="datos">
+        <div>
+          <dt>Tipo de servicio</dt>
+          <dd>{{ etiquetasServicio[datos.orden.tipoServicio] }}</dd>
+        </div>
+        <div>
+          <dt>Síntoma</dt>
+          <dd>{{ datos.orden.sintoma }}</dd>
+        </div>
+        @if (datos.orden.cuandoOcurre; as cuando) {
+          <div>
+            <dt>Cuándo ocurre</dt>
+            <dd>{{ etiquetasCuando[cuando] }}</dd>
+          </div>
+        }
+        <div>
+          <dt>Urgencia</dt>
+          <dd><app-pill-urgencia [urgencia]="datos.orden.urgencia" /></dd>
+        </div>
+        @if (datos.orden.mecanico; as mecanico) {
+          <div>
+            <dt>Mecánico</dt>
+            <dd>{{ mecanico.nombre }}</dd>
+          </div>
+        }
+        @if (datos.orden.elevador; as elevador) {
+          <div>
+            <dt>Elevador</dt>
+            <dd>{{ elevador }}</dd>
+          </div>
+        }
+      </dl>
+    </section>
+
+    @if (cancelable()) {
+      <button
+        type="button"
+        class="btn btn--peligro"
+        [disabled]="cancelando()"
+        (click)="confirmandoCancelacion.set(true)"
+      >
+        {{ cancelando() ? 'Cancelando…' : 'Cancelar orden' }}
+      </button>
+    }
+  }
+</main>
+
+<app-modal-confirmacion
+  [abierto]="confirmandoCancelacion()"
+  titulo="Cancelar la orden"
+  mensaje="¿Seguro que quieres cancelar esta orden? No se puede deshacer."
+  textoConfirmar="Cancelar orden"
+  textoCancelar="Volver"
+  peligro
+  (confirmar)="confirmarCancelacion()"
+  (cancelar)="confirmandoCancelacion.set(false)"
+/>

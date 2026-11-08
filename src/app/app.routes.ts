@@ -96,7 +96,14 @@ export const routes: Routes = [
             (m) => m.OrdenesListaClienteComponent
           )
       },
-      { path: 'ordenes/:id', data: { titulo: 'Seguimiento' }, loadComponent: pendiente },
+      {
+        path: 'ordenes/:id',
+        data: { titulo: 'Seguimiento' },
+        loadComponent: () =>
+          import('@features/ordenes/orden-detalle-cliente/orden-detalle-cliente.component').then(
+            (m) => m.OrdenDetalleClienteComponent
+          )
+      },
       {
         path: 'ordenes/:id/presupuesto',
         data: { titulo: 'Presupuesto' },
