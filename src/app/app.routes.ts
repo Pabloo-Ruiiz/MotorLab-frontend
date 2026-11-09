@@ -149,7 +149,14 @@ export const routes: Routes = [
             (m) => m.OrdenDetalleTallerComponent,
           ),
       },
-      { path: 'ordenes/:id/presupuesto', canActivate: [soloAdmin], loadComponent: pendiente },
+      {
+        path: 'ordenes/:id/presupuesto',
+        canActivate: [soloAdmin],
+        loadComponent: () =>
+          import('@features/taller/presupuesto-editor/presupuesto-editor/presupuesto-editor.component').then(
+            (m) => m.PresupuestoEditorComponent,
+          ),
+      },
       { path: 'piezas', loadComponent: pendiente },
       { path: 'avisos', loadComponent: avisos },
       { path: 'usuarios', canActivate: [soloAdmin], loadComponent: pendiente },
