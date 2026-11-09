@@ -1,0 +1,52 @@
+<dialog #dialogo class="dialogo" aria-labelledby="pieza-titulo" (close)="alCerrar()">
+  <h2 class="dialogo__titulo" id="pieza-titulo">{{ pieza() ? 'Editar pieza' : 'Nueva pieza' }}</h2>
+
+  <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    @if (errorGeneral(); as error) {
+      <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    }
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.referencia)">
+      <label for="pieza-referencia">Referencia</label>
+      <input
+        id="pieza-referencia"
+        type="text"
+        autocomplete="off"
+        [attr.maxlength]="maxReferencia"
+        formControlName="referencia"
+      />
+      <app-errores-campo [control]="form.controls.referencia" [mensajes]="mensajesTexto" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.nombre)">
+      <label for="pieza-nombre">Nombre</label>
+      <input
+        id="pieza-nombre"
+        type="text"
+        autocomplete="off"
+        [attr.maxlength]="maxNombre"
+        formControlName="nombre"
+      />
+      <app-errores-campo [control]="form.controls.nombre" [mensajes]="mensajesTexto" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.precio)">
+      <label for="pieza-precio">Precio (€)</label>
+      <input id="pieza-precio" type="number" min="0" step="0.01" formControlName="precio" />
+      <app-errores-campo [control]="form.controls.precio" [mensajes]="mensajesPrecio" />
+    </div>
+
+    @if (pieza() === null) {
+      <div class="campo" [class.campo--error]="campoConError(form.controls.stock)">
+        <label for="pieza-stock">Stock inicial</label>
+        <input id="pieza-stock" type="number" min="0" step="1" formControlName="stock" />
+        <app-errores-campo [control]="form.controls.stock" [mensajes]="mensajesStock" />
+      </div>
+    }
+
+    <div class="dialogo__acciones">
+      <button type="button" class="btn btn--secundario" (click)="cancelar.emit()">Cancelar</button>
+      <button type="submit" class="btn btn--primario" [disabled]="guardando()">Guardar</button>
+    </div>
+  </form>
+</dialog>

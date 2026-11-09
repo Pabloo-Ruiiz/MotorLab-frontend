@@ -2,10 +2,27 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import type { Pagina, Pieza } from '@core/models';
+import type { Pagina, Pieza, PiezaRequest, StockDeltaRequest } from '@core/models';
 import { PiezasService } from './piezas.service';
 
 const VACIA: Pagina<Pieza> = { datos: [], pagina: 1, limite: 20, total: 0, totalPaginas: 0 };
+
+const PIEZA: Pieza = {
+  id: 1,
+  referencia: 'DS-118',
+  nombre: 'Disco de freno',
+  precio: 36,
+  stock: 4,
+  activa: true,
+  stockBajo: false
+};
+
+const DATOS_PIEZA: PiezaRequest = {
+  referencia: 'DS-118',
+  nombre: 'Disco de freno',
+  precio: 36,
+  stock: 4
+};
 
 describe('PiezasService', () => {
   let servicio: PiezasService;
@@ -65,5 +82,70 @@ describe('PiezasService', () => {
     servicio.listar({ q: '   ', stockBajo: null, pagina: undefined }).subscribe();
 
     httpSimulado.expectOne('/api/v1/piezas').flush(VACIA);
+  });
+
+  it('crear envía POST /piezas con los datos y emite la pieza', () => {
+    let emitido: Pieza | undefined;
+
+    servicio.crear(DATOS_PIEZA).subscribe((valor) => (emitido = valor));
+
+    const peticion = httpSimulado.expectOne('/api/v1/piezas');
+    expect(peticion.request.method).toBe('POST');
+    expect(peticion.request.body).toEqual(DATOS_PIEZA);
+    peticion.flush(PIEZA);
+
+    expect(emitido).toEqual(PIEZA);
+  });
+
+  it('obtener envía GET /piezas/1 y emite la pieza', () => {
+    let emitido: Pieza | undefined;
+
+    servicio.obtener(1).subscribe((valor) => (emitido = valor));
+
+    const peticion = httpSimulado.expectOne('/api/v1/piezas/1');
+    expect(peticion.request.method).toBe('GET');
+    peticion.flush(PIEZA);
+
+    expect(emitido).toEqual(PIEZA);
+  });
+
+  it('actualizar envía PUT /piezas/1 con los datos y emite la pieza', () => {
+    let emitido: Pieza | undefined;
+
+    servicio.actualizar(1, DATOS_PIEZA).subscribe((valor) => (emitido = valor));
+
+    const peticion = httpSimulado.expectOne('/api/v1/piezas/1');
+    expect(peticion.request.method).toBe('PUT');
+    expect(peticion.request.body).toEqual(DATOS_PIEZA);
+    peticion.flush(PIEZA);
+
+    expect(emitido).toEqual(PIEZA);
+  });
+
+  it('darDeBaja envía DELETE /piezas/1 y completa con la respuesta 204', () => {
+    let completado = false;
+
+    servicio.darDeBaja(1).subscribe({ complete: () => (completado = true) });
+
+    const peticion = httpSimulado.expectOne('/api/v1/piezas/1');
+    expect(peticion.request.method).toBe('DELETE');
+    peticion.flush(null, { status: 204, statusText: 'No Content' });
+
+    expect(completado).toBe(true);
+  });
+
+  it('ajustarStock envía PATCH /piezas/1/stock con {delta, motivo} y emite la pieza', () => {
+    const datos: StockDeltaRequest = { delta: -2, motivo: 'Rotura en almacén' };
+    const respuesta: Pieza = { ...PIEZA, stock: 2 };
+    let emitido: Pieza | undefined;
+
+    servicio.ajustarStock(1, datos).subscribe((valor) => (emitido = valor));
+
+    const peticion = httpSimulado.expectOne('/api/v1/piezas/1/stock');
+    expect(peticion.request.method).toBe('PATCH');
+    expect(peticion.request.body).toEqual({ delta: -2, motivo: 'Rotura en almacén' });
+    peticion.flush(respuesta);
+
+    expect(emitido).toEqual(respuesta);
   });
 });
