@@ -1,0 +1,272 @@
+<main class="editor">
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (noEncontrada()) {
+    <app-vacio titulo="Orden no encontrada" />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario reintentar" (click)="reintentar()">
+      Reintentar
+    </button>
+  } @else if (datos(); as datos) {
+    @if (datos.presupuesto; as presupuesto) {
+      <header class="encabezado">
+        <div>
+          <h1>Presupuesto P-{{ presupuesto.id }}</h1>
+          <p class="texto-suave">
+            {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }} ·
+            {{ matriculaLegible(datos.orden.vehiculo.matricula) }} ·
+            {{ datos.orden.cliente.nombre }}
+          </p>
+        </div>
+        <app-pill-estado [estadoPresupuesto]="presupuesto.estado" />
+      </header>
+
+      @if (presupuesto.lineas.length === 0) {
+        <app-vacio titulo="El presupuesto todavía no tiene líneas" />
+      } @else {
+        <div class="tabla-contenedor">
+          <table class="tabla">
+            <caption class="sr-only">
+              Líneas del presupuesto
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Concepto</th>
+                <th scope="col">Ref.</th>
+                <th scope="col">Cant.</th>
+                <th scope="col" class="numero">Precio</th>
+                <th scope="col" class="numero">Importe</th>
+                @if (editable()) {
+                  <th scope="col"><span class="sr-only">Acciones</span></th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (linea of presupuesto.lineas; track linea.id) {
+                <tr>
+                  <td>
+                    <span class="concepto">
+                      {{ linea.concepto }}
+                      @if (avisoDe(presupuesto, linea); as aviso) {
+                        <span class="pill pill--ambar">
+                          Stock {{ aviso.stock }} de {{ aviso.necesarias | number: '1.0-2' }}
+                        </span>
+                      }
+                    </span>
+                  </td>
+                  <td class="texto-suave">
+                    {{ linea.tipo === 'mano_obra' ? 'MO' : linea.referencia }}
+                  </td>
+                  <td class="sin-salto">
+                    {{ linea.cantidad | number: '1.0-2' }}
+                    @if (linea.tipo === 'mano_obra') {
+                      h
+                    }
+                  </td>
+                  <td class="numero">
+                    {{ linea.precioUnitario | euros }}{{ linea.tipo === 'mano_obra' ? '/h' : '' }}
+                  </td>
+                  <td class="numero importe">{{ linea.importe | euros }}</td>
+                  @if (editable()) {
+                    <td class="acciones-linea">
+                      <button
+                        type="button"
+                        class="accion"
+                        [attr.aria-label]="'Editar ' + linea.concepto"
+                        [disabled]="procesando()"
+                        (click)="editarLinea(linea)"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M4 20h4L19 9l-4-4L4 16v4ZM13 7l4 4" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="accion"
+                        [attr.aria-label]="'Eliminar ' + linea.concepto"
+                        [disabled]="procesando()"
+                        (click)="eliminarLinea(linea)"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          aria-hidden="true"
+                        >
+                          <path d="M6 6l12 12M18 6L6 18" />
+                        </svg>
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @if (editable()) {
+        <div class="anadir">
+          <button
+            type="button"
+            class="btn btn--fantasma"
+            [disabled]="procesando()"
+            (click)="nuevaLinea('pieza')"
+          >
+            + Añadir pieza del catálogo
+          </button>
+          <button
+            type="button"
+            class="btn btn--fantasma"
+            [disabled]="procesando()"
+            (click)="nuevaLinea('mano_obra')"
+          >
+            + Añadir mano de obra
+          </button>
+        </div>
+      }
+
+      <div class="resumen">
+        <div class="resumen__datos">
+          @if (editable()) {
+            <form
+              class="condiciones"
+              [formGroup]="resumen"
+              (ngSubmit)="guardarResumen()"
+              novalidate
+            >
+              <div
+                class="campo"
+                [class.campo--error]="campoConError(resumen.controls.tiempoEstimadoHoras)"
+              >
+                <label for="editor-horas">Tiempo estimado (h)</label>
+                <input
+                  id="editor-horas"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  formControlName="tiempoEstimadoHoras"
+                />
+                <app-errores-campo
+                  [control]="resumen.controls.tiempoEstimadoHoras"
+                  [mensajes]="mensajesHoras"
+                />
+              </div>
+
+              <div
+                class="campo"
+                [class.campo--error]="campoConError(resumen.controls.garantiaMeses)"
+              >
+                <label for="editor-garantia">Garantía (meses)</label>
+                <input
+                  id="editor-garantia"
+                  type="number"
+                  min="0"
+                  step="1"
+                  formControlName="garantiaMeses"
+                />
+                <app-errores-campo
+                  [control]="resumen.controls.garantiaMeses"
+                  [mensajes]="mensajesGarantia"
+                />
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn--secundario"
+                [disabled]="procesando() || resumen.pristine"
+              >
+                Guardar
+              </button>
+            </form>
+          } @else {
+            @if (presupuesto.tiempoEstimadoHoras !== null) {
+              <span class="pill pill--gris">
+                Tiempo estimado · {{ presupuesto.tiempoEstimadoHoras | number: '1.0-1' }} h
+              </span>
+            }
+            <span class="pill pill--gris">Garantía · {{ presupuesto.garantiaMeses }} meses</span>
+          }
+
+          @if (stock(); as stock) {
+            <span
+              class="pill"
+              [class.pill--ambar]="stock.disponibles < stock.total"
+              [class.pill--verde]="stock.disponibles === stock.total"
+            >
+              Stock: {{ stock.disponibles }} de {{ stock.total }}
+              {{ stock.total === 1 ? 'pieza' : 'piezas' }}
+            </span>
+          }
+        </div>
+
+        <dl class="totales">
+          <div class="totales__fila">
+            <dt>Subtotal</dt>
+            <dd>{{ presupuesto.subtotal | euros }}</dd>
+          </div>
+          <div class="totales__fila">
+            <dt>IVA {{ presupuesto.ivaPorcentaje | number: '1.0-2' }} %</dt>
+            <dd>{{ presupuesto.iva | euros }}</dd>
+          </div>
+          <div class="totales__fila totales__fila--total">
+            <dt>Total</dt>
+            <dd>{{ presupuesto.total | euros }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      @if (editable()) {
+        <button
+          type="button"
+          class="btn btn--primario enviar"
+          [disabled]="procesando() || presupuesto.lineas.length === 0"
+          (click)="pedirConfirmacionEnvio()"
+        >
+          Enviar presupuesto al cliente
+        </button>
+      }
+    } @else {
+      <app-vacio titulo="Esta orden todavía no tiene presupuesto">
+        <button
+          type="button"
+          class="btn btn--primario"
+          [disabled]="procesando()"
+          (click)="crearPresupuesto()"
+        >
+          Crear presupuesto
+        </button>
+      </app-vacio>
+    }
+  }
+</main>
+
+<app-linea-dialog
+  [abierto]="dialogoAbierto()"
+  [linea]="lineaEditada()"
+  [tipoInicial]="tipoNueva()"
+  [guardando]="guardandoLinea()"
+  (guardar)="guardarLinea($event)"
+  (cancelar)="dialogoAbierto.set(false)"
+/>
+
+<app-modal-confirmacion
+  [abierto]="confirmandoEnvio()"
+  titulo="Enviar presupuesto"
+  mensaje="El cliente recibirá el presupuesto para autorizarlo o rechazarlo y ya no podrás modificarlo."
+  textoConfirmar="Enviar"
+  textoCancelar="Volver"
+  (confirmar)="enviar()"
+  (cancelar)="confirmandoEnvio.set(false)"
+/>

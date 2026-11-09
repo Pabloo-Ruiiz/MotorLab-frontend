@@ -1,0 +1,120 @@
+<dialog #dialogo class="dialogo" aria-labelledby="linea-titulo" (close)="alCerrar()">
+  <h2 class="dialogo__titulo" id="linea-titulo">{{ linea() ? 'Editar línea' : 'Añadir línea' }}</h2>
+
+  <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    @if (errorGeneral(); as error) {
+      <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    }
+
+    <div class="segmentado" role="group" aria-label="Tipo de línea">
+      @for (opcion of tipos; track opcion.valor) {
+        <button
+          type="button"
+          class="segmentado__opcion"
+          [attr.aria-pressed]="tipo() === opcion.valor"
+          (click)="cambiarTipo(opcion.valor)"
+        >
+          {{ opcion.texto }}
+        </button>
+      }
+    </div>
+
+    @if (tipo() === 'pieza') {
+      <div class="campo" [class.campo--error]="campoConError(form.controls.piezaId)">
+        <label for="linea-busqueda">Buscar pieza</label>
+        <!-- Enter no debe enviar el formulario mientras se busca -->
+        <input
+          id="linea-busqueda"
+          type="search"
+          autocomplete="off"
+          placeholder="Referencia o nombre…"
+          [attr.maxlength]="maxBusqueda"
+          [formControl]="busqueda"
+          (keydown.enter)="$event.preventDefault()"
+        />
+        <app-errores-campo [control]="form.controls.piezaId" [mensajes]="mensajesPieza" />
+      </div>
+
+      <div aria-live="polite">
+        @switch (estadoBusqueda()) {
+          @case ('buscando') {
+            <p class="nota">Buscando…</p>
+          }
+          @case ('error') {
+            <p class="nota">No se ha podido buscar en el catálogo</p>
+          }
+          @case ('lista') {
+            @if (resultados().length === 0) {
+              <p class="nota">Sin resultados</p>
+            }
+          }
+        }
+      </div>
+
+      @if (resultados().length > 0) {
+        <ul class="resultados" aria-label="Piezas encontradas">
+          @for (pieza of resultados(); track pieza.id) {
+            <li>
+              <button type="button" class="resultado" (click)="elegir(pieza)">
+                {{ pieza.referencia }} · {{ pieza.nombre }} · {{ pieza.precio | euros }} · Stock
+                {{ pieza.stock }}
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (piezaElegida(); as pieza) {
+        <div class="elegida">
+          <p class="elegida__nombre">{{ pieza.referencia }} · {{ pieza.nombre }}</p>
+          <p class="nota">Precio: {{ pieza.precio | euros }} (lo fija el catálogo)</p>
+        </div>
+      }
+
+      <div class="campo" [class.campo--error]="campoConError(form.controls.cantidad)">
+        <label for="linea-cantidad">Cantidad</label>
+        <input id="linea-cantidad" type="number" min="1" step="1" formControlName="cantidad" />
+        <app-errores-campo [control]="form.controls.cantidad" [mensajes]="mensajesCantidad" />
+      </div>
+
+      @if (avisoStock(); as aviso) {
+        <div class="aviso aviso--ambar">{{ aviso }}</div>
+      }
+    } @else {
+      <div class="campo" [class.campo--error]="campoConError(form.controls.concepto)">
+        <label for="linea-concepto">Concepto</label>
+        <input
+          id="linea-concepto"
+          type="text"
+          autocomplete="off"
+          [attr.maxlength]="maxConcepto"
+          formControlName="concepto"
+        />
+        <app-errores-campo [control]="form.controls.concepto" [mensajes]="mensajesConcepto" />
+      </div>
+
+      <div class="campo" [class.campo--error]="campoConError(form.controls.cantidad)">
+        <label for="linea-horas">Horas</label>
+        <input id="linea-horas" type="number" min="0" step="0.25" formControlName="cantidad" />
+        <app-errores-campo [control]="form.controls.cantidad" [mensajes]="mensajesCantidad" />
+      </div>
+
+      <div class="campo" [class.campo--error]="campoConError(form.controls.precioUnitario)">
+        <label for="linea-precio">Tarifa por hora (€)</label>
+        <input
+          id="linea-precio"
+          type="number"
+          min="0"
+          step="0.01"
+          formControlName="precioUnitario"
+        />
+        <app-errores-campo [control]="form.controls.precioUnitario" [mensajes]="mensajesPrecio" />
+      </div>
+    }
+
+    <div class="dialogo__acciones">
+      <button type="button" class="btn btn--secundario" (click)="cancelar.emit()">Cancelar</button>
+      <button type="submit" class="btn btn--primario" [disabled]="guardando()">Guardar</button>
+    </div>
+  </form>
+</dialog>

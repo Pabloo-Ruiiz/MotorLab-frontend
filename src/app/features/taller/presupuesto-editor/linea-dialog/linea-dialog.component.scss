@@ -1,0 +1,75 @@
+.dialogo {
+  width: min(520px, calc(100% - var(--mo-esp-32)));
+  padding: var(--mo-esp-24);
+  border: 0;
+  border-radius: var(--mo-radio-12);
+  background-color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-media);
+  color: var(--mo-texto);
+
+  &::backdrop {
+    background-color: rgb(27 28 43 / 50%);
+  }
+}
+
+.dialogo__titulo {
+  margin-bottom: var(--mo-esp-16);
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+}
+
+.nota {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.resultados {
+  max-height: 220px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-12);
+  list-style: none;
+}
+
+.resultado {
+  width: 100%;
+  min-height: var(--mo-tactil);
+  padding: var(--mo-esp-8) var(--mo-esp-12);
+  border: 0;
+  background-color: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--mo-tipo-14);
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--mo-naranja-claro);
+  }
+}
+
+.elegida {
+  padding: var(--mo-esp-12);
+  border-radius: var(--mo-radio-12);
+  background-color: var(--mo-fondo);
+}
+
+.elegida__nombre {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.dialogo__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--mo-esp-8);
+  margin-top: var(--mo-esp-4);
+}

@@ -1,0 +1,160 @@
+:host {
+  display: block;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.reintentar {
+  align-self: flex-start;
+}
+
+.texto-suave {
+  color: var(--mo-gris-oscuro);
+}
+
+.encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mo-esp-16);
+
+  .texto-suave {
+    font-size: var(--mo-tipo-14);
+  }
+}
+
+// En pantallas estrechas la tabla se desplaza dentro de su contenedor, no toda la página
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+.concepto {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-8);
+}
+
+.numero {
+  text-align: right;
+  white-space: nowrap;
+}
+
+// Más específico que .tabla th, que alinea a la izquierda
+th.numero {
+  text-align: right;
+}
+
+.importe {
+  font-weight: 700;
+}
+
+.sin-salto {
+  white-space: nowrap;
+}
+
+.acciones-linea {
+  white-space: nowrap;
+}
+
+.accion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-tactil);
+  height: var(--mo-tactil);
+  padding: var(--mo-esp-8);
+  border: 0;
+  border-radius: var(--mo-radio-8);
+  background-color: transparent;
+  color: var(--mo-gris-oscuro);
+  cursor: pointer;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--mo-fondo);
+    color: var(--mo-texto);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.anadir {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-12);
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  align-items: start;
+  gap: var(--mo-esp-24);
+}
+
+.resumen__datos {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--mo-esp-8);
+}
+
+.condiciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr));
+  align-items: start;
+  gap: var(--mo-esp-12);
+  width: 100%;
+
+  .btn {
+    align-self: end;
+  }
+}
+
+.totales {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-4);
+  margin: 0;
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+
+  dd {
+    margin: 0;
+  }
+}
+
+.totales__fila {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--mo-esp-16);
+}
+
+.totales__fila--total {
+  margin-top: var(--mo-esp-8);
+  color: var(--mo-texto);
+  font-size: var(--mo-tipo-16);
+  font-weight: 700;
+
+  dd {
+    font-size: var(--mo-tipo-26);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+}
+
+.enviar {
+  width: 100%;
+}

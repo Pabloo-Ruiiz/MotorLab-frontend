@@ -14,6 +14,12 @@ export function verdaderoValidator(control: AbstractControl): ValidationErrors |
   return control.value === true ? null : { required: true };
 }
 
+// Reutiliza la clave «min»: Validators.min no permite excluir el 0
+export function mayorQueCeroValidator(control: AbstractControl): ValidationErrors | null {
+  const valor = control.value as number | null;
+  return valor === null || valor > 0 ? null : { min: { min: 0, actual: valor } };
+}
+
 export function fechaHoyOPosteriorValidator(control: AbstractControl): ValidationErrors | null {
   const valor: unknown = control.value;
   if (valor === null || valor === undefined || valor === '') {
