@@ -117,7 +117,12 @@ export const routes: Routes = [
           ),
       },
       { path: 'avisos', data: { titulo: 'Avisos' }, loadComponent: avisos },
-      { path: 'perfil', data: { titulo: 'Perfil' }, loadComponent: pendiente },
+      {
+        path: 'perfil',
+        data: { titulo: 'Perfil' },
+        loadComponent: () =>
+          import('@features/perfil/perfil/perfil.component').then((m) => m.PerfilComponent),
+      },
     ],
   },
 

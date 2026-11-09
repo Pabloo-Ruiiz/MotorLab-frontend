@@ -1,0 +1,43 @@
+<main class="perfil">
+  @if (usuario(); as usuario) {
+    <section class="tarjeta" aria-labelledby="perfil-nombre">
+      <h2 class="perfil__nombre" id="perfil-nombre">{{ usuario.nombre }}</h2>
+      <dl class="datos">
+        <div>
+          <dt>Correo electrónico</dt>
+          <dd>{{ usuario.email }}</dd>
+        </div>
+        <div>
+          <dt>Teléfono</dt>
+          <dd>{{ usuario.telefono }}</dd>
+        </div>
+        <div>
+          <dt>Rol</dt>
+          <dd>{{ etiquetasRol[usuario.rol] }}</dd>
+        </div>
+      </dl>
+    </section>
+  } @else {
+    <app-vacio titulo="No se han podido cargar tus datos" />
+  }
+
+  <button type="button" class="btn btn--secundario" (click)="confirmandoCierre.set(true)">
+    Cerrar sesión
+  </button>
+
+  <p class="perfil__nota">
+    Consulta cómo tratamos tus datos en la
+    <!-- Sin preventDefault, con <base href="/"> el enlace llevaría a la raíz de la aplicación -->
+    <a href="#" (click)="$event.preventDefault()">Política de privacidad</a>.
+  </p>
+</main>
+
+<app-modal-confirmacion
+  [abierto]="confirmandoCierre()"
+  titulo="Cerrar sesión"
+  mensaje="¿Seguro que quieres cerrar sesión?"
+  textoConfirmar="Cerrar sesión"
+  textoCancelar="Volver"
+  (confirmar)="cerrarSesion()"
+  (cancelar)="confirmandoCierre.set(false)"
+/>
