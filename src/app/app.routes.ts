@@ -141,7 +141,14 @@ export const routes: Routes = [
             (m) => m.SolicitudesListaComponent,
           ),
       },
-      { path: 'ordenes/:id', canActivate: [soloAdmin], loadComponent: pendiente },
+      {
+        path: 'ordenes/:id',
+        canActivate: [soloAdmin],
+        loadComponent: () =>
+          import('@features/taller/orden-detalle/orden-detalle-taller/orden-detalle-taller.component').then(
+            (m) => m.OrdenDetalleTallerComponent,
+          ),
+      },
       { path: 'ordenes/:id/presupuesto', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'piezas', loadComponent: pendiente },
       { path: 'avisos', loadComponent: avisos },

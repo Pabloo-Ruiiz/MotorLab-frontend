@@ -2,7 +2,13 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import type { OrdenCreateRequest, OrdenCreateResponse } from '@core/models';
+import type {
+  AsignacionRequest,
+  CambioEstadoRequest,
+  OrdenCreateRequest,
+  OrdenCreateResponse,
+  OrdenDetalle
+} from '@core/models';
 import { OrdenesService } from './ordenes.service';
 
 describe('OrdenesService', () => {
@@ -102,5 +108,39 @@ describe('OrdenesService', () => {
     obtener.flush({});
     seguimiento.flush({});
     cancelar.flush({});
+  });
+
+  it('asignar hace PATCH /ordenes/9/asignacion con los datos y emite la orden', () => {
+    const datos: AsignacionRequest = {
+      mecanicoId: 4,
+      elevador: 'Elevador 2',
+      fechaEstimada: '2026-11-20T09:00:00'
+    };
+    const respuesta = { id: 9, estado: 'recibido' } as OrdenDetalle;
+    let emitido: OrdenDetalle | undefined;
+
+    servicio.asignar(9, datos).subscribe((valor) => (emitido = valor));
+
+    const peticion = httpSimulado.expectOne('/api/v1/ordenes/9/asignacion');
+    expect(peticion.request.method).toBe('PATCH');
+    expect(peticion.request.body).toEqual(datos);
+    peticion.flush(respuesta);
+
+    expect(emitido).toEqual(respuesta);
+  });
+
+  it('cambiarEstado hace PATCH /ordenes/9/estado con los datos y emite la orden', () => {
+    const datos: CambioEstadoRequest = { estado: 'arreglando', descripcion: 'Empezamos hoy' };
+    const respuesta = { id: 9, estado: 'arreglando' } as OrdenDetalle;
+    let emitido: OrdenDetalle | undefined;
+
+    servicio.cambiarEstado(9, datos).subscribe((valor) => (emitido = valor));
+
+    const peticion = httpSimulado.expectOne('/api/v1/ordenes/9/estado');
+    expect(peticion.request.method).toBe('PATCH');
+    expect(peticion.request.body).toEqual(datos);
+    peticion.flush(respuesta);
+
+    expect(emitido).toEqual(respuesta);
   });
 });

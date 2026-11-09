@@ -1,0 +1,32 @@
+:host {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.placa {
+  display: inline-flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 3px solid var(--mo-texto);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-blanco);
+  color: var(--mo-texto);
+}
+
+.placa__banda {
+  display: flex;
+  align-items: center;
+  padding-inline: var(--mo-esp-8);
+  background-color: var(--mo-azul-oscuro);
+  color: var(--mo-blanco);
+  font-size: var(--mo-tipo-13);
+  font-weight: 700;
+}
+
+.placa__numero {
+  padding: var(--mo-esp-4) var(--mo-esp-16);
+  font-size: var(--mo-tipo-26);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
