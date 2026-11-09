@@ -1,0 +1,72 @@
+<main class="panel">
+  <header>
+    <h1>Panel del taller</h1>
+    <p class="subtitulo">Resumen del mes de {{ mes }}</p>
+  </header>
+
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario reintentar" (click)="cargar()">
+      Reintentar
+    </button>
+  } @else if (metricas(); as metricas) {
+    <dl class="indicadores">
+      <div class="tarjeta tarjeta--fondo indicador">
+        <dt class="etiqueta">Órdenes activas</dt>
+        <dd class="indicador__valor">{{ metricas.ordenesActivas }}</dd>
+      </div>
+
+      <div class="tarjeta tarjeta--fondo indicador">
+        <dt class="etiqueta">Presupuestos sin respuesta</dt>
+        <dd class="indicador__valor indicador__valor--naranja">
+          {{ metricas.presupuestosSinRespuesta }}
+        </dd>
+      </div>
+
+      <div class="tarjeta tarjeta--fondo indicador">
+        <dt class="etiqueta">Ingresos del mes</dt>
+        <dd class="indicador__valor">{{ metricas.ingresosMes | euros }}</dd>
+      </div>
+
+      <div class="tarjeta tarjeta--fondo indicador">
+        <dt class="etiqueta">Piezas con stock bajo</dt>
+        <dd class="indicador__valor indicador__valor--rojo">{{ metricas.piezasStockBajo }}</dd>
+        <dd class="indicador__enlace">
+          <a
+            routerLink="/taller/piezas"
+            [queryParams]="{ stockBajo: true }"
+            aria-label="Ver piezas con stock bajo"
+          >
+            Ver piezas
+          </a>
+        </dd>
+      </div>
+    </dl>
+
+    <section class="tarjeta tarjeta--fondo" aria-labelledby="panel-estados">
+      <h2 class="etiqueta" id="panel-estados">Órdenes por estado</h2>
+
+      @if (barras().length === 0) {
+        <app-vacio titulo="Todavía no hay órdenes" />
+      } @else {
+        <ul class="barras">
+          @for (barra of barras(); track barra.estado) {
+            <li class="barra">
+              <span class="barra__etiqueta">{{ barra.etiqueta }}</span>
+              <span class="barra__pista" aria-hidden="true">
+                <span
+                  class="barra__relleno"
+                  [style.width.%]="barra.ancho"
+                  [style.background-color]="barra.color"
+                ></span>
+              </span>
+              <span class="barra__total">{{ barra.total }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</main>
