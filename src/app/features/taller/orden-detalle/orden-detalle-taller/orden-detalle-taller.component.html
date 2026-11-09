@@ -1,0 +1,215 @@
+<main class="detalle">
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (noEncontrada()) {
+    <app-vacio titulo="Orden no encontrada" />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario reintentar" (click)="reintentar()">
+      Reintentar
+    </button>
+  } @else if (datos(); as datos) {
+    <header>
+      <nav class="migas" aria-label="Ruta de navegación">
+        <a routerLink="/taller/solicitudes">Solicitudes</a> › Orden #{{ datos.orden.id }}
+      </nav>
+      <div class="encabezado">
+        <h1>Orden de trabajo #{{ datos.orden.id }}</h1>
+        <app-pill-estado [estado]="datos.orden.estado" />
+      </div>
+      @if (creada(); as creada) {
+        <p class="texto-suave">
+          @if (creada.esHoy) {
+            Creada hoy {{ creada.fechaHora | fechaHora: 'hora' }}
+          } @else {
+            Creada el {{ creada.fechaHora | fechaHora: 'completa' }}
+          }
+        </p>
+      }
+    </header>
+
+    <div class="rejilla">
+      <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-vehiculo">
+        <h2 class="etiqueta" id="orden-vehiculo">Vehículo</h2>
+        <div class="vehiculo">
+          <svg class="vehiculo__icono" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11h1a2 2 0 0 1 2 2v3a1 1 0 0 1-1 1h-1a2.5 2.5 0 0 1-5 0H9a2.5 2.5 0 0 1-5 0H3a1 1 0 0 1-1-1v-3a2 2 0 0 1 2-2h1zm2.1 0h9.8l-1.2-3.6a.5.5 0 0 0-.5-.4H8.8a.5.5 0 0 0-.5.4L7.1 11z"
+            />
+          </svg>
+          <div>
+            <strong>
+              {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }}
+              {{ datos.orden.vehiculo.version }}
+            </strong>
+            <p class="texto-suave">
+              {{ datos.orden.vehiculo.anio }} ·
+              {{ datos.orden.vehiculo.kilometros | number: '1.0-0' }} km
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-matricula">
+        <h2 class="etiqueta" id="orden-matricula">Matrícula</h2>
+        <app-matricula [matricula]="datos.orden.vehiculo.matricula" />
+      </section>
+
+      <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-sintoma">
+        <h2 class="etiqueta" id="orden-sintoma">Síntoma</h2>
+        <strong>{{ etiquetasServicio[datos.orden.tipoServicio] }}</strong>
+        <p class="texto-suave sintoma">«{{ datos.orden.sintoma }}»</p>
+        <p class="texto-suave">
+          @if (datos.orden.cuandoOcurre; as cuando) {
+            Cuándo: {{ etiquetasCuando[cuando] }} ·
+          }
+          ¿Conducible con seguridad?: {{ etiquetasConduccion[datos.orden.conduccionSegura] }}
+        </p>
+      </section>
+
+      <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-urgencia">
+        <h2 class="etiqueta" id="orden-urgencia">Urgencia</h2>
+        <app-pill-urgencia [urgencia]="datos.orden.urgencia" />
+        @if (datos.orden.urgencia === 'alta') {
+          <div class="barras" aria-hidden="true">
+            <span class="barra"></span>
+            <span class="barra"></span>
+            <span class="barra"></span>
+          </div>
+        }
+        @if (reglaAutomatica()) {
+          <p class="texto-suave regla">Regla automática: frenos</p>
+        }
+      </section>
+    </div>
+
+    <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-cliente">
+      <h2 class="etiqueta" id="orden-cliente">Cliente</h2>
+      <strong>{{ datos.orden.cliente.nombre }}</strong>
+      <p class="texto-suave">
+        {{ datos.orden.cliente.telefono }} · prefiere
+        {{ etiquetasContacto[datos.orden.contactoPreferido].toLowerCase() }}
+      </p>
+      <p class="texto-suave">
+        Fecha preferida: {{ datos.orden.fechaPreferida | fechaHora: 'corta' }} ·
+        {{ etiquetasFranja[datos.orden.franjaPreferida] }}
+      </p>
+    </section>
+
+    <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-asignacion">
+      <h2 class="etiqueta" id="orden-asignacion">Asignación</h2>
+      <form class="asignacion" [formGroup]="asignacion" (ngSubmit)="guardarAsignacion()" novalidate>
+        <div class="campo" [class.campo--error]="campoConError(asignacion.controls.mecanicoId)">
+          <label for="orden-mecanico">Mecánico</label>
+          <select id="orden-mecanico" formControlName="mecanicoId">
+            <option value="">Sin asignar</option>
+            @for (mecanico of opcionesMecanico(); track mecanico.id) {
+              <option [value]="mecanico.id">{{ mecanico.nombre }}</option>
+            }
+          </select>
+          <app-errores-campo [control]="asignacion.controls.mecanicoId" />
+        </div>
+
+        <div class="campo" [class.campo--error]="campoConError(asignacion.controls.elevador)">
+          <label for="orden-elevador">Elevador</label>
+          <input
+            id="orden-elevador"
+            type="text"
+            autocomplete="off"
+            [attr.maxlength]="maxElevador"
+            formControlName="elevador"
+          />
+          <app-errores-campo [control]="asignacion.controls.elevador" />
+        </div>
+
+        <div class="campo" [class.campo--error]="campoConError(asignacion.controls.fechaEstimada)">
+          <label for="orden-fecha">Fecha estimada</label>
+          <input id="orden-fecha" type="datetime-local" formControlName="fechaEstimada" />
+          <app-errores-campo [control]="asignacion.controls.fechaEstimada" />
+        </div>
+
+        <button type="submit" class="btn btn--secundario" [disabled]="procesando()">
+          Guardar asignación
+        </button>
+      </form>
+    </section>
+
+    @if (siguientes().length > 0) {
+      <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-estado">
+        <h2 class="etiqueta" id="orden-estado">Cambiar estado</h2>
+        <div class="campo" [class.campo--error]="campoConError(nota)">
+          <label for="orden-nota">Nota para el cliente (opcional)</label>
+          <input
+            id="orden-nota"
+            type="text"
+            autocomplete="off"
+            [attr.maxlength]="maxNota"
+            [formControl]="nota"
+          />
+          <app-errores-campo [control]="nota" />
+        </div>
+        <div class="acciones">
+          @for (estado of siguientes(); track estado) {
+            <button
+              type="button"
+              class="btn btn--primario"
+              [disabled]="procesando()"
+              (click)="cambiarEstado(estado)"
+            >
+              {{ textoAccion(estado) }}
+            </button>
+          }
+        </div>
+      </section>
+    }
+
+    @if (datos.orden.presupuesto; as presupuesto) {
+      <section class="tarjeta tarjeta--fondo presupuesto" aria-label="Presupuesto">
+        <div class="presupuesto__datos">
+          <app-pill-estado [estadoPresupuesto]="presupuesto.estado" />
+          <strong class="presupuesto__total">{{ presupuesto.total | euros }}</strong>
+        </div>
+        <a [routerLink]="['/taller/ordenes', datos.orden.id, 'presupuesto']">Ver presupuesto</a>
+      </section>
+    }
+
+    <div class="acciones acciones--final">
+      @if (cancelable()) {
+        <button
+          type="button"
+          class="btn btn--secundario"
+          [disabled]="procesando()"
+          (click)="confirmandoCancelacion.set(true)"
+        >
+          Cancelar orden
+        </button>
+      }
+      @if (puedeCrearPresupuesto()) {
+        <button
+          type="button"
+          class="btn btn--primario"
+          [disabled]="procesando()"
+          (click)="crearPresupuesto()"
+        >
+          Crear presupuesto
+        </button>
+      }
+    </div>
+
+    <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-seguimiento">
+      <h2 class="etiqueta" id="orden-seguimiento">Seguimiento</h2>
+      <app-linea-tiempo [eventos]="datos.seguimiento.eventos" [estado]="datos.orden.estado" />
+    </section>
+  }
+</main>
+
+<app-modal-confirmacion
+  [abierto]="confirmandoCancelacion()"
+  titulo="Cancelar la orden"
+  mensaje="¿Seguro que quieres cancelar esta orden? No se puede deshacer."
+  textoConfirmar="Cancelar orden"
+  textoCancelar="Volver"
+  peligro
+  (confirmar)="confirmarCancelacion()"
+  (cancelar)="confirmandoCancelacion.set(false)"
+/>

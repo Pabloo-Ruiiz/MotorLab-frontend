@@ -3,6 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import type {
+  AsignacionRequest,
+  CambioEstadoRequest,
   EstadoOrden,
   OrdenCreateRequest,
   OrdenCreateResponse,
@@ -46,6 +48,14 @@ export class OrdenesService {
 
   cancelar(id: number): Observable<OrdenDetalle> {
     return this.http.post<OrdenDetalle>(`${this.url}/${id}/cancelar`, null);
+  }
+
+  asignar(id: number, datos: AsignacionRequest): Observable<OrdenDetalle> {
+    return this.http.patch<OrdenDetalle>(`${this.url}/${id}/asignacion`, datos);
+  }
+
+  cambiarEstado(id: number, datos: CambioEstadoRequest): Observable<OrdenDetalle> {
+    return this.http.patch<OrdenDetalle>(`${this.url}/${id}/estado`, datos);
   }
 }
 
