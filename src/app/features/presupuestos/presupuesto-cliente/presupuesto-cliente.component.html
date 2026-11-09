@@ -1,0 +1,134 @@
+<main class="presupuesto">
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (sinPresupuesto()) {
+    <app-vacio titulo="Todavía no hay presupuesto para esta orden" />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario" (click)="reintentar()">Reintentar</button>
+  } @else if (datos(); as datos) {
+    <header>
+      <h2 class="presupuesto__titulo">Presupuesto P-{{ datos.presupuesto.id }}</h2>
+      <p class="presupuesto__orden">Orden #{{ datos.orden.id }}</p>
+    </header>
+
+    <section class="tarjeta vehiculo" aria-label="Vehículo">
+      <svg class="vehiculo__icono" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path
+          d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11h1a2 2 0 0 1 2 2v3a1 1 0 0 1-1 1h-1a2.5 2.5 0 0 1-5 0H9a2.5 2.5 0 0 1-5 0H3a1 1 0 0 1-1-1v-3a2 2 0 0 1 2-2h1zm2.1 0h9.8l-1.2-3.6a.5.5 0 0 0-.5-.4H8.8a.5.5 0 0 0-.5.4L7.1 11z"
+        />
+      </svg>
+      <div class="vehiculo__datos">
+        <strong
+          >{{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }} ·
+          {{ datos.orden.vehiculo.anio }}</strong
+        >
+        <p class="vehiculo__detalle">
+          {{ matriculaLegible(datos.orden.vehiculo.matricula) }} · {{ datos.orden.sintoma }}
+        </p>
+      </div>
+    </section>
+
+    <ul class="lineas" aria-label="Conceptos del presupuesto">
+      @for (linea of datos.presupuesto.lineas; track linea.id) {
+        <li class="linea">
+          <span class="linea__concepto">{{ linea.concepto }}</span>
+          <span class="linea__importe">{{ linea.importe | euros }}</span>
+        </li>
+      }
+    </ul>
+
+    <dl class="totales">
+      <div class="totales__fila">
+        <dt>Subtotal</dt>
+        <dd>{{ datos.presupuesto.subtotal | euros }}</dd>
+      </div>
+      <div class="totales__fila">
+        <dt>IVA {{ numero(datos.presupuesto.ivaPorcentaje) }} %</dt>
+        <dd>{{ datos.presupuesto.iva | euros }}</dd>
+      </div>
+      <div class="totales__fila totales__fila--total">
+        <dt>Total</dt>
+        <dd>{{ datos.presupuesto.total | euros }}</dd>
+      </div>
+    </dl>
+
+    <div class="condiciones">
+      @if (datos.presupuesto.tiempoEstimadoHoras; as horas) {
+        <span class="pill pill--verde">Listo en {{ numero(horas) }} h</span>
+      }
+      <span class="pill pill--verde">
+        Garantía {{ datos.presupuesto.garantiaMeses }}
+        {{ datos.presupuesto.garantiaMeses === 1 ? 'mes' : 'meses' }}
+      </span>
+    </div>
+
+    <div class="respuesta" aria-live="polite">
+      @switch (datos.presupuesto.estado) {
+        @case ('enviado') {
+          <p class="respuesta__nota">
+            Al pulsar «Autorizar» aceptas este presupuesto y el taller empezará la reparación.
+          </p>
+          <div class="respuesta__botones">
+            <button
+              type="button"
+              class="btn btn--secundario"
+              [disabled]="procesando()"
+              (click)="abrirRechazo()"
+            >
+              Rechazar
+            </button>
+            <button
+              type="button"
+              class="btn btn--primario"
+              [disabled]="procesando()"
+              (click)="modal.set('autorizar')"
+            >
+              Autorizar
+            </button>
+          </div>
+        }
+        @case ('autorizado') {
+          <app-pill-estado estadoPresupuesto="autorizado" />
+        }
+        @case ('rechazado') {
+          <app-pill-estado estadoPresupuesto="rechazado" />
+          @if (datos.presupuesto.motivoRechazo; as motivoRechazo) {
+            <p class="respuesta__motivo">Motivo: {{ motivoRechazo }}</p>
+          }
+        }
+      }
+    </div>
+  }
+</main>
+
+<app-modal-confirmacion
+  [abierto]="modal() === 'autorizar'"
+  titulo="Autorizar presupuesto"
+  mensaje="Al autorizar aceptas este presupuesto y el taller empezará la reparación."
+  textoConfirmar="Autorizar"
+  textoCancelar="Volver"
+  (confirmar)="autorizar()"
+  (cancelar)="modal.set(null)"
+/>
+
+<app-modal-confirmacion
+  [abierto]="modal() === 'rechazar'"
+  titulo="Rechazar presupuesto"
+  textoConfirmar="Rechazar"
+  textoCancelar="Volver"
+  peligro
+  (confirmar)="rechazar()"
+  (cancelar)="modal.set(null)"
+>
+  <div class="campo" [class.campo--error]="motivo.invalid && (motivo.touched || motivo.dirty)">
+    <label for="presupuesto-motivo">Motivo (opcional)</label>
+    <textarea
+      id="presupuesto-motivo"
+      rows="3"
+      [formControl]="motivo"
+      [attr.aria-invalid]="motivo.invalid && (motivo.touched || motivo.dirty)"
+    ></textarea>
+    <app-errores-campo [control]="motivo" />
+  </div>
+</app-modal-confirmacion>

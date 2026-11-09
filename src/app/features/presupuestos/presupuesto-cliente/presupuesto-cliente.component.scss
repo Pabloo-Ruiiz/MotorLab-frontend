@@ -1,0 +1,130 @@
+:host {
+  display: block;
+}
+
+.presupuesto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.presupuesto__titulo {
+  font-size: var(--mo-tipo-21);
+}
+
+.presupuesto__orden {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.vehiculo {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-16);
+}
+
+.vehiculo__icono {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  color: var(--mo-naranja);
+}
+
+// min-width: 0 permite que el síntoma se recorte en lugar de ensanchar la tarjeta
+.vehiculo__datos {
+  min-width: 0;
+}
+
+.vehiculo__detalle {
+  overflow: hidden;
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lineas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.linea {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--mo-esp-16);
+  font-weight: 700;
+}
+
+.linea__concepto {
+  overflow-wrap: anywhere;
+}
+
+.linea__importe {
+  white-space: nowrap;
+}
+
+.totales {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-4);
+  margin: 0;
+  padding-top: var(--mo-esp-12);
+  border-top: 1px solid var(--mo-linea);
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+
+  dd {
+    margin: 0;
+  }
+}
+
+.totales__fila {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--mo-esp-16);
+}
+
+.totales__fila--total {
+  margin-top: var(--mo-esp-8);
+  color: var(--mo-texto);
+  font-size: var(--mo-tipo-16);
+  font-weight: 700;
+
+  dd {
+    font-size: var(--mo-tipo-26);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+}
+
+.condiciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-8);
+}
+
+.respuesta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--mo-esp-12);
+}
+
+.respuesta__nota,
+.respuesta__motivo {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+  overflow-wrap: anywhere;
+}
+
+.respuesta__botones {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: var(--mo-esp-12);
+  width: 100%;
+}

@@ -13,7 +13,7 @@ const pendiente = () =>
 
 const vehiculoForm = () =>
   import('@features/vehiculos/vehiculo-form/vehiculo-form.component').then(
-    (m) => m.VehiculoFormComponent
+    (m) => m.VehiculoFormComponent,
   );
 
 const soloAdmin = rolGuard(['admin']);
@@ -36,13 +36,13 @@ export const routes: Routes = [
     path: 'login',
     canActivate: [invitadoGuard],
     loadComponent: () =>
-      import('@features/auth/login/login.component').then((m) => m.LoginComponent)
+      import('@features/auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: 'registro',
     canActivate: [invitadoGuard],
     loadComponent: () =>
-      import('@features/auth/registro/registro.component').then((m) => m.RegistroComponent)
+      import('@features/auth/registro/registro.component').then((m) => m.RegistroComponent),
   },
 
   {
@@ -50,7 +50,7 @@ export const routes: Routes = [
     canActivate: [authGuard, rolGuard(['cliente'])],
     loadComponent: () =>
       import('@layouts/cliente-layout/cliente-layout.component').then(
-        (m) => m.ClienteLayoutComponent
+        (m) => m.ClienteLayoutComponent,
       ),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'ordenes' },
@@ -59,59 +59,62 @@ export const routes: Routes = [
         data: { titulo: 'Mis vehículos' },
         loadComponent: () =>
           import('@features/vehiculos/vehiculos-lista/vehiculos-lista.component').then(
-            (m) => m.VehiculosListaComponent
-          )
+            (m) => m.VehiculosListaComponent,
+          ),
       },
       {
         path: 'vehiculos/nuevo',
         data: { titulo: 'Nuevo vehículo' },
-        loadComponent: vehiculoForm
+        loadComponent: vehiculoForm,
       },
       {
         path: 'vehiculos/:id/editar',
         data: { titulo: 'Editar vehículo' },
-        loadComponent: vehiculoForm
+        loadComponent: vehiculoForm,
       },
       {
         path: 'vehiculos/:id/historial',
         data: { titulo: 'Historial del vehículo' },
         loadComponent: () =>
           import('@features/vehiculos/vehiculo-historial/vehiculo-historial.component').then(
-            (m) => m.VehiculoHistorialComponent
-          )
+            (m) => m.VehiculoHistorialComponent,
+          ),
       },
       {
         path: 'solicitud/nueva',
         data: { titulo: 'Nueva solicitud' },
         loadComponent: () =>
           import('@features/ordenes/solicitud-nueva/solicitud-nueva.component').then(
-            (m) => m.SolicitudNuevaComponent
-          )
+            (m) => m.SolicitudNuevaComponent,
+          ),
       },
       {
         path: 'ordenes',
         data: { titulo: 'Mis órdenes' },
         loadComponent: () =>
           import('@features/ordenes/ordenes-lista-cliente/ordenes-lista-cliente.component').then(
-            (m) => m.OrdenesListaClienteComponent
-          )
+            (m) => m.OrdenesListaClienteComponent,
+          ),
       },
       {
         path: 'ordenes/:id',
         data: { titulo: 'Seguimiento' },
         loadComponent: () =>
           import('@features/ordenes/orden-detalle-cliente/orden-detalle-cliente.component').then(
-            (m) => m.OrdenDetalleClienteComponent
-          )
+            (m) => m.OrdenDetalleClienteComponent,
+          ),
       },
       {
         path: 'ordenes/:id/presupuesto',
         data: { titulo: 'Presupuesto' },
-        loadComponent: pendiente
+        loadComponent: () =>
+          import('@features/presupuestos/presupuesto-cliente/presupuesto-cliente.component').then(
+            (m) => m.PresupuestoClienteComponent,
+          ),
       },
       { path: 'avisos', data: { titulo: 'Avisos' }, loadComponent: pendiente },
-      { path: 'perfil', data: { titulo: 'Perfil' }, loadComponent: pendiente }
-    ]
+      { path: 'perfil', data: { titulo: 'Perfil' }, loadComponent: pendiente },
+    ],
   },
 
   {
@@ -128,8 +131,8 @@ export const routes: Routes = [
       { path: 'usuarios', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'panel', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'mis-ordenes', canActivate: [soloMecanico], loadComponent: pendiente },
-      { path: 'mis-ordenes/:id', canActivate: [soloMecanico], loadComponent: pendiente }
-    ]
+      { path: 'mis-ordenes/:id', canActivate: [soloMecanico], loadComponent: pendiente },
+    ],
   },
 
   { path: '403', loadComponent: pendiente },
@@ -139,8 +142,8 @@ export const routes: Routes = [
   {
     path: 'estilos',
     loadComponent: () =>
-      import('@features/estilos/estilos.component').then((m) => m.EstilosComponent)
+      import('@features/estilos/estilos.component').then((m) => m.EstilosComponent),
   },
 
-  { path: '**', redirectTo: '/404' }
+  { path: '**', redirectTo: '/404' },
 ];
