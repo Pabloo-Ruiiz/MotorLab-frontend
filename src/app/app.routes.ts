@@ -133,7 +133,14 @@ export const routes: Routes = [
       import('@layouts/taller-layout/taller-layout.component').then((m) => m.TallerLayoutComponent),
     children: [
       { path: '', pathMatch: 'full', redirectTo: rutaDeInicioTaller },
-      { path: 'solicitudes', canActivate: [soloAdmin], loadComponent: pendiente },
+      {
+        path: 'solicitudes',
+        canActivate: [soloAdmin],
+        loadComponent: () =>
+          import('@features/taller/solicitudes/solicitudes-lista/solicitudes-lista.component').then(
+            (m) => m.SolicitudesListaComponent,
+          ),
+      },
       { path: 'ordenes/:id', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'ordenes/:id/presupuesto', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'piezas', loadComponent: pendiente },

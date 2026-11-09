@@ -1,0 +1,85 @@
+:host {
+  display: block;
+}
+
+.solicitudes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mo-esp-16);
+}
+
+.encabezado__texto {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-12);
+
+  .campo {
+    flex: 1 1 160px;
+  }
+
+  .filtros__busqueda {
+    flex: 2 1 260px;
+  }
+}
+
+.reintentar {
+  align-self: flex-start;
+}
+
+// En pantallas estrechas la tabla se desplaza dentro de su contenedor, no toda la página
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+.fila {
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--mo-fondo);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mo-naranja);
+    outline-offset: -2px;
+  }
+}
+
+.fila--alta {
+  background-color: color-mix(in srgb, var(--mo-naranja-claro) 40%, transparent);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--mo-naranja-claro);
+  }
+}
+
+.fila__numero {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+}
+
+.pie__texto {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
