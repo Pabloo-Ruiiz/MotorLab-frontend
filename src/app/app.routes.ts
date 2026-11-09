@@ -167,8 +167,22 @@ export const routes: Routes = [
       { path: 'avisos', loadComponent: avisos },
       { path: 'usuarios', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'panel', canActivate: [soloAdmin], loadComponent: pendiente },
-      { path: 'mis-ordenes', canActivate: [soloMecanico], loadComponent: pendiente },
-      { path: 'mis-ordenes/:id', canActivate: [soloMecanico], loadComponent: pendiente },
+      {
+        path: 'mis-ordenes',
+        canActivate: [soloMecanico],
+        loadComponent: () =>
+          import('@features/taller/mecanico/mis-ordenes-mecanico/mis-ordenes-mecanico.component').then(
+            (m) => m.MisOrdenesMecanicoComponent,
+          ),
+      },
+      {
+        path: 'mis-ordenes/:id',
+        canActivate: [soloMecanico],
+        loadComponent: () =>
+          import('@features/taller/mecanico/orden-mecanico/orden-mecanico.component').then(
+            (m) => m.OrdenMecanicoComponent,
+          ),
+      },
     ],
   },
 

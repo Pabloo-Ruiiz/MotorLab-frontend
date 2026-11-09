@@ -1,0 +1,146 @@
+<main class="detalle">
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (noEncontrada()) {
+    <app-vacio titulo="Orden no encontrada" />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario reintentar" (click)="reintentar()">
+      Reintentar
+    </button>
+  } @else if (datos(); as datos) {
+    <header>
+      <nav class="migas" aria-label="Ruta de navegación">
+        <a routerLink="/taller/mis-ordenes">Mis órdenes</a> › Orden #{{ datos.orden.id }}
+      </nav>
+      <div class="encabezado">
+        <h1>Orden #{{ datos.orden.id }}</h1>
+        <div class="encabezado__pills">
+          <app-pill-estado [estado]="datos.orden.estado" />
+          @if (entrada(); as entrada) {
+            <span class="pill pill--gris">
+              @if (entrada.esHoy) {
+                Entrada hoy {{ entrada.fechaHora | fechaHora: 'hora' }}
+              } @else {
+                Entrada {{ entrada.fechaHora | fechaHora: 'corta' }}
+              }
+            </span>
+          }
+        </div>
+      </div>
+    </header>
+
+    <section class="tarjeta tarjeta--fondo" aria-label="Datos de la orden">
+      <dl class="datos">
+        <div>
+          <dt class="etiqueta">Vehículo</dt>
+          <dd>
+            {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }}
+            {{ datos.orden.vehiculo.version }}
+          </dd>
+        </div>
+        <div>
+          <dt class="etiqueta">Matrícula</dt>
+          <dd><app-matricula [matricula]="datos.orden.vehiculo.matricula" /></dd>
+        </div>
+        <div>
+          <dt class="etiqueta">Urgencia</dt>
+          <dd><app-pill-urgencia [urgencia]="datos.orden.urgencia" /></dd>
+        </div>
+        <div class="datos__ancho">
+          <dt class="etiqueta">Síntoma</dt>
+          <dd class="sintoma">{{ datos.orden.sintoma }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <form class="tarjeta tarjeta--fondo panel" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+      <div>
+        <h2 class="etiqueta" id="orden-cambiar-estado">Cambiar estado</h2>
+        <div class="chips" role="group" aria-labelledby="orden-cambiar-estado">
+          @for (opcion of opciones(); track opcion.estado) {
+            <button
+              type="button"
+              class="chip"
+              [class.opcion--actual]="opcion.actual"
+              [class.opcion--hecha]="opcion.hecha"
+              [attr.aria-current]="opcion.actual ? 'true' : null"
+              [attr.aria-pressed]="opcion.permitida ? seleccionado() === opcion.estado : null"
+              [disabled]="!opcion.permitida || procesando()"
+              (click)="elegir(opcion.estado)"
+            >
+              @if (opcion.hecha) {
+                ✓
+              }
+              {{ opcion.texto }}
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (hayOpciones()) {
+        <div class="campo" [class.campo--error]="campoConError(form.controls.descripcion)">
+          <label class="etiqueta" for="orden-nota">Nota visible para el cliente</label>
+          <textarea
+            id="orden-nota"
+            rows="3"
+            [attr.maxlength]="maxNota"
+            formControlName="descripcion"
+          ></textarea>
+          <app-errores-campo [control]="form.controls.descripcion" />
+        </div>
+      }
+
+      @if (lineasPieza().length > 0) {
+        <section aria-labelledby="orden-piezas">
+          <h2 class="etiqueta" id="orden-piezas">Piezas del presupuesto</h2>
+          <ul class="piezas">
+            @for (linea of lineasPieza(); track linea.id) {
+              <li class="pieza">
+                <span>{{ linea.concepto }} × {{ linea.cantidad }}</span>
+                <span class="pill" [class.pill--rojo]="linea.falta" [class.pill--verde]="!linea.falta">
+                  {{ linea.textoStock }}
+                </span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      @if (referenciasSinStock(); as referencias) {
+        <div class="aviso aviso--ambar">
+          Para pasar a Arreglando debe haber stock de todas las piezas. Pide a recepción que registre
+          la entrada de {{ referencias }}.
+        </div>
+      }
+
+      @if (errorEstado(); as error) {
+        <div class="aviso aviso--rojo" role="alert">
+          <p>{{ error.mensaje }}</p>
+          @if (error.detalles.length > 0) {
+            <ul class="error__detalles">
+              @for (detalle of error.detalles; track detalle.campo) {
+                <li>{{ detalle.campo }}: {{ detalle.mensaje }}</li>
+              }
+            </ul>
+          }
+        </div>
+      }
+
+      @if (hayOpciones()) {
+        <button
+          type="submit"
+          class="btn btn--primario guardar"
+          [disabled]="seleccionado() === null || procesando()"
+        >
+          Guardar cambio
+        </button>
+      }
+    </form>
+
+    <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-seguimiento">
+      <h2 class="etiqueta" id="orden-seguimiento">Seguimiento</h2>
+      <app-linea-tiempo [eventos]="datos.seguimiento.eventos" [estado]="datos.orden.estado" />
+    </section>
+  }
+</main>

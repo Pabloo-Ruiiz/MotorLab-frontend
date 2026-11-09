@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+.mis-ordenes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.subtitulo {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.reintentar {
+  align-self: flex-start;
+}
+
+.finalizadas__titulo {
+  min-height: var(--mo-tactil);
+  padding: var(--mo-esp-8) 0;
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+  font-weight: 700;
+  cursor: pointer;
+}
