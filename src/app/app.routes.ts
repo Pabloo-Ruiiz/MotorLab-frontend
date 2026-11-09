@@ -16,6 +16,10 @@ const vehiculoForm = () =>
     (m) => m.VehiculoFormComponent,
   );
 
+// La misma pantalla para el cliente y para el taller
+const avisos = () =>
+  import('@features/notificaciones/avisos/avisos.component').then((m) => m.AvisosComponent);
+
 const soloAdmin = rolGuard(['admin']);
 const soloMecanico = rolGuard(['mecanico']);
 
@@ -112,7 +116,7 @@ export const routes: Routes = [
             (m) => m.PresupuestoClienteComponent,
           ),
       },
-      { path: 'avisos', data: { titulo: 'Avisos' }, loadComponent: pendiente },
+      { path: 'avisos', data: { titulo: 'Avisos' }, loadComponent: avisos },
       { path: 'perfil', data: { titulo: 'Perfil' }, loadComponent: pendiente },
     ],
   },
@@ -128,6 +132,7 @@ export const routes: Routes = [
       { path: 'ordenes/:id', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'ordenes/:id/presupuesto', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'piezas', loadComponent: pendiente },
+      { path: 'avisos', loadComponent: avisos },
       { path: 'usuarios', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'panel', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'mis-ordenes', canActivate: [soloMecanico], loadComponent: pendiente },

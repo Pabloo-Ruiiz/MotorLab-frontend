@@ -1,0 +1,80 @@
+<main class="avisos">
+  @if (enTaller()) {
+    <h1 class="avisos__titulo">Avisos</h1>
+  }
+
+  <div class="segmentado" role="group" aria-label="Filtrar avisos">
+    @for (opcion of filtros; track opcion.valor) {
+      <button
+        type="button"
+        class="segmentado__opcion"
+        [attr.aria-pressed]="filtro() === opcion.valor"
+        (click)="cambiarFiltro(opcion.valor)"
+      >
+        {{ opcion.texto }}
+      </button>
+    }
+  </div>
+
+  <button
+    type="button"
+    class="btn btn--secundario avisos__marcar"
+    [disabled]="marcandoTodas()"
+    (click)="marcarTodas()"
+  >
+    {{ marcandoTodas() ? 'Marcando…' : 'Marcar todas como leídas' }}
+  </button>
+
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario" (click)="cargar()">Reintentar</button>
+  } @else if (resultado(); as resultado) {
+    @if (resultado.datos.length === 0) {
+      <app-vacio [titulo]="tituloVacio()" />
+    } @else {
+      <ul class="lista">
+        @for (notificacion of resultado.datos; track notificacion.id) {
+          <li>
+            <button
+              type="button"
+              class="tarjeta item"
+              [class.item--sin-leer]="!notificacion.leida"
+              [disabled]="notificacion.leida && notificacion.ordenId === null"
+              (click)="abrir(notificacion)"
+            >
+              <svg
+                class="item__icono"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path [attr.d]="iconos[notificacion.tipo]" />
+              </svg>
+              <span class="item__texto">
+                <span class="item__mensaje">{{ notificacion.mensaje }}</span>
+                <span class="item__fecha">{{ notificacion.creadaEn | fechaHora: 'completa' }}</span>
+              </span>
+              @if (!notificacion.leida) {
+                <span class="item__punto" aria-hidden="true"></span>
+                <span class="sr-only">Sin leer</span>
+              }
+            </button>
+          </li>
+        }
+      </ul>
+
+      <app-paginador
+        [pagina]="resultado.pagina"
+        [totalPaginas]="resultado.totalPaginas"
+        [total]="resultado.total"
+        (cambiarPagina)="cambiarPagina($event)"
+      />
+    }
+  }
+</main>
