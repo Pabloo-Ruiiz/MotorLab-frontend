@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   ActivatedRoute,
@@ -9,6 +9,8 @@ import {
   RouterOutlet
 } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
+
+import { NotificacionesContadorService } from '@core/services/notificaciones-contador.service';
 
 interface Pestana {
   ruta: string;
@@ -51,8 +53,7 @@ export class ClienteLayoutComponent {
     }
   ];
 
-  // TODO: se conecta con el servicio de avisos en el paso de notificaciones
-  protected readonly noLeidas = signal(0);
+  protected readonly noLeidas = inject(NotificacionesContadorService).noLeidas;
 
   protected readonly titulo = toSignal(
     this.router.events.pipe(

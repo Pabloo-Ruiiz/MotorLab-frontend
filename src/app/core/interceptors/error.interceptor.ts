@@ -13,6 +13,9 @@ import { URL_LOGIN, URL_REGISTRO } from './auth.interceptor';
 const URL_USUARIO_ACTUAL = `${environment.apiUrl}/auth/yo`;
 const URLS_SIN_REDIRECCION = [URL_LOGIN, URL_REGISTRO, URL_USUARIO_ACTUAL];
 
+// Se consulta cada 30 segundos: con el servidor caído, repetiría el aviso en cada intento
+const URL_CONTADOR_AVISOS = `${environment.apiUrl}/notificaciones/contador`;
+
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
@@ -32,7 +35,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         void router.navigate(['/login'], { queryParams: { returnUrl } });
       }
 
-      if (apiError.status === 0 || apiError.status >= 500) {
+      if ((apiError.status === 0 || apiError.status >= 500) && req.url !== URL_CONTADOR_AVISOS) {
         toast.error(apiError.mensaje);
       }
 

@@ -16,7 +16,9 @@
       >
         <path [attr.d]="iconoCampana" />
       </svg>
-      <span class="campana__insignia">{{ noLeidas() }}</span>
+      @if (noLeidas() > 0) {
+        <span class="campana__insignia">{{ noLeidas() }}</span>
+      }
     </div>
   </div>
 </header>

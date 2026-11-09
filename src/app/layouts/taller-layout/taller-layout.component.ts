@@ -16,6 +16,12 @@ const PIEZAS: Opcion = {
   icono: 'M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3ZM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z'
 };
 
+const AVISOS: Opcion = {
+  ruta: '/taller/avisos',
+  texto: 'Avisos',
+  icono: 'M6 16v-5a6 6 0 0 1 12 0v5l2 2H4l2-2ZM10 21h4'
+};
+
 const OPCIONES_ADMIN: readonly Opcion[] = [
   {
     ruta: '/taller/solicitudes',
@@ -29,7 +35,8 @@ const OPCIONES_ADMIN: readonly Opcion[] = [
     texto: 'Usuarios',
     icono:
       'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM3 20a6 6 0 0 1 12 0M16 4.5a3.5 3.5 0 0 1 0 6.5M18 14.5a6 6 0 0 1 3 5.5'
-  }
+  },
+  AVISOS
 ];
 
 const OPCIONES_MECANICO: readonly Opcion[] = [
@@ -38,7 +45,8 @@ const OPCIONES_MECANICO: readonly Opcion[] = [
     texto: 'Mis órdenes',
     icono: 'M9 3h6v4H9zM9 5H5v16h14V5h-4M9 12h6M9 16h6'
   },
-  PIEZAS
+  PIEZAS,
+  AVISOS
 ];
 
 @Component({

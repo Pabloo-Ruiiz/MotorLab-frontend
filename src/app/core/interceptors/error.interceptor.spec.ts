@@ -128,4 +128,12 @@ describe('errorInterceptor', () => {
     expect(toastSimulado.error).toHaveBeenCalledWith('Error interno del servidor');
     expect(recibido).toBeInstanceOf(ApiError);
   });
+
+  it('un fallo de conexión en el contador de avisos no muestra ningún toast', () => {
+    capturarError('/api/v1/notificaciones/contador');
+    httpSimulado.expectOne('/api/v1/notificaciones/contador').error(new ProgressEvent('error'));
+
+    expect(toastSimulado.error).not.toHaveBeenCalled();
+    expect(recibido).toBeInstanceOf(ApiError);
+  });
 });
