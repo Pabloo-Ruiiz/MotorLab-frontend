@@ -7,10 +7,6 @@ import { rolGuard } from '@core/guards/rol.guard';
 import { AuthService } from '@core/services/auth.service';
 import { pantallaInicio } from '@core/util/rutas';
 
-// Pantallas que aún no existen: cada una se sustituye en su paso
-const pendiente = () =>
-  import('@shared/components/pendiente/pendiente.component').then((m) => m.PendienteComponent);
-
 const vehiculoForm = () =>
   import('@features/vehiculos/vehiculo-form/vehiculo-form.component').then(
     (m) => m.VehiculoFormComponent,
@@ -198,14 +194,15 @@ export const routes: Routes = [
     ],
   },
 
-  { path: '403', loadComponent: pendiente },
-  { path: '404', loadComponent: pendiente },
-
-  // TODO: esta ruta solo existe en desarrollo y se elimina en el paso de errores globales (F26).
   {
-    path: 'estilos',
+    path: '403',
     loadComponent: () =>
-      import('@features/estilos/estilos.component').then((m) => m.EstilosComponent),
+      import('@shared/components/error-403/error-403.component').then((m) => m.Error403Component),
+  },
+  {
+    path: '404',
+    loadComponent: () =>
+      import('@shared/components/error-404/error-404.component').then((m) => m.Error404Component),
   },
 
   { path: '**', redirectTo: '/404' },
