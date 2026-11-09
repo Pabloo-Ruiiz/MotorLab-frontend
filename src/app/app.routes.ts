@@ -173,7 +173,12 @@ export const routes: Routes = [
             (m) => m.UsuariosListaComponent,
           ),
       },
-      { path: 'panel', canActivate: [soloAdmin], loadComponent: pendiente },
+      {
+        path: 'panel',
+        canActivate: [soloAdmin],
+        loadComponent: () =>
+          import('@features/taller/panel/panel/panel.component').then((m) => m.PanelComponent),
+      },
       {
         path: 'mis-ordenes',
         canActivate: [soloMecanico],

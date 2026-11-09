@@ -1,0 +1,94 @@
+:host {
+  display: block;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.subtitulo {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.reintentar {
+  align-self: flex-start;
+}
+
+.etiqueta {
+  margin-bottom: var(--mo-esp-8);
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-12);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: var(--mo-esp-16);
+  margin: 0;
+}
+
+.indicador dd {
+  margin: 0;
+}
+
+.indicador__valor {
+  font-size: var(--mo-tipo-26);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.indicador__valor--naranja {
+  color: var(--mo-naranja-oscuro);
+}
+
+.indicador__valor--rojo {
+  color: var(--mo-rojo-oscuro);
+}
+
+.indicador__enlace {
+  font-size: var(--mo-tipo-14);
+}
+
+.barras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Anchos fijos en la primera y la última columna: así las barras empiezan y acaban a la vez
+.barra {
+  display: grid;
+  grid-template-columns: minmax(120px, 220px) 1fr 4ch;
+  align-items: center;
+  gap: var(--mo-esp-12);
+  font-size: var(--mo-tipo-14);
+}
+
+.barra__pista {
+  display: block;
+  height: 20px;
+  overflow: hidden;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-linea);
+}
+
+.barra__relleno {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.barra__total {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+}
