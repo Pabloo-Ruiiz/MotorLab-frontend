@@ -1,0 +1,121 @@
+<main class="solicitudes">
+  <header class="encabezado">
+    <div>
+      <h1>Solicitudes</h1>
+      <p class="encabezado__texto">Solicitudes enviadas por los clientes desde la web</p>
+    </div>
+    @if (nuevas() !== null) {
+      <span class="pill pill--verde">{{ nuevas() }} {{ nuevas() === 1 ? 'nueva' : 'nuevas' }}</span>
+    }
+  </header>
+
+  <div class="filtros" role="search" aria-label="Filtrar órdenes" [formGroup]="form">
+    <div class="campo filtros__busqueda">
+      <label class="sr-only" for="solicitudes-q">Buscar por matrícula o cliente</label>
+      <input
+        id="solicitudes-q"
+        type="search"
+        placeholder="Buscar por matrícula o cliente…"
+        autocomplete="off"
+        [attr.maxlength]="maxBusqueda"
+        formControlName="q"
+      />
+    </div>
+
+    <div class="campo">
+      <label class="sr-only" for="solicitudes-estado">Estado</label>
+      <select id="solicitudes-estado" formControlName="estado">
+        <option value="">Estado: Todos</option>
+        @for (opcion of opcionesEstado; track opcion.valor) {
+          <option [value]="opcion.valor">{{ opcion.texto }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="campo">
+      <label class="sr-only" for="solicitudes-urgencia">Urgencia</label>
+      <select id="solicitudes-urgencia" formControlName="urgencia">
+        <option value="">Urgencia: Todas</option>
+        @for (opcion of opcionesUrgencia; track opcion.valor) {
+          <option [value]="opcion.valor">{{ opcion.texto }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="campo">
+      <label class="sr-only" for="solicitudes-mecanico">Mecánico</label>
+      <select id="solicitudes-mecanico" formControlName="mecanicoId">
+        <option value="">Mecánico: Todos</option>
+        @for (mecanico of mecanicos(); track mecanico.id) {
+          <option [value]="mecanico.id">{{ mecanico.nombre }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario reintentar" (click)="reintentar()">
+      Reintentar
+    </button>
+  } @else if (resultado(); as resultado) {
+    @if (resultado.datos.length === 0) {
+      <app-vacio [titulo]="tituloVacio()" />
+    } @else {
+      <div class="tabla-contenedor">
+        <table class="tabla">
+          <caption class="sr-only">
+            Órdenes de trabajo
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Nº</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Vehículo</th>
+              <th scope="col">Servicio</th>
+              <th scope="col">Urgencia</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Entrada</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (orden of resultado.datos; track orden.ordenId) {
+              <tr
+                class="fila"
+                tabindex="0"
+                [class.fila--alta]="orden.urgencia === 'alta'"
+                (click)="abrir(orden)"
+                (keydown.enter)="abrir(orden)"
+              >
+                <td class="fila__numero">#{{ orden.ordenId }}</td>
+                <td>{{ orden.clienteNombre }}</td>
+                <td>
+                  {{ orden.marca }} {{ orden.modelo }} · {{ matriculaLegible(orden.matricula) }}
+                </td>
+                <td>{{ etiquetasServicio[orden.tipoServicio] }}</td>
+                <td><app-pill-urgencia [urgencia]="orden.urgencia" /></td>
+                <td><app-pill-estado [estado]="orden.estado" /></td>
+                <td>{{ orden.fechaEntrada | fechaHora: 'corta' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pie">
+        <p class="pie__texto">
+          Mostrando {{ resultado.datos.length }} de {{ resultado.total }}
+          {{ resultado.total === 1 ? 'orden' : 'órdenes' }}
+        </p>
+        <app-paginador
+          [pagina]="resultado.pagina"
+          [totalPaginas]="resultado.totalPaginas"
+          [total]="resultado.total"
+          (cambiarPagina)="cambiarPagina($event)"
+        />
+      </div>
+    }
+  }
+</main>
