@@ -1,0 +1,33 @@
+<ul class="lista">
+  @for (orden of ordenes(); track orden.ordenId) {
+    <li>
+      <article class="tarjeta orden">
+        <div class="orden__cabecera">
+          <h2 class="orden__titulo">
+            <a class="orden__enlace" [routerLink]="['/taller/mis-ordenes', orden.ordenId]">
+              #{{ orden.ordenId }} · {{ orden.marca }} {{ orden.modelo }}
+            </a>
+          </h2>
+          <app-pill-urgencia [urgencia]="orden.urgencia" />
+        </div>
+
+        <p class="orden__detalle">
+          {{ matriculaLegible(orden.matricula) }} · {{ etiquetasServicio[orden.tipoServicio] }}
+          @if (orden.elevador; as elevador) {
+            · Elevador: {{ elevador }}
+          }
+        </p>
+
+        <app-barra-progreso
+          [progreso]="orden.progreso"
+          [etiqueta]="'Progreso de la orden ' + orden.ordenId"
+        />
+
+        <div class="orden__pie">
+          <app-pill-estado [estado]="orden.estado" />
+          <span class="orden__porcentaje" aria-hidden="true">{{ orden.progreso }} %</span>
+        </div>
+      </article>
+    </li>
+  }
+</ul>

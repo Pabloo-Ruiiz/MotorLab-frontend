@@ -1,0 +1,108 @@
+:host {
+  display: block;
+}
+
+.detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.reintentar {
+  align-self: flex-start;
+}
+
+.migas {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.encabezado,
+.encabezado__pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-8);
+}
+
+.encabezado {
+  justify-content: space-between;
+}
+
+// También se aplica a la etiqueta del campo: debe ganar a los estilos globales de .campo label
+.etiqueta {
+  margin-bottom: var(--mo-esp-8);
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-12);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.datos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: var(--mo-esp-16);
+  margin: 0;
+
+  dd {
+    margin: 0;
+  }
+}
+
+.datos__ancho {
+  grid-column: 1 / -1;
+}
+
+.sintoma {
+  overflow-wrap: anywhere;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+// Deshabilitadas, pero informan: no deben verse apagadas como las opciones no disponibles
+.opcion--actual:disabled {
+  border-color: var(--mo-naranja);
+  background-color: var(--mo-naranja);
+  color: var(--mo-sobre-naranja);
+  font-weight: 700;
+  opacity: 1;
+}
+
+.opcion--hecha:disabled {
+  border-color: var(--mo-verde-claro);
+  background-color: var(--mo-verde-claro);
+  color: var(--mo-verde-oscuro);
+  font-weight: 700;
+  opacity: 1;
+}
+
+.piezas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pieza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-8);
+}
+
+.error__detalles {
+  margin: var(--mo-esp-4) 0 0;
+  padding-left: var(--mo-esp-16);
+}
+
+.guardar {
+  align-self: flex-end;
+}
