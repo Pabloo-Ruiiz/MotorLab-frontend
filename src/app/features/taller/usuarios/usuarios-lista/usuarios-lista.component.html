@@ -70,7 +70,8 @@
                           esPropio(usuario) ? 'usuarios-propio-' + usuario.id : null
                         "
                         [checked]="usuario.activo"
-                        [disabled]="esPropio(usuario) || actualizando().includes(usuario.id)"
+                        [attr.aria-disabled]="actualizando().includes(usuario.id) ? 'true' : null"
+                        [disabled]="esPropio(usuario)"
                         (change)="cambiarActivo(usuario, casilla)"
                       />
                       <span class="interruptor__pista" aria-hidden="true"></span>

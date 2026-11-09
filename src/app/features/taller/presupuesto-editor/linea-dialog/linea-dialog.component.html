@@ -31,8 +31,14 @@
           [attr.maxlength]="maxBusqueda"
           [formControl]="busqueda"
           (keydown.enter)="$event.preventDefault()"
+          aria-describedby="linea-busqueda-error"
+          [attr.aria-invalid]="campoConError(form.controls.piezaId)"
         />
-        <app-errores-campo [control]="form.controls.piezaId" [mensajes]="mensajesPieza" />
+        <app-errores-campo
+          id="linea-busqueda-error"
+          [control]="form.controls.piezaId"
+          [mensajes]="mensajesPieza"
+        />
       </div>
 
       <div aria-live="polite">
@@ -73,8 +79,20 @@
 
       <div class="campo" [class.campo--error]="campoConError(form.controls.cantidad)">
         <label for="linea-cantidad">Cantidad</label>
-        <input id="linea-cantidad" type="number" min="1" step="1" formControlName="cantidad" />
-        <app-errores-campo [control]="form.controls.cantidad" [mensajes]="mensajesCantidad" />
+        <input
+          id="linea-cantidad"
+          type="number"
+          min="1"
+          step="1"
+          formControlName="cantidad"
+          aria-describedby="linea-cantidad-error"
+          [attr.aria-invalid]="campoConError(form.controls.cantidad)"
+        />
+        <app-errores-campo
+          id="linea-cantidad-error"
+          [control]="form.controls.cantidad"
+          [mensajes]="mensajesCantidad"
+        />
       </div>
 
       @if (avisoStock(); as aviso) {
@@ -89,14 +107,32 @@
           autocomplete="off"
           [attr.maxlength]="maxConcepto"
           formControlName="concepto"
+          aria-describedby="linea-concepto-error"
+          [attr.aria-invalid]="campoConError(form.controls.concepto)"
         />
-        <app-errores-campo [control]="form.controls.concepto" [mensajes]="mensajesConcepto" />
+        <app-errores-campo
+          id="linea-concepto-error"
+          [control]="form.controls.concepto"
+          [mensajes]="mensajesConcepto"
+        />
       </div>
 
       <div class="campo" [class.campo--error]="campoConError(form.controls.cantidad)">
         <label for="linea-horas">Horas</label>
-        <input id="linea-horas" type="number" min="0" step="0.25" formControlName="cantidad" />
-        <app-errores-campo [control]="form.controls.cantidad" [mensajes]="mensajesCantidad" />
+        <input
+          id="linea-horas"
+          type="number"
+          min="0"
+          step="0.25"
+          formControlName="cantidad"
+          aria-describedby="linea-horas-error"
+          [attr.aria-invalid]="campoConError(form.controls.cantidad)"
+        />
+        <app-errores-campo
+          id="linea-horas-error"
+          [control]="form.controls.cantidad"
+          [mensajes]="mensajesCantidad"
+        />
       </div>
 
       <div class="campo" [class.campo--error]="campoConError(form.controls.precioUnitario)">
@@ -107,8 +143,14 @@
           min="0"
           step="0.01"
           formControlName="precioUnitario"
+          aria-describedby="linea-precio-error"
+          [attr.aria-invalid]="campoConError(form.controls.precioUnitario)"
         />
-        <app-errores-campo [control]="form.controls.precioUnitario" [mensajes]="mensajesPrecio" />
+        <app-errores-campo
+          id="linea-precio-error"
+          [control]="form.controls.precioUnitario"
+          [mensajes]="mensajesPrecio"
+        />
       </div>
     }
 

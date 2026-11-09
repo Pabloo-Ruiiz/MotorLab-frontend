@@ -5,10 +5,18 @@
   right: var(--mo-esp-8);
   left: var(--mo-esp-8);
   z-index: 1000;
+  pointer-events: none; // el contenedor vacío no debe bloquear los clics
+}
+
+.toasts__region {
   display: flex;
   flex-direction: column;
   gap: var(--mo-esp-8);
-  pointer-events: none; // el contenedor vacío no debe bloquear los clics
+}
+
+// Una región vacía sigue en el DOM, pero no debe añadir separación
+.toasts__region:not(:empty) + .toasts__region:not(:empty) {
+  margin-top: var(--mo-esp-8);
 }
 
 @media (min-width: 768px) {
@@ -49,6 +57,11 @@
   border-left-color: var(--mo-azul);
   background-color: var(--mo-azul-claro);
   color: var(--mo-azul-oscuro);
+}
+
+.toast__icono {
+  flex-shrink: 0;
+  font-weight: 800;
 }
 
 .toast__mensaje {

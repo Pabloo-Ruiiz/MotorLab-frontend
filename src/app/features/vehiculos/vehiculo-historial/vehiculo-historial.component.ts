@@ -11,6 +11,7 @@ import {
 } from '@core/models';
 import { VehiculosService } from '@core/services/vehiculos.service';
 import { aApiError } from '@core/util/api-error';
+import { FocoTrasCarga } from '@core/util/foco';
 import { matriculaLegible } from '@core/util/matricula';
 import { BarraProgresoComponent } from '@shared/components/barra-progreso/barra-progreso.component';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
@@ -44,6 +45,7 @@ interface DatosHistorial {
 export class VehiculoHistorialComponent {
   private readonly vehiculos = inject(VehiculosService);
   private readonly id = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
+  private readonly foco = new FocoTrasCarga();
 
   // El historial no trae la matrícula si está vacío. shareReplay evita repetir la petición
   // al cambiar de página y, si falla, no guarda el error: «Reintentar» vuelve a pedirlo
@@ -86,6 +88,7 @@ export class VehiculoHistorialComponent {
       .subscribe((datos) => {
         this.datos.set(datos);
         this.cargando.set(false);
+        this.foco.restaurar();
       });
 
     this.cargar(1);
@@ -96,8 +99,13 @@ export class VehiculoHistorialComponent {
     this.paginaPedida.next(pagina);
   }
 
+  protected cambiarPagina(pagina: number): void {
+    this.foco.marcar();
+    this.cargar(pagina);
+  }
+
   protected reintentar(): void {
-    this.cargar(this.ultimaPagina);
+    this.cambiarPagina(this.ultimaPagina);
   }
 
   private registrarError(error: unknown): void {

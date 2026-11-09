@@ -82,6 +82,12 @@ h6 {
   box-shadow: 0 0 0 2px var(--mo-blanco);
 }
 
+// <main> solo recibe el foco por código (core/util/foco.ts): no es un control
+main[tabindex='-1']:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 // Oculta el contenido visualmente, pero lo mantiene para los lectores de pantalla
 .sr-only {
   position: absolute;

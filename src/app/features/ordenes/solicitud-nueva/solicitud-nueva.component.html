@@ -26,7 +26,7 @@
   } @else {
     <div class="progreso">
       <div class="progreso__textos">
-        <p class="progreso__actual" aria-live="polite">{{ indicador() }}</p>
+        <p #indicadorPaso class="progreso__actual" tabindex="-1">{{ indicador() }}</p>
         <p class="progreso__otros">{{ otrosPasos() }}</p>
       </div>
       <app-barra-progreso [progreso]="progreso()" etiqueta="Progreso de la solicitud" />
@@ -46,20 +46,26 @@
             id="solicitud-vehiculo"
             formControlName="vehiculoId"
             [attr.aria-invalid]="campoConError(form.controls.vehiculoId)"
+            aria-describedby="solicitud-vehiculo-error"
           >
             <option [ngValue]="null">Selecciona un vehículo</option>
             @for (vehiculo of vehiculos(); track vehiculo.id) {
               <option [ngValue]="vehiculo.id">{{ etiquetaVehiculo(vehiculo) }}</option>
             }
           </select>
-          <app-errores-campo [control]="form.controls.vehiculoId" />
+          <app-errores-campo id="solicitud-vehiculo-error" [control]="form.controls.vehiculoId" />
         </div>
       </div>
 
       <div class="paso" [hidden]="paso() !== 2">
         <div class="campo">
           <span class="campo__etiqueta" id="solicitud-servicio">Tipo de servicio</span>
-          <div class="chips" role="group" aria-labelledby="solicitud-servicio">
+          <div
+            class="chips"
+            role="group"
+            aria-labelledby="solicitud-servicio"
+            aria-describedby="solicitud-servicio-error"
+          >
             @for (opcion of opcionesServicio; track opcion.valor) {
               <button
                 type="button"
@@ -71,7 +77,7 @@
               </button>
             }
           </div>
-          <app-errores-campo [control]="form.controls.tipoServicio" />
+          <app-errores-campo id="solicitud-servicio-error" [control]="form.controls.tipoServicio" />
         </div>
 
         <div class="campo" [class.campo--error]="campoConError(form.controls.sintoma)">
@@ -80,7 +86,7 @@
             id="solicitud-sintoma"
             rows="3"
             formControlName="sintoma"
-            aria-describedby="solicitud-contador"
+            aria-describedby="solicitud-contador solicitud-sintoma-error"
             [attr.aria-invalid]="campoConError(form.controls.sintoma)"
           ></textarea>
           <p
@@ -90,10 +96,10 @@
           >
             {{ form.controls.sintoma.value.length }} caracteres · mínimo 20
             @if (form.controls.sintoma.value.length >= 20) {
-              ✓
+              <span aria-hidden="true">✓</span>
             }
           </p>
-          <app-errores-campo [control]="form.controls.sintoma" />
+          <app-errores-campo id="solicitud-sintoma-error" [control]="form.controls.sintoma" />
         </div>
 
         <div class="campo" [class.campo--error]="campoConError(form.controls.cuandoOcurre)">
@@ -102,13 +108,14 @@
             id="solicitud-cuando"
             formControlName="cuandoOcurre"
             [attr.aria-invalid]="campoConError(form.controls.cuandoOcurre)"
+            aria-describedby="solicitud-cuando-error"
           >
             <option [ngValue]="null">Sin indicar</option>
             @for (opcion of opcionesCuando; track opcion.valor) {
               <option [ngValue]="opcion.valor">{{ opcion.texto }}</option>
             }
           </select>
-          <app-errores-campo [control]="form.controls.cuandoOcurre" />
+          <app-errores-campo id="solicitud-cuando-error" [control]="form.controls.cuandoOcurre" />
         </div>
 
         <ng-container
@@ -145,8 +152,13 @@
             formControlName="fechaPreferida"
             [min]="hoy"
             [attr.aria-invalid]="campoConError(form.controls.fechaPreferida)"
+            aria-describedby="solicitud-fecha-error"
           />
-          <app-errores-campo [control]="form.controls.fechaPreferida" [mensajes]="mensajesFecha" />
+          <app-errores-campo
+            id="solicitud-fecha-error"
+            [control]="form.controls.fechaPreferida"
+            [mensajes]="mensajesFecha"
+          />
         </div>
 
         <ng-container
@@ -174,11 +186,15 @@
             <input
               type="checkbox"
               formControlName="aceptaPrivacidad"
+              aria-describedby="solicitud-privacidad-error"
               [attr.aria-invalid]="campoConError(form.controls.aceptaPrivacidad)"
             />
             <span>Acepto la política de privacidad del taller</span>
           </label>
-          <app-errores-campo [control]="form.controls.aceptaPrivacidad" />
+          <app-errores-campo
+            id="solicitud-privacidad-error"
+            [control]="form.controls.aceptaPrivacidad"
+          />
         </div>
       </div>
 
@@ -220,7 +236,12 @@
 >
   <div class="campo">
     <span class="campo__etiqueta" [id]="id">{{ etiqueta }}</span>
-    <div class="segmentado" role="group" [attr.aria-labelledby]="id">
+    <div
+      class="segmentado"
+      role="group"
+      [attr.aria-labelledby]="id"
+      [attr.aria-describedby]="id + '-error'"
+    >
       @for (opcion of opciones; track opcion.valor) {
         <button
           type="button"
@@ -232,6 +253,6 @@
         </button>
       }
     </div>
-    <app-errores-campo [control]="control" />
+    <app-errores-campo [attr.id]="id + '-error'" [control]="control" />
   </div>
 </ng-template>

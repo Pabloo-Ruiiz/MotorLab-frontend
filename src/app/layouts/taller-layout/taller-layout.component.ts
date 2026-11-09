@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { ETIQUETAS_ROL } from '@core/models';
 import { AuthService } from '@core/services/auth.service';
+import { enfocarPrincipal } from '@core/util/foco';
 
 interface Opcion {
   ruta: string;
@@ -72,4 +73,18 @@ export class TallerLayoutComponent {
         return [];
     }
   });
+
+  protected irAlContenido(): void {
+    enfocarPrincipal();
+  }
+
+  // Sin esto, el menú abierto taparía los controles a los que se llega con Tab.
+  // relatedTarget es null si se pulsa fuera de un control: entonces el menú sigue como estaba
+  protected cerrarMenuSiSaleElFoco(evento: FocusEvent, lateral: HTMLElement): void {
+    const destino = evento.relatedTarget;
+
+    if (destino instanceof Node && !lateral.contains(destino)) {
+      this.menuAbierto.set(false);
+    }
+  }
 }

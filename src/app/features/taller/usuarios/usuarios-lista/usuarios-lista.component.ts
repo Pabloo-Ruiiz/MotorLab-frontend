@@ -22,6 +22,7 @@ import { AuthService } from '@core/services/auth.service';
 import { ToastService } from '@core/services/toast.service';
 import { UsuariosService } from '@core/services/usuarios.service';
 import { aApiError, mensajeDeError } from '@core/util/api-error';
+import { FocoTrasCarga } from '@core/util/foco';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
@@ -70,6 +71,7 @@ export class UsuariosListaComponent {
   private readonly router = inject(Router);
   private readonly ruta = inject(ActivatedRoute);
   private readonly usuarioActual = inject(AuthService).usuario;
+  private readonly foco = new FocoTrasCarga();
 
   private readonly recargas = new Subject<void>();
   private readonly dialogo = viewChild.required(UsuarioDialogComponent);
@@ -120,10 +122,12 @@ export class UsuariosListaComponent {
   }
 
   protected cambiarPagina(pagina: number): void {
+    this.foco.marcar();
     this.navegar({ ...this.filtros(), pagina });
   }
 
   protected reintentar(): void {
+    this.foco.marcar();
     this.cargando.set(true);
     this.errorCarga.set(null);
     this.recargas.next();
@@ -131,6 +135,12 @@ export class UsuariosListaComponent {
 
   protected cambiarActivo(usuario: Usuario, casilla: HTMLInputElement): void {
     const { id } = usuario;
+
+    // Durante la petición no se usa «disabled», que haría perder el foco: se anula la pulsación
+    if (this.actualizando().includes(id)) {
+      casilla.checked = !casilla.checked;
+      return;
+    }
 
     this.actualizando.update((ids) => [...ids, id]);
     this.usuarios
@@ -219,5 +229,6 @@ export class UsuariosListaComponent {
     if (resultado !== null) {
       this.resultado.set(resultado);
     }
+    this.foco.restaurar();
   }
 }

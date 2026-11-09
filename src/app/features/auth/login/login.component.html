@@ -28,8 +28,9 @@
         autocomplete="email"
         formControlName="email"
         [attr.aria-invalid]="campoConError(form.controls.email)"
+        aria-describedby="login-email-error"
       />
-      <app-errores-campo [control]="form.controls.email" />
+      <app-errores-campo id="login-email-error" [control]="form.controls.email" />
     </div>
 
     <div class="campo" [class.campo--error]="campoConError(form.controls.password)">
@@ -40,8 +41,9 @@
         autocomplete="current-password"
         formControlName="password"
         [attr.aria-invalid]="campoConError(form.controls.password)"
+        aria-describedby="login-password-error"
       />
-      <app-errores-campo [control]="form.controls.password" />
+      <app-errores-campo id="login-password-error" [control]="form.controls.password" />
     </div>
 
     <button type="submit" class="btn btn--primario" [disabled]="enviando()">

@@ -16,11 +16,16 @@
         id="stock-delta"
         type="number"
         step="1"
-        aria-describedby="stock-delta-ayuda"
+        aria-describedby="stock-delta-ayuda stock-delta-error"
         formControlName="delta"
+        [attr.aria-invalid]="campoConError(form.controls.delta)"
       />
       <p class="nota" id="stock-delta-ayuda">Positiva para entradas, negativa para retirar stock.</p>
-      <app-errores-campo [control]="form.controls.delta" [mensajes]="mensajesDelta" />
+      <app-errores-campo
+        id="stock-delta-error"
+        [control]="form.controls.delta"
+        [mensajes]="mensajesDelta"
+      />
     </div>
 
     <div class="campo" [class.campo--error]="campoConError(form.controls.motivo)">
@@ -31,8 +36,10 @@
         autocomplete="off"
         [attr.maxlength]="maxMotivo"
         formControlName="motivo"
+        aria-describedby="stock-motivo-error"
+        [attr.aria-invalid]="campoConError(form.controls.motivo)"
       />
-      <app-errores-campo [control]="form.controls.motivo" />
+      <app-errores-campo id="stock-motivo-error" [control]="form.controls.motivo" />
     </div>
 
     <div class="dialogo__acciones">

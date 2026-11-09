@@ -69,8 +69,11 @@
               [disabled]="!opcion.permitida || procesando()"
               (click)="elegir(opcion.estado)"
             >
+              <!-- Marcas visibles: el estado no se indica solo con el color -->
               @if (opcion.hecha) {
-                ✓
+                <span aria-hidden="true">✓</span>
+              } @else if (opcion.actual) {
+                <span aria-hidden="true">●</span>
               }
               {{ opcion.texto }}
             </button>
@@ -86,8 +89,10 @@
             rows="3"
             [attr.maxlength]="maxNota"
             formControlName="descripcion"
+            aria-describedby="orden-nota-error"
+            [attr.aria-invalid]="campoConError(form.controls.descripcion)"
           ></textarea>
-          <app-errores-campo [control]="form.controls.descripcion" />
+          <app-errores-campo id="orden-nota-error" [control]="form.controls.descripcion" />
         </div>
       }
 

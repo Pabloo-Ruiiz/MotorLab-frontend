@@ -8,6 +8,7 @@ import type { Pagina, Vehiculo } from '@core/models';
 import { ToastService } from '@core/services/toast.service';
 import { VehiculosService } from '@core/services/vehiculos.service';
 import { aApiError, mensajeDeError } from '@core/util/api-error';
+import { FocoTrasCarga } from '@core/util/foco';
 import { matriculaLegible } from '@core/util/matricula';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacion/modal-confirmacion.component';
@@ -33,6 +34,7 @@ const LIMITE = 10;
 export class VehiculosListaComponent {
   private readonly vehiculos = inject(VehiculosService);
   private readonly toast = inject(ToastService);
+  private readonly foco = new FocoTrasCarga();
 
   private readonly paginaPedida = new Subject<number>();
 
@@ -71,6 +73,7 @@ export class VehiculosListaComponent {
       .subscribe((resultado) => {
         this.resultado.set(resultado);
         this.cargando.set(false);
+        this.foco.restaurar();
       });
 
     this.cargar(1);
@@ -80,8 +83,13 @@ export class VehiculosListaComponent {
     this.paginaPedida.next(pagina);
   }
 
+  protected cambiarPagina(pagina: number): void {
+    this.foco.marcar();
+    this.cargar(pagina);
+  }
+
   protected reintentar(): void {
-    this.cargar(this.resultado()?.pagina ?? 1);
+    this.cambiarPagina(this.resultado()?.pagina ?? 1);
   }
 
   protected confirmarBaja(): void {
@@ -95,7 +103,7 @@ export class VehiculosListaComponent {
     this.vehiculos.darDeBaja(vehiculo.id).subscribe({
       next: () => {
         this.toast.exito('Vehículo dado de baja');
-        this.cargar(this.paginaTrasBaja());
+        this.cambiarPagina(this.paginaTrasBaja());
       },
       error: (error: unknown) => {
         // El interceptor ya avisa de los fallos de conexión y de los errores 5xx
