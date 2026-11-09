@@ -1,4 +1,13 @@
-<aside class="lateral" (keydown.escape)="menuAbierto.set(false); hamburguesa.focus()">
+<aside
+  #lateral
+  class="lateral"
+  (keydown.escape)="menuAbierto.set(false); hamburguesa.focus()"
+  (focusout)="cerrarMenuSiSaleElFoco($event, lateral)"
+>
+  <button type="button" class="btn btn--primario saltar" (click)="irAlContenido()">
+    Saltar al contenido
+  </button>
+
   <div class="lateral__barra">
     <div class="logo">
       <span class="logo__cuadrado" aria-hidden="true">M</span>

@@ -9,6 +9,7 @@ import { NotificacionesContadorService } from '@core/services/notificaciones-con
 import { NotificacionesService } from '@core/services/notificaciones.service';
 import { ToastService } from '@core/services/toast.service';
 import { aApiError, mensajeDeError } from '@core/util/api-error';
+import { FocoTrasCarga } from '@core/util/foco';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
@@ -41,6 +42,7 @@ export class AvisosComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
+  private readonly foco = new FocoTrasCarga();
 
   private readonly peticiones = new Subject<void>();
 
@@ -91,6 +93,7 @@ export class AvisosComponent {
   }
 
   protected cargar(): void {
+    this.foco.marcar();
     this.cargando.set(true);
     this.errorCarga.set(null);
     this.peticiones.next();
@@ -151,6 +154,7 @@ export class AvisosComponent {
       this.resultado.set(resultado);
       this.errorCarga.set(null);
     }
+    this.foco.restaurar();
   }
 
   private irAOrden(ordenId: number | null): void {

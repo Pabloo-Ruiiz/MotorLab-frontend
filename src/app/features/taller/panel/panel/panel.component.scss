@@ -64,10 +64,11 @@
   list-style: none;
 }
 
-// Anchos fijos en la primera y la última columna: así las barras empiezan y acaban a la vez
+// Primera y última columna iguales en todas las filas: las barras empiezan y acaban a la vez.
+// El 40 % evita que, en pantallas estrechas, las etiquetas dejen la barra sin espacio
 .barra {
   display: grid;
-  grid-template-columns: minmax(120px, 220px) 1fr 4ch;
+  grid-template-columns: minmax(0, min(220px, 40%)) 1fr 4ch;
   align-items: center;
   gap: var(--mo-esp-12);
   font-size: var(--mo-tipo-14);

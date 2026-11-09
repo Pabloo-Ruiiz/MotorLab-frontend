@@ -101,13 +101,18 @@
       <form class="asignacion" [formGroup]="asignacion" (ngSubmit)="guardarAsignacion()" novalidate>
         <div class="campo" [class.campo--error]="campoConError(asignacion.controls.mecanicoId)">
           <label for="orden-mecanico">Mecánico</label>
-          <select id="orden-mecanico" formControlName="mecanicoId">
+          <select
+            id="orden-mecanico"
+            formControlName="mecanicoId"
+            aria-describedby="orden-mecanico-error"
+            [attr.aria-invalid]="campoConError(asignacion.controls.mecanicoId)"
+          >
             <option value="">Sin asignar</option>
             @for (mecanico of opcionesMecanico(); track mecanico.id) {
               <option [value]="mecanico.id">{{ mecanico.nombre }}</option>
             }
           </select>
-          <app-errores-campo [control]="asignacion.controls.mecanicoId" />
+          <app-errores-campo id="orden-mecanico-error" [control]="asignacion.controls.mecanicoId" />
         </div>
 
         <div class="campo" [class.campo--error]="campoConError(asignacion.controls.elevador)">
@@ -118,14 +123,22 @@
             autocomplete="off"
             [attr.maxlength]="maxElevador"
             formControlName="elevador"
+            aria-describedby="orden-elevador-error"
+            [attr.aria-invalid]="campoConError(asignacion.controls.elevador)"
           />
-          <app-errores-campo [control]="asignacion.controls.elevador" />
+          <app-errores-campo id="orden-elevador-error" [control]="asignacion.controls.elevador" />
         </div>
 
         <div class="campo" [class.campo--error]="campoConError(asignacion.controls.fechaEstimada)">
           <label for="orden-fecha">Fecha estimada</label>
-          <input id="orden-fecha" type="datetime-local" formControlName="fechaEstimada" />
-          <app-errores-campo [control]="asignacion.controls.fechaEstimada" />
+          <input
+            id="orden-fecha"
+            type="datetime-local"
+            formControlName="fechaEstimada"
+            aria-describedby="orden-fecha-error"
+            [attr.aria-invalid]="campoConError(asignacion.controls.fechaEstimada)"
+          />
+          <app-errores-campo id="orden-fecha-error" [control]="asignacion.controls.fechaEstimada" />
         </div>
 
         <button type="submit" class="btn btn--secundario" [disabled]="procesando()">
@@ -145,8 +158,10 @@
             autocomplete="off"
             [attr.maxlength]="maxNota"
             [formControl]="nota"
+            aria-describedby="orden-nota-error"
+            [attr.aria-invalid]="campoConError(nota)"
           />
-          <app-errores-campo [control]="nota" />
+          <app-errores-campo id="orden-nota-error" [control]="nota" />
         </div>
         <div class="acciones">
           @for (estado of siguientes(); track estado) {

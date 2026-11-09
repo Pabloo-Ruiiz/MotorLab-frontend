@@ -81,14 +81,12 @@ export class StockDialogComponent {
   mostrarErrorServidor(error: unknown): void {
     const apiError = aApiError(error);
 
-    // El interceptor ya avisa de los fallos de conexión y de los errores 5xx
-    if (apiError.status >= 400 && apiError.status < 500) {
-      // STOCK_INSUFICIENTE trae campo = referencia, que no es un control: va al mensaje general
-      const resto = aplicarErroresServidor(this.form, apiError);
+    // STOCK_INSUFICIENTE trae campo = referencia, que no es un control: va al mensaje general
+    const resto = aplicarErroresServidor(this.form, apiError);
 
-      if (resto.length > 0 || apiError.detalles.length === 0) {
-        this.errorGeneral.set([apiError.mensaje, ...resto.map((d) => d.mensaje)].join(' · '));
-      }
+    // También los 5xx y los fallos de conexión: el toast del interceptor queda tapado por el modal
+    if (resto.length > 0 || apiError.detalles.length === 0) {
+      this.errorGeneral.set([apiError.mensaje, ...resto.map((d) => d.mensaje)].join(' · '));
     }
 
     // La llamada llega desde fuera de la plantilla: sin esto, OnPush no pintaría las clases de error

@@ -91,19 +91,16 @@ export class PiezaDialogComponent {
   // Lo llama la pantalla que hace la petición, con el error que le devuelva el servidor
   mostrarErrorServidor(error: unknown): void {
     const apiError = aApiError(error);
+    const resto = aplicarErroresServidor(this.form, apiError);
 
-    // El interceptor ya avisa de los fallos de conexión y de los errores 5xx
-    if (apiError.status >= 400 && apiError.status < 500) {
-      const resto = aplicarErroresServidor(this.form, apiError);
-
-      // En el catálogo, el único conflicto al guardar es una referencia repetida
-      if (apiError.codigo === 'CONFLICTO' && apiError.detalles.length === 0) {
-        const { referencia } = this.form.controls;
-        referencia.setErrors({ servidor: apiError.mensaje });
-        referencia.markAsTouched();
-      } else if (resto.length > 0 || apiError.detalles.length === 0) {
-        this.errorGeneral.set([apiError.mensaje, ...resto.map((d) => d.mensaje)].join(' · '));
-      }
+    // En el catálogo, el único conflicto al guardar es una referencia repetida
+    if (apiError.codigo === 'CONFLICTO' && apiError.detalles.length === 0) {
+      const { referencia } = this.form.controls;
+      referencia.setErrors({ servidor: apiError.mensaje });
+      referencia.markAsTouched();
+    } else if (resto.length > 0 || apiError.detalles.length === 0) {
+      // También los 5xx y los fallos de conexión: el toast del interceptor queda tapado por el modal
+      this.errorGeneral.set([apiError.mensaje, ...resto.map((d) => d.mensaje)].join(' · '));
     }
 
     // La llamada llega desde fuera de la plantilla: sin esto, OnPush no pintaría las clases de error

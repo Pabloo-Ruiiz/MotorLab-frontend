@@ -19,6 +19,19 @@ $texto-tenue: rgb(255 255 255 / 75%);
   color: var(--mo-blanco);
 }
 
+// Fuera de la pantalla hasta que recibe el foco; sigue siendo el primer elemento con Tab
+.saltar {
+  position: absolute;
+  top: var(--mo-esp-8);
+  left: var(--mo-esp-8);
+  z-index: 20;
+  transform: translateY(-200%);
+
+  &:focus {
+    transform: none;
+  }
+}
+
 .lateral__barra {
   display: flex;
   align-items: center;

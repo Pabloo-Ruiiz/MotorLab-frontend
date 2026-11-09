@@ -101,7 +101,8 @@
   outline-offset: 2px;
 }
 
-.interruptor__control:disabled + .interruptor__pista {
+.interruptor__control:disabled + .interruptor__pista,
+.interruptor__control[aria-disabled='true'] + .interruptor__pista {
   opacity: 0.5;
 }
 

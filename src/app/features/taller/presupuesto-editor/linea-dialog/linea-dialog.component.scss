@@ -53,6 +53,13 @@
   &:focus-visible {
     background-color: var(--mo-naranja-claro);
   }
+
+  // Hacia dentro: la lista desplazable recortaría el contorno. El oscuro contrasta con el fondo
+  &:focus-visible {
+    outline-color: var(--mo-naranja-oscuro);
+    outline-offset: -3px;
+    box-shadow: none;
+  }
 }
 
 .elegida {

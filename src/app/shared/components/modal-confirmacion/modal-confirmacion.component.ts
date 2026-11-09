@@ -9,6 +9,8 @@ import {
   viewChild
 } from '@angular/core';
 
+import { recuperarFoco } from '@core/util/foco';
+
 let siguienteId = 1;
 
 @Component({
@@ -42,6 +44,8 @@ export class ModalConfirmacionComponent {
         dialogo.showModal();
       } else if (!this.abierto() && dialogo.open) {
         dialogo.close();
+        // Al confirmar, el botón que abrió el diálogo puede estar ya deshabilitado
+        recuperarFoco();
       }
     });
   }

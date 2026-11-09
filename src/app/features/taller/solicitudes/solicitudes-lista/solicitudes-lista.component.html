@@ -82,14 +82,17 @@
           </thead>
           <tbody>
             @for (orden of resultado.datos; track orden.ordenId) {
-              <tr
-                class="fila"
-                tabindex="0"
-                [class.fila--alta]="orden.urgencia === 'alta'"
-                (click)="abrir(orden)"
-                (keydown.enter)="abrir(orden)"
-              >
-                <td class="fila__numero">#{{ orden.ordenId }}</td>
+              <!-- El clic en la fila es una ayuda para el ratón; el teclado y los lectores usan el enlace -->
+              <tr class="fila" [class.fila--alta]="orden.urgencia === 'alta'" (click)="abrir(orden)">
+                <td class="fila__numero">
+                  <a
+                    class="fila__enlace"
+                    [routerLink]="['/taller/ordenes', orden.ordenId]"
+                    (click)="$event.stopPropagation()"
+                  >
+                    #{{ orden.ordenId }}
+                  </a>
+                </td>
                 <td>{{ orden.clienteNombre }}</td>
                 <td>
                   {{ orden.marca }} {{ orden.modelo }} · {{ matriculaLegible(orden.matricula) }}

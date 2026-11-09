@@ -28,8 +28,9 @@
         autocomplete="name"
         formControlName="nombre"
         [attr.aria-invalid]="campoConError(form.controls.nombre)"
+        aria-describedby="registro-nombre-error"
       />
-      <app-errores-campo [control]="form.controls.nombre" />
+      <app-errores-campo id="registro-nombre-error" [control]="form.controls.nombre" />
     </div>
 
     <div class="campo" [class.campo--error]="campoConError(form.controls.email)">
@@ -40,8 +41,9 @@
         autocomplete="email"
         formControlName="email"
         [attr.aria-invalid]="campoConError(form.controls.email)"
+        aria-describedby="registro-email-error"
       />
-      <app-errores-campo [control]="form.controls.email" />
+      <app-errores-campo id="registro-email-error" [control]="form.controls.email" />
     </div>
 
     <div class="campo" [class.campo--error]="campoConError(form.controls.telefono)">
@@ -52,8 +54,9 @@
         autocomplete="tel"
         formControlName="telefono"
         [attr.aria-invalid]="campoConError(form.controls.telefono)"
+        aria-describedby="registro-telefono-error"
       />
-      <app-errores-campo [control]="form.controls.telefono" />
+      <app-errores-campo id="registro-telefono-error" [control]="form.controls.telefono" />
     </div>
 
     <div class="campo" [class.campo--error]="campoConError(form.controls.password)">
@@ -64,8 +67,9 @@
         autocomplete="new-password"
         formControlName="password"
         [attr.aria-invalid]="campoConError(form.controls.password)"
+        aria-describedby="registro-password-error"
       />
-      <app-errores-campo [control]="form.controls.password" />
+      <app-errores-campo id="registro-password-error" [control]="form.controls.password" />
     </div>
 
     <div class="campo">
@@ -73,11 +77,12 @@
         <input
           type="checkbox"
           formControlName="aceptaPrivacidad"
+          aria-describedby="registro-privacidad-error"
           [attr.aria-invalid]="campoConError(form.controls.aceptaPrivacidad)"
         />
         <span>Acepto la política de privacidad del taller</span>
       </label>
-      <app-errores-campo [control]="form.controls.aceptaPrivacidad" />
+      <app-errores-campo id="registro-privacidad-error" [control]="form.controls.aceptaPrivacidad" />
     </div>
 
     <button type="submit" class="btn btn--primario" [disabled]="enviando()">

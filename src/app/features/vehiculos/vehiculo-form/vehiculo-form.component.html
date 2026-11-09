@@ -19,8 +19,13 @@
           formControlName="matricula"
           [readOnly]="esEdicion"
           [attr.aria-invalid]="campoConError(form.controls.matricula)"
+          aria-describedby="vehiculo-matricula-error"
         />
-        <app-errores-campo [control]="form.controls.matricula" [mensajes]="mensajesMatricula" />
+        <app-errores-campo
+          id="vehiculo-matricula-error"
+          [control]="form.controls.matricula"
+          [mensajes]="mensajesMatricula"
+        />
       </div>
 
       <div class="campo" [class.campo--error]="campoConError(form.controls.marca)">
@@ -31,8 +36,9 @@
           autocomplete="off"
           formControlName="marca"
           [attr.aria-invalid]="campoConError(form.controls.marca)"
+          aria-describedby="vehiculo-marca-error"
         />
-        <app-errores-campo [control]="form.controls.marca" />
+        <app-errores-campo id="vehiculo-marca-error" [control]="form.controls.marca" />
       </div>
 
       <div class="campo" [class.campo--error]="campoConError(form.controls.modelo)">
@@ -43,8 +49,9 @@
           autocomplete="off"
           formControlName="modelo"
           [attr.aria-invalid]="campoConError(form.controls.modelo)"
+          aria-describedby="vehiculo-modelo-error"
         />
-        <app-errores-campo [control]="form.controls.modelo" />
+        <app-errores-campo id="vehiculo-modelo-error" [control]="form.controls.modelo" />
       </div>
 
       <div class="campo" [class.campo--error]="campoConError(form.controls.version)">
@@ -55,8 +62,9 @@
           autocomplete="off"
           formControlName="version"
           [attr.aria-invalid]="campoConError(form.controls.version)"
+          aria-describedby="vehiculo-version-error"
         />
-        <app-errores-campo [control]="form.controls.version" />
+        <app-errores-campo id="vehiculo-version-error" [control]="form.controls.version" />
       </div>
 
       <div class="formulario__fila">
@@ -68,8 +76,13 @@
             inputmode="numeric"
             formControlName="anio"
             [attr.aria-invalid]="campoConError(form.controls.anio)"
+            aria-describedby="vehiculo-anio-error"
           />
-          <app-errores-campo [control]="form.controls.anio" [mensajes]="mensajesEntero" />
+          <app-errores-campo
+            id="vehiculo-anio-error"
+            [control]="form.controls.anio"
+            [mensajes]="mensajesEntero"
+          />
         </div>
 
         <div class="campo" [class.campo--error]="campoConError(form.controls.kilometros)">
@@ -80,8 +93,13 @@
             inputmode="numeric"
             formControlName="kilometros"
             [attr.aria-invalid]="campoConError(form.controls.kilometros)"
+            aria-describedby="vehiculo-kilometros-error"
           />
-          <app-errores-campo [control]="form.controls.kilometros" [mensajes]="mensajesEntero" />
+          <app-errores-campo
+            id="vehiculo-kilometros-error"
+            [control]="form.controls.kilometros"
+            [mensajes]="mensajesEntero"
+          />
         </div>
       </div>
 

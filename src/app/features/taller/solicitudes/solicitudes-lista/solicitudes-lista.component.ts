@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import {
   catchError,
   combineLatest,
@@ -30,6 +30,7 @@ import {
 import { OrdenesService } from '@core/services/ordenes.service';
 import { UsuariosService } from '@core/services/usuarios.service';
 import { mensajeDeError } from '@core/util/api-error';
+import { FocoTrasCarga } from '@core/util/foco';
 import { matriculaLegible } from '@core/util/matricula';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
@@ -83,6 +84,7 @@ function leerFiltros(params: ParamMap): FiltrosUrl {
     PillEstadoComponent,
     PillUrgenciaComponent,
     ReactiveFormsModule,
+    RouterLink,
     VacioComponent
   ],
   templateUrl: './solicitudes-lista.component.html',
@@ -94,6 +96,7 @@ export class SolicitudesListaComponent {
   private readonly usuarios = inject(UsuariosService);
   private readonly router = inject(Router);
   private readonly ruta = inject(ActivatedRoute);
+  private readonly foco = new FocoTrasCarga();
 
   private readonly reintentos = new Subject<void>();
 
@@ -169,10 +172,12 @@ export class SolicitudesListaComponent {
   }
 
   protected cambiarPagina(pagina: number): void {
+    this.foco.marcar();
     this.navegar({ ...this.filtros(), pagina });
   }
 
   protected reintentar(): void {
+    this.foco.marcar();
     this.cargarNuevas();
     this.reintentos.next();
   }
@@ -252,6 +257,7 @@ export class SolicitudesListaComponent {
     if (resultado !== null) {
       this.resultado.set(resultado);
     }
+    this.foco.restaurar();
   }
 
   // Es independiente de los filtros de la tabla: basta el total de una consulta de un elemento

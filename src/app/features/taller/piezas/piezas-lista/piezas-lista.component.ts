@@ -29,6 +29,7 @@ import { AuthService } from '@core/services/auth.service';
 import { PiezasService } from '@core/services/piezas.service';
 import { ToastService } from '@core/services/toast.service';
 import { aApiError, mensajeDeError } from '@core/util/api-error';
+import { FocoTrasCarga } from '@core/util/foco';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacion/modal-confirmacion.component';
 import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
@@ -82,6 +83,7 @@ export class PiezasListaComponent {
   private readonly router = inject(Router);
   private readonly ruta = inject(ActivatedRoute);
   private readonly rol = inject(AuthService).rol;
+  private readonly foco = new FocoTrasCarga();
 
   private readonly recargas = new Subject<void>();
   private readonly dialogoPieza = viewChild.required(PiezaDialogComponent);
@@ -161,13 +163,14 @@ export class PiezasListaComponent {
   }
 
   protected cambiarPagina(pagina: number): void {
+    this.foco.marcar();
     this.navegar({ ...this.filtros(), pagina });
   }
 
   protected reintentar(): void {
     this.cargando.set(true);
     this.errorCarga.set(null);
-    this.recargas.next();
+    this.recargar();
   }
 
   protected nuevaPieza(): void {
@@ -190,7 +193,7 @@ export class PiezasListaComponent {
       next: () => {
         this.dialogoPiezaAbierto.set(false);
         this.toast.exito(pieza === null ? 'Pieza creada' : 'Pieza actualizada');
-        this.recargas.next();
+        this.recargar();
       },
       error: (error: unknown) => this.dialogoPieza().mostrarErrorServidor(error)
     });
@@ -210,7 +213,7 @@ export class PiezasListaComponent {
         next: () => {
           this.piezaStock.set(null);
           this.toast.exito('Stock actualizado');
-          this.recargas.next();
+          this.recargar();
         },
         error: (error: unknown) => this.dialogoStock().mostrarErrorServidor(error)
       });
@@ -230,10 +233,16 @@ export class PiezasListaComponent {
       .subscribe({
         next: () => {
           this.toast.exito('Pieza dada de baja');
-          this.recargas.next();
+          this.recargar();
         },
         error: (error: unknown) => this.avisarErrorBaja(error)
       });
+  }
+
+  // Tras un cambio, la fila del botón con el foco puede dejar de cumplir los filtros
+  private recargar(): void {
+    this.foco.marcar();
+    this.recargas.next();
   }
 
   private avisarErrorBaja(error: unknown): void {
@@ -305,5 +314,6 @@ export class PiezasListaComponent {
     if (resultado !== null) {
       this.resultado.set(resultado);
     }
+    this.foco.restaurar();
   }
 }

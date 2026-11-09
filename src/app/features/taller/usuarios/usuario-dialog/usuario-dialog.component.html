@@ -14,8 +14,9 @@
         autocomplete="off"
         formControlName="nombre"
         [attr.aria-invalid]="campoConError(form.controls.nombre)"
+        aria-describedby="usuario-nombre-error"
       />
-      <app-errores-campo [control]="form.controls.nombre" />
+      <app-errores-campo id="usuario-nombre-error" [control]="form.controls.nombre" />
     </div>
 
     <div class="campo" [class.campo--error]="campoConError(form.controls.email)">
@@ -26,8 +27,9 @@
         autocomplete="off"
         formControlName="email"
         [attr.aria-invalid]="campoConError(form.controls.email)"
+        aria-describedby="usuario-email-error"
       />
-      <app-errores-campo [control]="form.controls.email" />
+      <app-errores-campo id="usuario-email-error" [control]="form.controls.email" />
     </div>
 
     <div class="campo" [class.campo--error]="campoConError(form.controls.telefono)">
@@ -38,8 +40,9 @@
         autocomplete="off"
         formControlName="telefono"
         [attr.aria-invalid]="campoConError(form.controls.telefono)"
+        aria-describedby="usuario-telefono-error"
       />
-      <app-errores-campo [control]="form.controls.telefono" />
+      <app-errores-campo id="usuario-telefono-error" [control]="form.controls.telefono" />
     </div>
 
     <div class="campo" [class.campo--error]="campoConError(form.controls.password)">
@@ -50,8 +53,9 @@
         autocomplete="new-password"
         formControlName="password"
         [attr.aria-invalid]="campoConError(form.controls.password)"
+        aria-describedby="usuario-password-error"
       />
-      <app-errores-campo [control]="form.controls.password" />
+      <app-errores-campo id="usuario-password-error" [control]="form.controls.password" />
     </div>
 
     <div class="campo" [class.campo--error]="campoConError(form.controls.rol)">
@@ -60,13 +64,14 @@
         id="usuario-rol"
         formControlName="rol"
         [attr.aria-invalid]="campoConError(form.controls.rol)"
+        aria-describedby="usuario-rol-error"
       >
         <option value="">Elige un rol</option>
         @for (opcion of opcionesRol; track opcion.valor) {
           <option [value]="opcion.valor">{{ opcion.texto }}</option>
         }
       </select>
-      <app-errores-campo [control]="form.controls.rol" />
+      <app-errores-campo id="usuario-rol-error" [control]="form.controls.rol" />
     </div>
 
     <div class="dialogo__acciones">

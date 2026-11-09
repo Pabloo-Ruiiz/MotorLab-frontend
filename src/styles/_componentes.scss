@@ -22,8 +22,10 @@
   }
 }
 
+// El borde doble y la negrita distinguen la opción elegida también sin percibir el color
 @mixin opcion-activa {
   border-color: var(--mo-naranja);
+  box-shadow: inset 0 0 0 1px var(--mo-naranja);
   background-color: var(--mo-naranja-claro);
   color: var(--mo-naranja-oscuro);
   font-weight: 700;

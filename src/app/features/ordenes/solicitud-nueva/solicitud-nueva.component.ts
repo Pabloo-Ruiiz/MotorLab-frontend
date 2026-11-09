@@ -1,12 +1,16 @@
 import { formatDate, NgTemplateOutlet } from '@angular/common';
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
+  ElementRef,
   inject,
+  Injector,
   LOCALE_ID,
-  signal
+  signal,
+  viewChild
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -107,7 +111,9 @@ export class SolicitudNuevaComponent {
   private readonly vehiculosService = inject(VehiculosService);
   private readonly ordenes = inject(OrdenesService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
   private readonly locale = inject(LOCALE_ID);
+  private readonly indicadorPaso = viewChild<ElementRef<HTMLElement>>('indicadorPaso');
   private readonly vehiculoPedido = Number(
     inject(ActivatedRoute).snapshot.queryParamMap.get('vehiculo')
   );
@@ -229,7 +235,7 @@ export class SolicitudNuevaComponent {
     const paso = this.paso();
     if (paso > 1) {
       this.errorGeneral.set(null);
-      this.paso.set((paso - 1) as Paso);
+      this.irAPaso((paso - 1) as Paso);
     }
   }
 
@@ -251,7 +257,16 @@ export class SolicitudNuevaComponent {
       return;
     }
 
-    this.paso.set((paso + 1) as Paso);
+    this.irAPaso((paso + 1) as Paso);
+  }
+
+  // El foco va al indicador y no a un campo, para no abrir el teclado del móvil: así el
+  // siguiente Tab entra en el primer control del paso y se anuncia en qué paso se está
+  private irAPaso(paso: Paso): void {
+    this.paso.set(paso);
+    afterNextRender(() => this.indicadorPaso()?.nativeElement.focus(), {
+      injector: this.injector
+    });
   }
 
   private enviar(): void {
@@ -301,7 +316,7 @@ export class SolicitudNuevaComponent {
   private volverAlPrimerPasoCon(condicion: (campo: Campo) => boolean): void {
     const paso = PASOS_CON_CAMPOS.find((candidato) => CAMPOS_POR_PASO[candidato].some(condicion));
     if (paso !== undefined) {
-      this.paso.set(paso);
+      this.irAPaso(paso);
     }
   }
 }

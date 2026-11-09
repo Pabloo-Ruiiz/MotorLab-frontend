@@ -128,7 +128,8 @@
       rows="3"
       [formControl]="motivo"
       [attr.aria-invalid]="motivo.invalid && (motivo.touched || motivo.dirty)"
+      aria-describedby="presupuesto-motivo-error"
     ></textarea>
-    <app-errores-campo [control]="motivo" />
+    <app-errores-campo id="presupuesto-motivo-error" [control]="motivo" />
   </div>
 </app-modal-confirmacion>

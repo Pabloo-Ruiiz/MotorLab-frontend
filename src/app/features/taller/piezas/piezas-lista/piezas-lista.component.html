@@ -44,7 +44,13 @@
     @if (resultado.datos.length === 0) {
       <app-vacio [titulo]="tituloVacio()" />
     } @else {
-      <div class="tabla-contenedor">
+      <!-- Sin controles dentro, el teclado necesita poder enfocar la zona para desplazarla -->
+      <div
+        class="tabla-contenedor"
+        role="region"
+        aria-label="Catálogo de piezas"
+        [attr.tabindex]="esAdmin() ? null : 0"
+      >
         <table class="tabla">
           <caption class="sr-only">
             Catálogo de piezas
@@ -67,7 +73,13 @@
                 <td class="referencia">{{ pieza.referencia }}</td>
                 <td>{{ pieza.nombre }}</td>
                 <td class="numero">{{ pieza.precio | euros }}</td>
-                <td class="numero stock" [class.stock--bajo]="pieza.stockBajo">{{ pieza.stock }}</td>
+                <td class="numero stock" [class.stock--bajo]="pieza.stockBajo">
+                  {{ pieza.stock }}
+                  <!-- La pill de una pieza inactiva no indica el stock bajo: el rojo no basta -->
+                  @if (!pieza.activa && pieza.stockBajo) {
+                    <span class="stock__nota">(bajo)</span>
+                  }
+                </td>
                 <td>
                   @if (!pieza.activa) {
                     <span class="pill pill--gris">Inactiva</span>

@@ -36,6 +36,7 @@ import { OrdenesService } from '@core/services/ordenes.service';
 import { PresupuestosService } from '@core/services/presupuestos.service';
 import { ToastService } from '@core/services/toast.service';
 import { aApiError } from '@core/util/api-error';
+import { FocoTrasCarga } from '@core/util/foco';
 import {
   aplicarErroresServidor,
   campoConError,
@@ -82,6 +83,7 @@ export class PresupuestoEditorComponent {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly ordenId = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
+  private readonly foco = new FocoTrasCarga();
 
   private readonly recarga = new Subject<void>();
   private readonly dialogo = viewChild.required(LineaDialogComponent);
@@ -149,6 +151,7 @@ export class PresupuestoEditorComponent {
           this.errorCarga.set(null);
           this.rellenarResumen(datos.presupuesto);
         }
+        this.foco.restaurar();
       });
   }
 
@@ -209,6 +212,8 @@ export class PresupuestoEditorComponent {
   protected eliminarLinea(linea: Linea): void {
     const presupuesto = this.presupuesto();
     if (presupuesto !== null) {
+      // El botón pulsado se deshabilita y, al recargar, desaparece con su línea
+      this.foco.marcar();
       this.ejecutar(this.presupuestos.eliminarLinea(presupuesto.id, linea.id));
     }
   }
@@ -341,6 +346,7 @@ export class PresupuestoEditorComponent {
       this.recarga.next();
     } else {
       this.procesando.set(false);
+      this.foco.restaurar();
     }
   }
 }
