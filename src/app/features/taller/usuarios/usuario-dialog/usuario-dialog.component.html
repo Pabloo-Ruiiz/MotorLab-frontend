@@ -1,0 +1,77 @@
+<dialog #dialogo class="dialogo" aria-labelledby="usuario-titulo" (close)="alCerrar()">
+  <h2 class="dialogo__titulo" id="usuario-titulo">Nuevo usuario</h2>
+
+  <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    @if (errorGeneral(); as error) {
+      <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    }
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.nombre)">
+      <label for="usuario-nombre">Nombre</label>
+      <input
+        id="usuario-nombre"
+        type="text"
+        autocomplete="off"
+        formControlName="nombre"
+        [attr.aria-invalid]="campoConError(form.controls.nombre)"
+      />
+      <app-errores-campo [control]="form.controls.nombre" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.email)">
+      <label for="usuario-email">Correo electrónico</label>
+      <input
+        id="usuario-email"
+        type="email"
+        autocomplete="off"
+        formControlName="email"
+        [attr.aria-invalid]="campoConError(form.controls.email)"
+      />
+      <app-errores-campo [control]="form.controls.email" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.telefono)">
+      <label for="usuario-telefono">Teléfono</label>
+      <input
+        id="usuario-telefono"
+        type="tel"
+        autocomplete="off"
+        formControlName="telefono"
+        [attr.aria-invalid]="campoConError(form.controls.telefono)"
+      />
+      <app-errores-campo [control]="form.controls.telefono" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.password)">
+      <label for="usuario-password">Contraseña</label>
+      <input
+        id="usuario-password"
+        type="password"
+        autocomplete="new-password"
+        formControlName="password"
+        [attr.aria-invalid]="campoConError(form.controls.password)"
+      />
+      <app-errores-campo [control]="form.controls.password" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.rol)">
+      <label for="usuario-rol">Rol</label>
+      <select
+        id="usuario-rol"
+        formControlName="rol"
+        [attr.aria-invalid]="campoConError(form.controls.rol)"
+      >
+        <option value="">Elige un rol</option>
+        @for (opcion of opcionesRol; track opcion.valor) {
+          <option [value]="opcion.valor">{{ opcion.texto }}</option>
+        }
+      </select>
+      <app-errores-campo [control]="form.controls.rol" />
+    </div>
+
+    <div class="dialogo__acciones">
+      <button type="button" class="btn btn--secundario" (click)="cancelar.emit()">Cancelar</button>
+      <button type="submit" class="btn btn--primario" [disabled]="guardando()">Crear usuario</button>
+    </div>
+  </form>
+</dialog>

@@ -1,0 +1,114 @@
+<main class="usuarios">
+  <header class="encabezado">
+    <div>
+      <h1>Usuarios</h1>
+      <p class="encabezado__texto">Clientes y personal del taller</p>
+    </div>
+    <button type="button" class="btn btn--primario" (click)="dialogoAbierto.set(true)">
+      + Nuevo usuario
+    </button>
+  </header>
+
+  <div class="filtros" role="search" aria-label="Filtrar usuarios">
+    <div class="campo">
+      <label class="sr-only" for="usuarios-rol">Rol</label>
+      <select id="usuarios-rol" [formControl]="filtroRol">
+        <option value="">Rol: Todos</option>
+        @for (opcion of opcionesRol; track opcion.valor) {
+          <option [value]="opcion.valor">{{ opcion.texto }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario reintentar" (click)="reintentar()">
+      Reintentar
+    </button>
+  } @else if (resultado(); as resultado) {
+    @if (resultado.datos.length === 0) {
+      <app-vacio [titulo]="tituloVacio()" />
+    } @else {
+      <div class="tabla-contenedor">
+        <table class="tabla">
+          <caption class="sr-only">
+            Usuarios
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Nombre</th>
+              <th scope="col">Correo</th>
+              <th scope="col">Teléfono</th>
+              <th scope="col">Rol</th>
+              <th scope="col">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (usuario of resultado.datos; track usuario.id) {
+              <tr>
+                <td>{{ usuario.nombre }}</td>
+                <td>{{ usuario.email }}</td>
+                <td class="sin-salto">{{ usuario.telefono }}</td>
+                <td>
+                  <span class="pill" [class]="clasesRol[usuario.rol]">
+                    {{ etiquetasRol[usuario.rol] }}
+                  </span>
+                </td>
+                <td>
+                  <div class="estado">
+                    <label class="interruptor">
+                      <input
+                        #casilla
+                        class="interruptor__control"
+                        type="checkbox"
+                        role="switch"
+                        [attr.aria-label]="'Cuenta activa de ' + usuario.nombre"
+                        [attr.aria-describedby]="
+                          esPropio(usuario) ? 'usuarios-propio-' + usuario.id : null
+                        "
+                        [checked]="usuario.activo"
+                        [disabled]="esPropio(usuario) || actualizando().includes(usuario.id)"
+                        (change)="cambiarActivo(usuario, casilla)"
+                      />
+                      <span class="interruptor__pista" aria-hidden="true"></span>
+                    </label>
+                    <span>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</span>
+                  </div>
+                  @if (esPropio(usuario)) {
+                    <p class="nota" [id]="'usuarios-propio-' + usuario.id">
+                      No puedes desactivar tu propia cuenta
+                    </p>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pie">
+        <p class="pie__texto">
+          Mostrando {{ resultado.datos.length }} de {{ resultado.total }}
+          {{ resultado.total === 1 ? 'usuario' : 'usuarios' }}
+        </p>
+        <app-paginador
+          [pagina]="resultado.pagina"
+          [totalPaginas]="resultado.totalPaginas"
+          [total]="resultado.total"
+          (cambiarPagina)="cambiarPagina($event)"
+        />
+      </div>
+    }
+  }
+</main>
+
+<!-- Fuera de los bloques @if: una recarga no debe destruir el diálogo abierto -->
+<app-usuario-dialog
+  [abierto]="dialogoAbierto()"
+  [guardando]="guardando()"
+  (guardar)="guardar($event)"
+  (cancelar)="dialogoAbierto.set(false)"
+/>
