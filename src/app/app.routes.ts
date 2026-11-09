@@ -157,7 +157,13 @@ export const routes: Routes = [
             (m) => m.PresupuestoEditorComponent,
           ),
       },
-      { path: 'piezas', loadComponent: pendiente },
+      {
+        path: 'piezas',
+        loadComponent: () =>
+          import('@features/taller/piezas/piezas-lista/piezas-lista.component').then(
+            (m) => m.PiezasListaComponent,
+          ),
+      },
       { path: 'avisos', loadComponent: avisos },
       { path: 'usuarios', canActivate: [soloAdmin], loadComponent: pendiente },
       { path: 'panel', canActivate: [soloAdmin], loadComponent: pendiente },

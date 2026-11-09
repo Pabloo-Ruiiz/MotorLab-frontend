@@ -1,0 +1,37 @@
+// Estilos comunes de PiezaDialogComponent y StockDialogComponent
+.dialogo {
+  width: min(480px, calc(100% - var(--mo-esp-32)));
+  padding: var(--mo-esp-24);
+  border: 0;
+  border-radius: var(--mo-radio-12);
+  background-color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-media);
+  color: var(--mo-texto);
+
+  &::backdrop {
+    background-color: rgb(27 28 43 / 50%);
+  }
+}
+
+.dialogo__titulo {
+  margin-bottom: var(--mo-esp-16);
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+}
+
+.nota {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.dialogo__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--mo-esp-8);
+  margin-top: var(--mo-esp-4);
+}

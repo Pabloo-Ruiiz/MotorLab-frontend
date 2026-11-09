@@ -1,0 +1,96 @@
+:host {
+  display: block;
+}
+
+.piezas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mo-esp-16);
+}
+
+.encabezado__texto {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-12) var(--mo-esp-16);
+}
+
+.filtros__busqueda {
+  flex: 1 1 260px;
+}
+
+.casilla {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  min-height: var(--mo-tactil);
+  font-size: var(--mo-tipo-14);
+  cursor: pointer;
+}
+
+.reintentar {
+  align-self: flex-start;
+}
+
+// En pantallas estrechas la tabla se desplaza dentro de su contenedor, no toda la página
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+.fila--stock-bajo {
+  background-color: color-mix(in srgb, var(--mo-naranja-claro) 40%, transparent);
+}
+
+.referencia {
+  color: var(--mo-gris-oscuro);
+  white-space: nowrap;
+}
+
+.numero {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.stock {
+  font-weight: 700;
+}
+
+.stock--bajo {
+  color: var(--mo-rojo-oscuro);
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--mo-esp-8);
+}
+
+.accion {
+  font-size: var(--mo-tipo-14);
+  white-space: nowrap;
+}
+
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+}
+
+.pie__texto {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}

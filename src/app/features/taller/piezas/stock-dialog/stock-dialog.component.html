@@ -1,0 +1,43 @@
+<dialog #dialogo class="dialogo" aria-labelledby="stock-titulo" (close)="alCerrar()">
+  <h2 class="dialogo__titulo" id="stock-titulo">Registrar entrada</h2>
+
+  <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+    @if (pieza(); as pieza) {
+      <p class="nota">{{ pieza.referencia }} · {{ pieza.nombre }} · Stock actual: {{ pieza.stock }}</p>
+    }
+
+    @if (errorGeneral(); as error) {
+      <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    }
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.delta)">
+      <label for="stock-delta">Cantidad</label>
+      <input
+        id="stock-delta"
+        type="number"
+        step="1"
+        aria-describedby="stock-delta-ayuda"
+        formControlName="delta"
+      />
+      <p class="nota" id="stock-delta-ayuda">Positiva para entradas, negativa para retirar stock.</p>
+      <app-errores-campo [control]="form.controls.delta" [mensajes]="mensajesDelta" />
+    </div>
+
+    <div class="campo" [class.campo--error]="campoConError(form.controls.motivo)">
+      <label for="stock-motivo">Motivo (opcional)</label>
+      <input
+        id="stock-motivo"
+        type="text"
+        autocomplete="off"
+        [attr.maxlength]="maxMotivo"
+        formControlName="motivo"
+      />
+      <app-errores-campo [control]="form.controls.motivo" />
+    </div>
+
+    <div class="dialogo__acciones">
+      <button type="button" class="btn btn--secundario" (click)="cancelar.emit()">Cancelar</button>
+      <button type="submit" class="btn btn--primario" [disabled]="guardando()">Guardar</button>
+    </div>
+  </form>
+</dialog>
