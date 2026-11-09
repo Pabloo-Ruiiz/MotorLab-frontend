@@ -165,7 +165,14 @@ export const routes: Routes = [
           ),
       },
       { path: 'avisos', loadComponent: avisos },
-      { path: 'usuarios', canActivate: [soloAdmin], loadComponent: pendiente },
+      {
+        path: 'usuarios',
+        canActivate: [soloAdmin],
+        loadComponent: () =>
+          import('@features/taller/usuarios/usuarios-lista/usuarios-lista.component').then(
+            (m) => m.UsuariosListaComponent,
+          ),
+      },
       { path: 'panel', canActivate: [soloAdmin], loadComponent: pendiente },
       {
         path: 'mis-ordenes',

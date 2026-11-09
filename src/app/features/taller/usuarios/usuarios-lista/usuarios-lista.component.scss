@@ -1,0 +1,114 @@
+:host {
+  display: block;
+}
+
+.usuarios {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mo-esp-16);
+}
+
+.encabezado__texto,
+.pie__texto,
+.nota {
+  color: var(--mo-gris-oscuro);
+  font-size: var(--mo-tipo-14);
+}
+
+.filtros .campo {
+  max-width: 260px;
+}
+
+.reintentar {
+  align-self: flex-start;
+}
+
+// En pantallas estrechas la tabla se desplaza dentro de su contenedor, no toda la página
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+.sin-salto {
+  white-space: nowrap;
+}
+
+.estado {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+}
+
+// La casilla real ocupa toda el área y es invisible: conserva el teclado y la accesibilidad
+.interruptor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--mo-tactil);
+  cursor: pointer;
+
+  &:has(:disabled) {
+    cursor: not-allowed;
+  }
+}
+
+.interruptor__control {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.interruptor__pista {
+  position: relative;
+  display: block;
+  width: 44px;
+  height: 24px;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-gris);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--mo-blanco);
+  }
+}
+
+.interruptor__control:checked + .interruptor__pista {
+  background-color: var(--mo-verde-oscuro);
+
+  &::after {
+    left: 22px;
+  }
+}
+
+.interruptor__control:focus-visible + .interruptor__pista {
+  outline: 2px solid var(--mo-naranja);
+  outline-offset: 2px;
+}
+
+.interruptor__control:disabled + .interruptor__pista {
+  opacity: 0.5;
+}
+
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+}
