@@ -1,4 +1,12 @@
+<app-logo class="filigrana" />
+
 <main class="solicitud">
+  @if (!creada()) {
+    <p class="descripcion">
+      Solicita una revisión o reparación de tu vehículo de forma rápida y sencilla.
+    </p>
+  }
+
   @if (cargando()) {
     <app-cargando />
   } @else if (errorCarga(); as error) {
@@ -7,227 +15,394 @@
       Reintentar
     </button>
   } @else if (creada(); as orden) {
-    <section class="tarjeta exito" aria-labelledby="solicitud-enviada">
-      <h2 id="solicitud-enviada">Solicitud enviada</h2>
-      <p>{{ orden.mensaje }}</p>
-      <p class="exito__urgencia">
-        Urgencia asignada:
-        <app-pill-urgencia [urgencia]="orden.urgencia" />
-      </p>
-      <div class="exito__enlaces">
-        <a class="btn btn--primario" [routerLink]="['/cliente/ordenes', orden.id]">Ver la orden</a>
-        <a class="btn btn--secundario" routerLink="/cliente/ordenes">Ir a mis órdenes</a>
-      </div>
-    </section>
+    <app-solicitud-enviada
+      [orden]="orden"
+      [vehiculo]="vehiculoPorId(form.controls.vehiculoId.value)"
+      [tipoServicio]="form.controls.tipoServicio.value"
+    />
   } @else if (vehiculos().length === 0) {
     <app-vacio titulo="Aún no tienes vehículos" texto="Añade uno para poder pedir cita">
       <a class="btn btn--primario" routerLink="/cliente/vehiculos/nuevo">Añadir vehículo</a>
     </app-vacio>
   } @else {
-    <div class="progreso">
-      <div class="progreso__textos">
+    <div class="hoja" (keydown)="alPulsarTecla($event)">
+      <!-- Indicador de pasos -->
+      <div class="progreso">
         <p #indicadorPaso class="progreso__actual" tabindex="-1">{{ indicador() }}</p>
-        <p class="progreso__otros">{{ otrosPasos() }}</p>
+        <app-indicador-pasos [pasos]="pasos" [paso]="paso()" />
       </div>
-      <app-barra-progreso [progreso]="progreso()" etiqueta="Progreso de la solicitud" />
-    </div>
 
-    <form class="formulario" [formGroup]="form" (ngSubmit)="avanzar()">
-      @if (errorGeneral(); as error) {
-        <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
-      }
+      <form [formGroup]="form" (ngSubmit)="avanzar()">
+        <div class="formulario__cuerpo">
+          @if (errorGeneral(); as error) {
+            <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+          }
 
-      <!-- Se ocultan en vez de destruirse: al volver a enlazar un control, Angular lo revalida
+          <!-- Se ocultan en vez de destruirse: al volver a enlazar un control, Angular lo revalida
            y se perderían los errores del servidor antes de mostrarlos -->
-      <div class="paso" [hidden]="paso() !== 1">
-        <div class="campo" [class.campo--error]="campoConError(form.controls.vehiculoId)">
-          <label for="solicitud-vehiculo">Vehículo</label>
-          <select
-            id="solicitud-vehiculo"
-            formControlName="vehiculoId"
-            [attr.aria-invalid]="campoConError(form.controls.vehiculoId)"
-            aria-describedby="solicitud-vehiculo-error"
-          >
-            <option [ngValue]="null">Selecciona un vehículo</option>
-            @for (vehiculo of vehiculos(); track vehiculo.id) {
-              <option [ngValue]="vehiculo.id">{{ etiquetaVehiculo(vehiculo) }}</option>
-            }
-          </select>
-          <app-errores-campo id="solicitud-vehiculo-error" [control]="form.controls.vehiculoId" />
-        </div>
-      </div>
+          <div class="paso" [hidden]="paso() !== 1">
+            <ng-container
+              *ngTemplateOutlet="
+                cabecera;
+                context: {
+                  titulo: 'Tu vehículo',
+                  texto: 'Elige el vehículo que necesita atención.',
+                }
+              "
+            />
 
-      <div class="paso" [hidden]="paso() !== 2">
-        <div class="campo">
-          <span class="campo__etiqueta" id="solicitud-servicio">Tipo de servicio</span>
-          <div
-            class="chips"
-            role="group"
-            aria-labelledby="solicitud-servicio"
-            aria-describedby="solicitud-servicio-error"
-          >
-            @for (opcion of opcionesServicio; track opcion.valor) {
-              <button
-                type="button"
-                class="chip"
-                [attr.aria-pressed]="form.controls.tipoServicio.value === opcion.valor"
-                (click)="elegir(form.controls.tipoServicio, opcion.valor)"
-              >
-                {{ opcion.texto }}
-              </button>
+            <div class="campo" [class.campo--error]="campoConError(form.controls.vehiculoId)">
+              <label for="solicitud-vehiculo">Vehículo</label>
+              <div class="con-icono">
+                <app-icono-coche class="con-icono__icono" />
+                <select
+                  id="solicitud-vehiculo"
+                  formControlName="vehiculoId"
+                  [attr.aria-invalid]="campoConError(form.controls.vehiculoId)"
+                  aria-describedby="solicitud-vehiculo-error"
+                >
+                  <option [ngValue]="null">Selecciona un vehículo</option>
+                  @for (vehiculo of vehiculos(); track vehiculo.id) {
+                    <option [ngValue]="vehiculo.id">{{ etiquetaVehiculo(vehiculo) }}</option>
+                  }
+                </select>
+              </div>
+              <app-errores-campo
+                id="solicitud-vehiculo-error"
+                [control]="form.controls.vehiculoId"
+              />
+            </div>
+
+            @if (vehiculoPorId(form.controls.vehiculoId.value); as vehiculo) {
+              <app-ficha-vehiculo [vehiculo]="vehiculo" />
             }
           </div>
-          <app-errores-campo id="solicitud-servicio-error" [control]="form.controls.tipoServicio" />
-        </div>
 
-        <div class="campo" [class.campo--error]="campoConError(form.controls.sintoma)">
-          <label for="solicitud-sintoma">Describe el síntoma</label>
-          <textarea
-            id="solicitud-sintoma"
-            rows="3"
-            formControlName="sintoma"
-            aria-describedby="solicitud-contador solicitud-sintoma-error"
-            [attr.aria-invalid]="campoConError(form.controls.sintoma)"
-          ></textarea>
-          <p
-            id="solicitud-contador"
-            class="contador"
-            [class.contador--ok]="form.controls.sintoma.value.length >= 20"
-          >
-            {{ form.controls.sintoma.value.length }} caracteres · mínimo 20
-            @if (form.controls.sintoma.value.length >= 20) {
-              <svg class="icono-linea" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M5 12l5 5 9-10" />
-              </svg>
-            }
-          </p>
-          <app-errores-campo id="solicitud-sintoma-error" [control]="form.controls.sintoma" />
-        </div>
-
-        <div class="campo" [class.campo--error]="campoConError(form.controls.cuandoOcurre)">
-          <label for="solicitud-cuando">¿Cuándo ocurre? (opcional)</label>
-          <select
-            id="solicitud-cuando"
-            formControlName="cuandoOcurre"
-            [attr.aria-invalid]="campoConError(form.controls.cuandoOcurre)"
-            aria-describedby="solicitud-cuando-error"
-          >
-            <option [ngValue]="null">Sin indicar</option>
-            @for (opcion of opcionesCuando; track opcion.valor) {
-              <option [ngValue]="opcion.valor">{{ opcion.texto }}</option>
-            }
-          </select>
-          <app-errores-campo id="solicitud-cuando-error" [control]="form.controls.cuandoOcurre" />
-        </div>
-
-        <ng-container
-          [ngTemplateOutlet]="segmentado"
-          [ngTemplateOutletContext]="{
-            id: 'solicitud-conduccion',
-            etiqueta: '¿Se puede conducir con seguridad?',
-            control: form.controls.conduccionSegura,
-            opciones: opcionesConduccion
-          }"
-        />
-
-        <ng-container
-          [ngTemplateOutlet]="segmentado"
-          [ngTemplateOutletContext]="{
-            id: 'solicitud-urgencia',
-            etiqueta: 'Urgencia que percibes',
-            control: form.controls.urgencia,
-            opciones: opcionesUrgencia
-          }"
-        />
-
-        <div class="aviso aviso--ambar">
-          En frenos, o si no es seguro conducir, marcamos urgencia alta.
-        </div>
-      </div>
-
-      <div class="paso" [hidden]="paso() !== 3">
-        <div class="campo" [class.campo--error]="campoConError(form.controls.fechaPreferida)">
-          <label for="solicitud-fecha">Fecha preferida</label>
-          <input
-            id="solicitud-fecha"
-            type="date"
-            formControlName="fechaPreferida"
-            [min]="hoy"
-            [attr.aria-invalid]="campoConError(form.controls.fechaPreferida)"
-            aria-describedby="solicitud-fecha-error"
-          />
-          <app-errores-campo
-            id="solicitud-fecha-error"
-            [control]="form.controls.fechaPreferida"
-            [mensajes]="mensajesFecha"
-          />
-        </div>
-
-        <ng-container
-          [ngTemplateOutlet]="segmentado"
-          [ngTemplateOutletContext]="{
-            id: 'solicitud-franja',
-            etiqueta: 'Franja preferida',
-            control: form.controls.franjaPreferida,
-            opciones: opcionesFranja
-          }"
-        />
-
-        <ng-container
-          [ngTemplateOutlet]="segmentado"
-          [ngTemplateOutletContext]="{
-            id: 'solicitud-contacto',
-            etiqueta: 'Contacto preferido',
-            control: form.controls.contactoPreferido,
-            opciones: opcionesContacto
-          }"
-        />
-
-        <div class="campo">
-          <label class="casilla">
-            <input
-              type="checkbox"
-              formControlName="aceptaPrivacidad"
-              aria-describedby="solicitud-privacidad-error"
-              [attr.aria-invalid]="campoConError(form.controls.aceptaPrivacidad)"
+          <div class="paso" [hidden]="paso() !== 2">
+            <ng-container
+              *ngTemplateOutlet="
+                cabecera;
+                context: {
+                  icono: iconos.problema,
+                  titulo: 'Cuéntanos qué le pasa',
+                  texto: 'Cuanto más detalle nos des, mejor podremos preparar la visita.',
+                }
+              "
             />
-            <span>Acepto la política de privacidad del taller</span>
-          </label>
-          <app-errores-campo
-            id="solicitud-privacidad-error"
-            [control]="form.controls.aceptaPrivacidad"
-          />
-        </div>
-      </div>
 
-      @if (paso() === 4) {
-        <dl class="tarjeta resumen">
-          @for (fila of filasResumen(); track fila.etiqueta) {
-            <div class="resumen__fila">
-              <dt>{{ fila.etiqueta }}</dt>
-              <dd>{{ fila.valor }}</dd>
+            <div class="rejilla">
+              <div class="columna">
+                <div class="campo" [class.campo--error]="campoConError(form.controls.tipoServicio)">
+                  <label for="solicitud-servicio">Tipo de servicio</label>
+                  <div class="con-icono">
+                    <svg
+                      class="con-icono__icono"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path [attr.d]="iconosServicio[form.controls.tipoServicio.value ?? 'otro']" />
+                    </svg>
+                    <select
+                      id="solicitud-servicio"
+                      formControlName="tipoServicio"
+                      [attr.aria-invalid]="campoConError(form.controls.tipoServicio)"
+                      aria-describedby="solicitud-servicio-error"
+                    >
+                      <option [ngValue]="null">Selecciona un servicio</option>
+                      @for (opcion of opcionesServicio; track opcion.valor) {
+                        <option [ngValue]="opcion.valor">{{ opcion.texto }}</option>
+                      }
+                    </select>
+                  </div>
+                  <app-errores-campo
+                    id="solicitud-servicio-error"
+                    [control]="form.controls.tipoServicio"
+                  />
+                </div>
+
+                <div class="campo" [class.campo--error]="campoConError(form.controls.cuandoOcurre)">
+                  <label for="solicitud-cuando">
+                    ¿Cuándo ocurre? <span class="opcional">Opcional</span>
+                  </label>
+                  <select
+                    id="solicitud-cuando"
+                    formControlName="cuandoOcurre"
+                    [attr.aria-invalid]="campoConError(form.controls.cuandoOcurre)"
+                    aria-describedby="solicitud-cuando-error"
+                  >
+                    <option [ngValue]="null">Sin indicar</option>
+                    @for (opcion of opcionesCuando; track opcion.valor) {
+                      <option [ngValue]="opcion.valor">{{ opcion.texto }}</option>
+                    }
+                  </select>
+                  <app-errores-campo
+                    id="solicitud-cuando-error"
+                    [control]="form.controls.cuandoOcurre"
+                  />
+                </div>
+
+                <ng-container
+                  [ngTemplateOutlet]="segmentado"
+                  [ngTemplateOutletContext]="{
+                    id: 'solicitud-conduccion',
+                    etiqueta: '¿Se puede conducir con seguridad?',
+                    control: form.controls.conduccionSegura,
+                    opciones: opcionesConduccion,
+                  }"
+                />
+              </div>
+
+              <div class="columna">
+                <div class="urgencia">
+                  @if (form.controls.urgencia.value; as urgencia) {
+                    <app-pill-urgencia class="urgencia__insignia" [urgencia]="urgencia" />
+                  }
+                  <ng-container
+                    [ngTemplateOutlet]="segmentado"
+                    [ngTemplateOutletContext]="{
+                      id: 'solicitud-urgencia',
+                      etiqueta: 'Urgencia que percibes',
+                      control: form.controls.urgencia,
+                      opciones: opcionesUrgencia,
+                    }"
+                  />
+                  <div role="status">
+                    @if (motivoUrgencia(); as motivo) {
+                      <p class="urgencia__motivo">{{ motivo }}</p>
+                    }
+                  </div>
+                </div>
+
+                <div
+                  class="campo campo--crece"
+                  [class.campo--error]="campoConError(form.controls.sintoma)"
+                >
+                  <label for="solicitud-sintoma">Describe el síntoma</label>
+                  <div class="sintoma">
+                    <textarea
+                      id="solicitud-sintoma"
+                      rows="3"
+                      formControlName="sintoma"
+                      placeholder="Ej.: chirría al frenar desde hace una semana"
+                      aria-describedby="solicitud-contador solicitud-sintoma-error"
+                      [attr.aria-invalid]="campoConError(form.controls.sintoma)"
+                    ></textarea>
+                    <p
+                      id="solicitud-contador"
+                      class="contador"
+                      [class.contador--ok]="form.controls.sintoma.value.length >= 20"
+                    >
+                      {{ form.controls.sintoma.value.length }} / 20 mínimo
+                      @if (form.controls.sintoma.value.length >= 20) {
+                        <svg
+                          class="icono-linea"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          aria-hidden="true"
+                        >
+                          <path [attr.d]="iconos.hecho" />
+                        </svg>
+                      }
+                    </p>
+                  </div>
+                  <app-errores-campo
+                    id="solicitud-sintoma-error"
+                    [control]="form.controls.sintoma"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="paso" [hidden]="paso() !== 3">
+            <ng-container
+              *ngTemplateOutlet="
+                cabecera;
+                context: {
+                  icono: iconos.cita,
+                  titulo: 'Elige tu cita',
+                  texto: 'Indica cuándo te viene mejor y cómo prefieres que te contactemos.',
+                }
+              "
+            />
+
+            <div class="campo" [class.campo--error]="campoConError(form.controls.fechaPreferida)">
+              <label for="solicitud-fecha">Fecha preferida</label>
+              <div class="con-icono">
+                <ng-container
+                  *ngTemplateOutlet="icono; context: { $implicit: iconos.cita, tamano: 18 }"
+                />
+                <input
+                  id="solicitud-fecha"
+                  type="date"
+                  formControlName="fechaPreferida"
+                  [min]="hoy"
+                  [attr.aria-invalid]="campoConError(form.controls.fechaPreferida)"
+                  aria-describedby="solicitud-fecha-error"
+                />
+              </div>
+              <app-errores-campo
+                id="solicitud-fecha-error"
+                [control]="form.controls.fechaPreferida"
+                [mensajes]="mensajesFecha"
+              />
+            </div>
+
+            <div class="rejilla">
+              <ng-container
+                [ngTemplateOutlet]="segmentado"
+                [ngTemplateOutletContext]="{
+                  id: 'solicitud-franja',
+                  etiqueta: 'Franja preferida',
+                  control: form.controls.franjaPreferida,
+                  opciones: opcionesFranja,
+                  iconos: iconos,
+                }"
+              />
+
+              <ng-container
+                [ngTemplateOutlet]="segmentado"
+                [ngTemplateOutletContext]="{
+                  id: 'solicitud-contacto',
+                  etiqueta: 'Contacto preferido',
+                  control: form.controls.contactoPreferido,
+                  opciones: opcionesContacto,
+                  iconos: iconos,
+                }"
+              />
+            </div>
+
+            <div class="campo">
+              <label
+                class="casilla"
+                [class.casilla--marcada]="form.controls.aceptaPrivacidad.value"
+                [class.casilla--error]="campoConError(form.controls.aceptaPrivacidad)"
+              >
+                <input
+                  type="checkbox"
+                  formControlName="aceptaPrivacidad"
+                  aria-describedby="solicitud-privacidad-error"
+                  [attr.aria-invalid]="campoConError(form.controls.aceptaPrivacidad)"
+                />
+                <span>Acepto la política de privacidad del taller</span>
+              </label>
+              <app-errores-campo
+                id="solicitud-privacidad-error"
+                [control]="form.controls.aceptaPrivacidad"
+              />
+            </div>
+          </div>
+
+          @if (paso() === 4) {
+            <div class="paso">
+              <ng-container
+                *ngTemplateOutlet="
+                  cabecera;
+                  context: {
+                    icono: iconos.resumen,
+                    titulo: 'Revisa tu solicitud',
+                    texto: 'Comprueba que todo es correcto antes de enviarla.',
+                  }
+                "
+              />
+
+              <app-resumen-solicitud [grupos]="gruposResumen()" />
             </div>
           }
-        </dl>
-      }
+        </div>
 
-      <div class="acciones">
-        @if (paso() > 1) {
-          <button type="button" class="btn btn--secundario" (click)="atras()">Atrás</button>
-        }
-        <button type="submit" class="btn btn--primario acciones__avanzar" [disabled]="enviando()">
-          @if (paso() < 4) {
-            Siguiente
-          } @else if (enviando()) {
-            Enviando…
-          } @else {
-            Enviar solicitud
+        <div class="acciones">
+          <p class="acciones__atajo">
+            <kbd>Intro</kbd> para {{ paso() < 4 ? 'continuar' : 'enviar' }}
+            @if (paso() === 2) {
+              · <kbd>Ctrl</kbd>+<kbd>Intro</kbd> en el síntoma
+            }
+          </p>
+          @if (paso() > 1) {
+            <button type="button" class="btn btn--fantasma acciones__atras" (click)="atras()">
+              <ng-container
+                *ngTemplateOutlet="icono; context: { $implicit: iconos.anterior, tamano: 18 }"
+              />
+              Anterior
+            </button>
           }
-        </button>
-      </div>
-    </form>
+          <button type="submit" class="btn btn--primario acciones__avanzar" [disabled]="enviando()">
+            @if (paso() < 4) {
+              Siguiente
+              <ng-container
+                *ngTemplateOutlet="icono; context: { $implicit: iconos.siguiente, tamano: 18 }"
+              />
+            } @else if (enviando()) {
+              <span class="girando" aria-hidden="true"></span>
+              Enviando…
+            } @else {
+              Enviar solicitud
+              <ng-container
+                *ngTemplateOutlet="icono; context: { $implicit: iconos.enviar, tamano: 18 }"
+              />
+            }
+          </button>
+        </div>
+      </form>
+    </div>
   }
 </main>
+
+<ng-template #icono let-trazado let-tamano="tamano">
+  <svg
+    [attr.width]="tamano"
+    [attr.height]="tamano"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path [attr.d]="trazado" />
+  </svg>
+</ng-template>
+
+<ng-template #cabecera let-icono="icono" let-titulo="titulo" let-texto="texto">
+  <div class="paso__cabecera">
+    <span class="paso__icono">
+      @if (icono) {
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path [attr.d]="icono" />
+        </svg>
+      } @else {
+        <app-icono-coche />
+      }
+    </span>
+    <div>
+      <h2 class="paso__titulo">{{ titulo }}</h2>
+      <p class="paso__texto">{{ texto }}</p>
+    </div>
+  </div>
+</ng-template>
 
 <ng-template
   #segmentado
@@ -235,6 +410,7 @@
   let-etiqueta="etiqueta"
   let-control="control"
   let-opciones="opciones"
+  let-iconos="iconos"
 >
   <div class="campo">
     <span class="campo__etiqueta" [id]="id">{{ etiqueta }}</span>
@@ -248,9 +424,26 @@
         <button
           type="button"
           class="segmentado__opcion"
+          [attr.data-valor]="opcion.valor"
+          [disabled]="control.disabled"
           [attr.aria-pressed]="control.value === opcion.valor"
           (click)="elegir(control, opcion.valor)"
         >
+          @if (iconos?.[opcion.valor]; as trazado) {
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path [attr.d]="trazado" />
+            </svg>
+          }
           {{ opcion.texto }}
         </button>
       }

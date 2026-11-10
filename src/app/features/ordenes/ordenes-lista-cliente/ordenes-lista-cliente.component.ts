@@ -10,17 +10,22 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { ETIQUETAS_TIPO_SERVICIO, type OrdenResumen } from '@core/models';
+import {
+  ETIQUETAS_ESTADO,
+  ETIQUETAS_TIPO_SERVICIO,
+  type OrdenResumen
+} from '@core/models';
 import { OrdenesService } from '@core/services/ordenes.service';
 import { mensajeDeError } from '@core/util/api-error';
 import { esEstadoFinal } from '@core/util/estados';
 import { matriculaLegible } from '@core/util/matricula';
-import { BarraProgresoComponent } from '@shared/components/barra-progreso/barra-progreso.component';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
-import { PillEstadoComponent } from '@shared/components/pill-estado/pill-estado.component';
+import { IconoCocheComponent } from '@shared/components/icono-coche/icono-coche.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
 import { EurosPipe } from '@shared/pipes/euros.pipe';
 import { FechaHoraPipe } from '@shared/pipes/fecha-hora.pipe';
+import { TONOS_ESTADO, type Tono } from '@shared/util/tonos';
 
 type Pestana = 'activas' | 'historial';
 
@@ -29,11 +34,11 @@ const LIMITE = 100;
 @Component({
   selector: 'app-ordenes-lista-cliente',
   imports: [
-    BarraProgresoComponent,
     CargandoComponent,
     EurosPipe,
     FechaHoraPipe,
-    PillEstadoComponent,
+    IconoCocheComponent,
+    LogoComponent,
     RouterLink,
     VacioComponent
   ],
@@ -91,5 +96,13 @@ export class OrdenesListaClienteComponent {
 
   protected presupuestoListo(orden: OrdenResumen): boolean {
     return orden.presupuestoEstado === 'enviado';
+  }
+
+  protected textoEstado(orden: OrdenResumen): string {
+    return this.presupuestoListo(orden) ? 'Presupuesto listo' : ETIQUETAS_ESTADO[orden.estado];
+  }
+
+  protected tono(orden: OrdenResumen): Tono {
+    return this.presupuestoListo(orden) ? 'aviso' : TONOS_ESTADO[orden.estado];
   }
 }

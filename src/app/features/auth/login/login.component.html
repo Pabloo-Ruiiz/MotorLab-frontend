@@ -1,10 +1,11 @@
 <header class="cabecera">
-  <p class="cabecera__titulo">Taller Martínez</p>
+  <app-logo class="cabecera__fondo" />
+  <p class="cabecera__titulo">Taller MotorLab</p>
   <p class="cabecera__subtitulo">Área de clientes</p>
 </header>
 
 <main class="pagina">
-  <div class="logo" aria-hidden="true">T</div>
+  <app-logo class="logo" />
   <h1 class="titulo">Bienvenido</h1>
   <p class="subtitulo">Sigue tus reparaciones sin llamar al taller</p>
 
@@ -17,6 +18,10 @@
 
   @if (errorGeneral(); as error) {
     <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+  }
+
+  @if (correoSinVerificar(); as correo) {
+    <app-reenviar-correo [email]="correo" />
   }
 
   <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()">

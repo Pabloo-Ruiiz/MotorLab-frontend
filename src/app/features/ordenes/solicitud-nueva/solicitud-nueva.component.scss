@@ -1,13 +1,52 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
+}
+
+// Esquina inferior derecha, por detrás de la hoja: nunca tapa un control
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(
+    var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)
+  ); // sobre las pestañas
+  z-index: -1;
+  width: clamp(140px, 22vw, 260px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.03;
+  pointer-events: none;
+
+  @media (min-width: 768px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
 }
 
 .solicitud,
-.formulario,
-.paso {
+.formulario__cuerpo,
+.paso,
+.columna {
   display: flex;
   flex-direction: column;
   gap: var(--mo-esp-16);
+}
+
+.solicitud {
+  gap: var(--mo-esp-20);
+}
+
+// Acerca el texto al título, que pinta el layout con su propio margen inferior
+.descripcion {
+  margin-top: calc(var(--mo-esp-12) * -1);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-16);
+  text-wrap: pretty;
+
+  @media (min-width: 768px) {
+    margin-top: calc(var(--mo-esp-16) * -1);
+  }
 }
 
 // «display: flex» anularía el atributo hidden
@@ -15,110 +54,408 @@
   display: none;
 }
 
+.paso {
+  container-type: inline-size;
+  gap: var(--mo-esp-20);
+  animation: entrar var(--mo-duracion-entrada) var(--mo-curva-salida);
+}
+
+.hoja {
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-blanco);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 4%),
+    0 12px 32px -20px rgb(15 23 42 / 18%);
+}
+
+.formulario__cuerpo {
+  padding: var(--mo-esp-20);
+
+  @media (min-width: 768px) {
+    padding: var(--mo-esp-32);
+  }
+}
+
+// ── Indicador de pasos ──────────────────────────────────────────────
+
 .progreso {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-8);
-}
+  gap: var(--mo-esp-16);
+  padding: var(--mo-esp-20) var(--mo-esp-20) var(--mo-esp-16);
+  border-bottom: 1px solid var(--mo-arena);
 
-.progreso__textos {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--mo-esp-8);
+  @media (min-width: 768px) {
+    padding: var(--mo-esp-24) var(--mo-esp-32) var(--mo-esp-20);
+  }
 }
 
 .progreso__actual {
-  font-size: var(--mo-tipo-14);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
   font-weight: var(--mo-peso-medio);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.progreso__otros {
+// ── Cabecera de cada paso ───────────────────────────────────────────
+
+.paso__cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+}
+
+.paso__icono {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-crema);
+
+  app-icono-coche {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.paso__titulo {
+  font-size: var(--mo-tipo-18);
+  font-weight: var(--mo-peso-medio);
+  line-height: 24px;
+}
+
+.paso__texto {
   color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
+}
+
+// ── Controles ───────────────────────────────────────────────────────
+
+// Mismo borde en todos los controles; los de error conservan el suyo de _componentes.scss
+.campo:not(.campo--error) {
+  select,
+  input[type='date'] {
+    border-color: var(--mo-linea);
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        border-color: var(--mo-niebla);
+      }
+    }
+
+    &:focus {
+      border-color: var(--mo-tinta);
+    }
+  }
+}
+
+.paso select,
+.paso input[type='date'] {
+  min-height: 48px;
+  border-radius: var(--mo-radio-8);
+  color-scheme: light;
+}
+
+// Flecha propia para que el desplegable tenga el mismo aspecto en todos los navegadores
+.paso select {
+  padding-right: var(--mo-esp-40);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23545454' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--mo-esp-12) center;
+  background-size: 18px;
+  appearance: none;
+}
+
+.con-icono {
+  position: relative;
+
+  > svg,
+  > .con-icono__icono {
+    position: absolute;
+    top: 50%;
+    left: var(--mo-esp-12);
+    width: 20px;
+    height: 20px;
+    color: var(--mo-acero);
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  select,
+  input {
+    padding-left: 44px;
+  }
+}
+
+.opcional {
+  margin-left: var(--mo-esp-4);
+  color: var(--mo-niebla);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-normal);
 }
 
 // Mismo aspecto que el <label> de .campo, para los grupos que no tienen un único control
 .campo__etiqueta {
-  color: var(--mo-acero);
+  color: var(--mo-pizarra);
   font-size: var(--mo-tipo-14);
   font-weight: var(--mo-peso-medio);
 }
 
-.contador {
+// Una sola pieza de la misma altura que un desplegable
+.segmentado {
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-crema);
+}
+
+.segmentado .segmentado__opcion {
+  gap: 6px;
+  min-height: 40px;
+  padding: var(--mo-esp-4) var(--mo-esp-8);
+  border-color: transparent;
+  border-radius: var(--mo-radio-6);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled, [aria-pressed='true']) {
+      background-color: var(--mo-blanco);
+    }
+  }
+}
+
+.rejilla {
+  display: grid;
+  gap: var(--mo-esp-16) var(--mo-esp-24);
+}
+
+// Según el ancho del formulario, no de la ventana: la barra lateral le resta espacio
+@container (min-width: 520px) {
+  .rejilla {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+// ── Paso 2: urgencia y síntoma ──────────────────────────────────────
+
+.urgencia {
+  position: relative;
+}
+
+.urgencia__insignia {
+  position: absolute;
+  top: -2px;
+  right: 0;
+}
+
+.urgencia__motivo {
+  margin-top: 6px;
   color: var(--mo-acero);
-  text-align: right;
-  font-family: var(--mo-mono);
   font-size: var(--mo-tipo-12);
 }
 
-.contador--ok {
-  color: var(--mo-tinta);
+// Además del color, el borde doble distingue la opción elegida
+.urgencia .segmentado__opcion[aria-pressed='true'] {
+  border-color: var(--urgencia-color);
+  background-color: var(--urgencia-fondo);
+  box-shadow: inset 0 0 0 1px var(--urgencia-color);
+  color: var(--urgencia-color);
+
+  // Bloqueada por la urgencia automática: debe seguir leyéndose con claridad
+  &:disabled {
+    opacity: 1;
+  }
+
+  &[data-valor='baja'] {
+    --urgencia-color: #1a6b2f;
+    --urgencia-fondo: #eaf6ec;
+  }
+
+  &[data-valor='media'] {
+    --urgencia-color: #8a5300;
+    --urgencia-fondo: #fdf3e0;
+  }
+
+  &[data-valor='alta'] {
+    --urgencia-color: var(--mo-error);
+    --urgencia-fondo: var(--mo-error-fondo);
+  }
 }
+
+// Ocupa el alto que deja la columna de al lado, para que las dos terminen a la misma altura
+.campo--crece {
+  flex: 1 1 auto;
+}
+
+// El marco es del contenedor para que el contador quede dentro y el texto nunca pase por debajo
+.sintoma {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-blanco);
+  transition: border-color var(--mo-transicion);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-niebla);
+    }
+  }
+
+  &:focus-within {
+    border-color: var(--mo-tinta);
+    outline: 2px solid var(--mo-tinta);
+    outline-offset: 2px;
+  }
+
+  textarea {
+    flex: 1 1 auto;
+    border: 0;
+    border-radius: inherit;
+    background: none;
+    box-shadow: none;
+    outline: none;
+  }
+
+  .contador {
+    padding: 0 var(--mo-esp-12) var(--mo-esp-8);
+  }
+}
+
+.campo--error .sintoma {
+  border-color: var(--mo-error);
+  box-shadow: inset 0 0 0 1px var(--mo-error);
+}
+
+.contador {
+  color: var(--mo-niebla);
+  text-align: right;
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+  transition: color var(--mo-transicion);
+}
+
+.contador--ok {
+  color: #1a6b2f;
+}
+
+// ── Paso 3: privacidad ──────────────────────────────────────────────
 
 .casilla {
   display: flex;
   align-items: center;
-  gap: var(--mo-esp-8);
-  min-height: var(--mo-tactil);
+  gap: var(--mo-esp-12);
+  min-height: 52px;
+  padding: var(--mo-esp-12) var(--mo-esp-16);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-8);
   cursor: pointer;
+  transition:
+    background-color var(--mo-transicion),
+    border-color var(--mo-transicion);
 
   input {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--mo-tinta);
   }
 }
 
-.resumen {
-  display: flex;
-  flex-direction: column;
-  gap: var(--mo-esp-12);
-  margin: 0;
+.casilla--marcada {
+  border-color: var(--mo-tinta);
+  background-color: var(--mo-crema);
 }
 
-.resumen__fila {
-  dt {
-    color: var(--mo-acero);
-    font-size: var(--mo-tipo-14);
-    font-weight: var(--mo-peso-medio);
-  }
-
-  dd {
-    margin: 0;
-    overflow-wrap: anywhere;
-  }
+.casilla--error {
+  border-color: var(--mo-error);
 }
+
+// ── Acciones ────────────────────────────────────────────────────────
 
 .acciones {
   display: flex;
-  gap: var(--mo-esp-8);
-}
-
-.acciones__avanzar {
-  flex: 1;
-}
-
-.exito {
-  display: flex;
-  flex-direction: column;
-  gap: var(--mo-esp-12);
-}
-
-.exito__urgencia {
-  display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--mo-esp-8);
-  font-size: var(--mo-tipo-14);
-}
-
-.exito__enlaces {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--mo-esp-8);
+  padding: var(--mo-esp-16) var(--mo-esp-20);
+  border-top: 1px solid var(--mo-arena);
+  border-radius: 0 0 calc(var(--mo-radio-16) - 1px) calc(var(--mo-radio-16) - 1px);
+  background-color: var(--mo-crema);
 
   .btn {
-    flex: 1;
+    min-width: 136px;
+  }
+
+  @media (min-width: 768px) {
+    padding: var(--mo-esp-16) var(--mo-esp-32);
+  }
+
+  // En móvil se reparten la fila para que sean fáciles de pulsar
+  @media (max-width: 479px) {
+    .btn {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+}
+
+// El icono acompaña la dirección del movimiento al apuntar
+.acciones__atras,
+.acciones__avanzar {
+  --desplazamiento: 3px;
+
+  svg {
+    transition: transform var(--mo-pulsar);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) svg {
+      transform: translateX(calc(var(--desplazamiento) * var(--mo-movimiento)));
+    }
+  }
+}
+
+.acciones__atras {
+  --desplazamiento: -3px;
+}
+
+.girando {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgb(255 255 255 / 35%);
+  border-top-color: var(--mo-blanco);
+  border-radius: 50%;
+  animation: girar 700ms linear infinite;
+}
+
+// Los atajos solo sirven con teclado físico
+.acciones__atajo {
+  display: none;
+  margin-right: auto;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+
+  @media (pointer: fine) and (min-width: 1024px) {
+    display: block;
+  }
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(calc(6px * var(--mo-movimiento)));
+  }
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
   }
 }

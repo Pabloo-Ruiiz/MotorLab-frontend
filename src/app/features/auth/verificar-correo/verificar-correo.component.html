@@ -1,0 +1,25 @@
+<header class="cabecera">
+  <app-logo class="cabecera__fondo" />
+  <p class="cabecera__titulo">Taller MotorLab</p>
+  <p class="cabecera__subtitulo">Área de clientes</p>
+</header>
+
+<main class="pagina" aria-live="polite">
+  <app-logo class="logo" />
+
+  @switch (estado()) {
+    @case ('verificando') {
+      <h1 class="titulo">Confirmando tu correo…</h1>
+    }
+    @case ('confirmado') {
+      <h1 class="titulo">Correo confirmado</h1>
+      <p class="subtitulo">Tu cuenta ya está activa. Ya puedes iniciar sesión.</p>
+      <a class="btn btn--primario" routerLink="/login">Iniciar sesión</a>
+    }
+    @case ('error') {
+      <h1 class="titulo">No hemos podido confirmarlo</h1>
+      <p class="subtitulo">{{ error() }}</p>
+      <a class="btn btn--primario" routerLink="/login">Ir a iniciar sesión</a>
+    }
+  }
+</main>

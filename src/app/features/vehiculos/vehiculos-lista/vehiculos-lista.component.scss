@@ -1,5 +1,27 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
+}
+
+// Esquina inferior derecha, como en el resto de pantallas del cliente
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(
+    var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)
+  ); // sobre las pestañas
+  z-index: -1;
+  width: clamp(140px, 22vw, 260px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.035;
+  pointer-events: none;
+
+  @media (min-width: 768px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
 }
 
 .vehiculos,
@@ -9,49 +31,299 @@
   gap: var(--mo-esp-16);
 }
 
+.reintentar {
+  align-self: flex-start;
+}
+
 .lista {
   margin: 0;
   padding: 0;
   list-style: none;
+
+  > li {
+    animation: entrar var(--mo-duracion-entrada) var(--mo-curva-salida) both;
+    animation-delay: calc(min(var(--i, 0), 10) * 40ms);
+  }
 }
 
+// ── Tarjeta ─────────────────────────────────────────────────────────
+
 .vehiculo {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   gap: var(--mo-esp-16);
+  padding: var(--mo-esp-20);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-16);
+  background-color: rgb(255 255 255 / 85%);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 3%);
+  transition:
+    border-color var(--mo-transicion),
+    box-shadow var(--mo-transicion);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-niebla);
+      box-shadow: 0 10px 28px -16px rgb(0 0 0 / 20%);
+    }
+  }
+
+  @media (min-width: 768px) {
+    padding: var(--mo-esp-24);
+  }
 }
 
-.vehiculo__datos {
-  display: flex;
+.vehiculo__cabecera {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: var(--mo-esp-16);
+  gap: var(--mo-esp-12) var(--mo-esp-16);
+
+  // Estrecho: la matrícula baja a su propia fila
+  .placa {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+@container (min-width: 440px) {
+  .vehiculo__cabecera {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+
+    .placa {
+      grid-column: auto;
+    }
+  }
 }
 
 .vehiculo__icono {
-  flex-shrink: 0;
-  color: var(--mo-tinta);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-carbon);
+  color: var(--mo-blanco);
+
+  app-icono-coche {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+.vehiculo__nombre {
+  min-width: 0;
 }
 
 .vehiculo__titulo {
-  font-size: var(--mo-tipo-16);
+  font-size: var(--mo-tipo-18);
+  font-weight: var(--mo-peso-medio);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+
+  @media (min-width: 768px) {
+    font-size: var(--mo-tipo-24);
+  }
 }
 
-.vehiculo__detalle {
+.vehiculo__version {
+  margin-top: 2px;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  overflow-wrap: anywhere;
+}
+
+.placa {
+  font-size: var(--mo-tipo-16);
+  line-height: 30px;
+}
+
+.placa__banda {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-esp-20);
+  background-color: #1f3a93; // banda azul de la matrícula europea
+  font-size: 11px;
+}
+
+// Datos secundarios: etiqueta pequeña sobre el valor
+.datos {
+  display: flex;
+  gap: var(--mo-esp-8);
+  margin: 0;
+}
+
+.datos__item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--mo-esp-8) var(--mo-esp-12);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-crema);
+
+  dt {
+    color: var(--mo-acero);
+    font-size: var(--mo-tipo-12);
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--mo-tipo-14);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--mo-peso-medio);
+  }
+}
+
+@container (min-width: 440px) {
+  .datos__item {
+    flex: 0 1 160px;
+  }
+}
+
+// ── Acciones ────────────────────────────────────────────────────────
+
+// Móvil: «Nueva solicitud» a todo el ancho; Historial y Editar a medias; la baja al final
+.acciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mo-esp-8);
+  padding-top: var(--mo-esp-16);
+  border-top: 1px solid var(--mo-arena);
+
+  .btn {
+    min-height: 40px;
+    padding: var(--mo-esp-8) var(--mo-esp-12);
+    font-size: var(--mo-tipo-14);
+  }
+
+  .btn--fantasma {
+    background-color: var(--mo-blanco);
+  }
+}
+
+.acciones__nueva,
+.acciones__baja {
+  grid-column: 1 / -1;
+}
+
+.acciones__nueva svg {
+  transition: transform var(--mo-pulsar);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .acciones__nueva:hover svg {
+    transform: rotate(calc(90deg * var(--mo-movimiento)));
+  }
+}
+
+// Destructiva pero discreta: solo se tiñe al apuntar
+.acciones__baja {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--mo-error);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-error-fondo);
+      background-color: var(--mo-error-fondo);
+    }
+  }
+}
+
+// Ancho: todo en una fila, con la baja separada a la derecha
+@container (min-width: 600px) {
+  .acciones {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .acciones__baja {
+    margin-left: auto;
+  }
+}
+
+// ── Añadir vehículo ─────────────────────────────────────────────────
+
+.anadir {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-16);
+  padding: var(--mo-esp-16) var(--mo-esp-20);
+  border: 1.5px dashed var(--mo-niebla);
+  border-radius: var(--mo-radio-16);
+  background-color: rgb(255 255 255 / 60%);
+  color: var(--mo-tinta);
+  text-decoration: none;
+  transition:
+    background-color var(--mo-transicion),
+    border-color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  &:active {
+    transform: scale(var(--mo-escala-tarjeta));
+  }
+
+  svg {
+    display: block;
+    transition: transform var(--mo-pulsar);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-tinta);
+      background-color: var(--mo-blanco);
+
+      .anadir__icono {
+        background-color: var(--mo-tinta);
+        color: var(--mo-blanco);
+      }
+
+      svg {
+        transform: rotate(calc(90deg * var(--mo-movimiento)));
+      }
+    }
+  }
+}
+
+.anadir__icono {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--mo-arena);
+  transition:
+    background-color var(--mo-transicion),
+    color var(--mo-transicion);
+}
+
+.anadir__textos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.anadir__titulo {
+  font-size: var(--mo-tipo-16);
+  font-weight: var(--mo-peso-medio);
+}
+
+.anadir__texto {
   color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
-.vehiculo__acciones {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--mo-esp-8);
-
-  .btn {
-    padding-inline: var(--mo-esp-8);
-    font-size: var(--mo-tipo-14);
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(calc(6px * var(--mo-movimiento)));
   }
-}
-
-.vehiculo__acciones .vehiculo__baja {
-  color: var(--mo-error);
 }

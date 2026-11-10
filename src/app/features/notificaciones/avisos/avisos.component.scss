@@ -89,3 +89,10 @@
   border-radius: 50%;
   background-color: var(--mo-tinta);
 }
+
+// Aviso elegido desde la campana
+.item--destacado {
+  box-shadow:
+    0 0 0 1px var(--mo-tinta),
+    0 0 0 5px var(--mo-arena);
+}

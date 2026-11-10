@@ -1,65 +1,337 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
 }
 
-.historial,
-.lista,
-.orden {
+// Fija en la esquina inferior derecha: no se mueve al desplazar y no ocupa el centro del contenido
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)); // sobre las pestañas
+  z-index: -1;
+  width: clamp(140px, 22vw, 260px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.04;
+  pointer-events: none;
+
+  @media (min-width: 768px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
+}
+
+.historial {
   display: flex;
   flex-direction: column;
+  gap: var(--mo-esp-20);
+
+  @media (min-width: 768px) {
+    gap: var(--mo-esp-24);
+  }
 }
 
-.historial,
-.lista {
+// Acerca el texto al título, que pinta el layout con su propio margen inferior
+.descripcion {
+  margin-top: calc(var(--mo-esp-12) * -1);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-16);
+  text-wrap: pretty;
+
+  @media (min-width: 768px) {
+    margin-top: calc(var(--mo-esp-16) * -1);
+  }
+}
+
+.reintentar {
+  align-self: flex-start;
+}
+
+// ── Ficha del vehículo ───────────────────────────────────────────────
+
+.ficha {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
   gap: var(--mo-esp-16);
+  padding: var(--mo-esp-20);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-carbon);
+  color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-elevada);
+  animation: aparecer var(--mo-duracion-entrada) var(--mo-curva-salida) both;
+
+  @media (min-width: 560px) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding: var(--mo-esp-24);
+  }
 }
 
-.historial__titulo {
+.ficha__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-esp-56, 56px);
+  height: var(--mo-esp-56, 56px);
+  border-radius: var(--mo-radio-16);
+  background-color: rgb(255 255 255 / 8%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 10%);
+
+  app-icono-coche {
+    width: var(--mo-esp-32);
+    height: var(--mo-esp-32);
+  }
+}
+
+.ficha__textos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ficha__etiqueta {
+  color: var(--mo-peltre);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ficha__titulo {
   font-size: var(--mo-tipo-24);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-titulo);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
-.lista {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.ficha__detalle {
+  color: var(--mo-peltre);
+  font-size: var(--mo-tipo-14);
 }
 
-.orden {
-  position: relative; // referencia del área clicable de .orden__enlace
+// En móvil la matrícula ocupa su propia fila, bajo el nombre
+.placa--grande {
+  grid-column: 1 / -1;
+  justify-self: start;
+  border-color: transparent;
+  color: var(--mo-tinta);
+  font-size: var(--mo-tipo-16);
+  line-height: 32px;
+
+  .placa__banda {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--mo-esp-20);
+    background-color: #1f3a93; // banda azul de la matrícula europea
+    font-size: 11px;
+  }
+
+  @media (min-width: 560px) {
+    grid-column: auto;
+    justify-self: end;
+  }
+}
+
+// ── Resumen ──────────────────────────────────────────────────────────
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--mo-esp-8);
+
+  @media (min-width: 768px) {
+    gap: var(--mo-esp-16);
+  }
+}
+
+.resumen__dato {
+  --tono: var(--mo-tinta);
+  --tono-fondo: var(--mo-arena);
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'icono valor'
+    'texto texto';
+  align-items: center;
+  gap: var(--mo-esp-8) var(--mo-esp-12);
+  padding: var(--mo-esp-12);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-16);
+  background-color: rgb(255 255 255 / 70%);
+  animation: aparecer var(--mo-duracion-entrada) var(--mo-curva-salida) both;
+
+  @media (min-width: 768px) {
+    grid-template-areas: 'icono valor' 'icono texto';
+    gap: 0 var(--mo-esp-12);
+    padding: var(--mo-esp-16) var(--mo-esp-20);
+  }
+}
+
+.resumen__icono {
+  grid-area: icono;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-esp-32);
+  height: var(--mo-esp-32);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--tono-fondo);
+  color: var(--tono);
+
+  @media (min-width: 768px) {
+    width: var(--mo-esp-40);
+    height: var(--mo-esp-40);
+  }
+}
+
+.resumen__valor {
+  grid-area: valor;
+  font-size: var(--mo-tipo-24);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-titulo);
+  line-height: 1;
+}
+
+.resumen__texto {
+  grid-area: texto;
+  overflow: hidden;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nota {
+  margin-top: calc(var(--mo-esp-12) * -1);
+  color: var(--mo-niebla);
+  font-size: var(--mo-tipo-12);
+}
+
+// ── Filtros y orden ─────────────────────────────────────────────────
+
+.herramientas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+}
+
+.filtros {
+  display: inline-flex;
+  gap: 2px;
+  max-width: 100%;
+  padding: var(--mo-esp-4);
+  overflow-x: auto;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-arena);
+  scrollbar-width: none;
+}
+
+.filtro {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 var(--mo-esp-12);
+  border: 0;
+  border-radius: var(--mo-radio-pildora);
+  background: none;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+  cursor: pointer;
+  transition:
+    background-color var(--mo-transicion),
+    box-shadow var(--mo-transicion),
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  &:active {
+    transform: scale(var(--mo-escala-pulsado));
+  }
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      box-shadow: var(--mo-sombra-anillo);
+      color: var(--mo-tinta);
+    }
+  }
+
+  &[aria-pressed='true'] {
+    background-color: var(--mo-blanco);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+    color: var(--mo-tinta);
+  }
+}
+
+.filtro__total {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: var(--mo-radio-pildora);
+  background-color: rgb(0 0 0 / 6%);
+  font-size: var(--mo-tipo-12);
+  font-variant-numeric: tabular-nums;
+  line-height: 20px;
+  text-align: center;
+}
+
+.ordenar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--mo-tactil);
+  padding: 0 var(--mo-esp-12);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-blanco);
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-14);
+  cursor: pointer;
+  transition:
+    border-color var(--mo-transicion),
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  &:active {
+    transform: scale(var(--mo-escala-pulsado));
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-niebla);
+      color: var(--mo-tinta);
     }
   }
 }
 
-.orden__cabecera {
+// ── Tarjetas ─────────────────────────────────────────────────────────
+
+.lista {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--mo-esp-8);
-}
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 
-.orden__titulo {
-  font-size: var(--mo-tipo-16);
-}
-
-.orden__enlace {
-  color: inherit;
-  text-decoration: none;
-
-  // Extiende el enlace a toda la tarjeta
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: var(--mo-radio-16);
+  // Entrada escalonada: --i lo fija la plantilla con el índice de la tarjeta
+  > li {
+    animation: aparecer var(--mo-duracion-entrada) var(--mo-curva-salida) both;
+    animation-delay: calc(min(var(--i, 0), 10) * 30ms);
   }
 }
 
-.orden__detalle {
-  color: var(--mo-acero);
-  font-size: var(--mo-tipo-14);
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(calc(6px * var(--mo-movimiento)));
+  }
 }

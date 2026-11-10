@@ -1,20 +1,102 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
 }
 
-.ordenes,
-.lista,
-.orden {
+// Fija en la esquina inferior derecha: no se mueve al desplazar y no ocupa el centro del contenido
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)); // sobre las pestañas
+  z-index: -1;
+  width: clamp(140px, 22vw, 260px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.04;
+  pointer-events: none;
+
+  @media (min-width: 768px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
+}
+
+// Móvil: una columna, con «Nueva solicitud» al final y fija sobre las pestañas de navegación
+.ordenes {
   display: flex;
   flex-direction: column;
+  gap: var(--mo-esp-20);
 }
 
-.ordenes,
+// Acerca el texto al título, que pinta el layout con su propio margen inferior
+.descripcion {
+  margin-top: calc(var(--mo-esp-12) * -1);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-16);
+}
+
+.nueva {
+  position: sticky;
+  bottom: var(--mo-esp-16);
+  z-index: 1;
+  order: 1;
+  align-self: flex-end;
+  box-shadow: var(--mo-sombra-elevada);
+  transition:
+    background-color var(--mo-transicion),
+    box-shadow var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  svg {
+    transition: transform var(--mo-pulsar);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover svg {
+      transform: rotate(calc(90deg * var(--mo-movimiento)));
+    }
+  }
+}
+
+.pestanas {
+  display: flex;
+  gap: var(--mo-esp-24);
+  border-bottom: 1px solid var(--mo-linea);
+}
+
+// Sin relleno lateral para que el texto quede alineado con las tarjetas
+.pestana {
+  flex: 1;
+  min-height: var(--mo-tactil);
+  margin-bottom: -1px;
+  padding: var(--mo-esp-8) 0;
+  border: 0;
+  background: none;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+  cursor: pointer;
+  transition:
+    box-shadow var(--mo-transicion),
+    color var(--mo-transicion);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--mo-tinta);
+    }
+  }
+
+  &[aria-pressed='true'] {
+    box-shadow: inset 0 -2px 0 var(--mo-tinta);
+    color: var(--mo-tinta);
+  }
+}
+
 .lista {
+  display: flex;
+  flex-direction: column;
   gap: var(--mo-esp-16);
-}
-
-.lista {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -22,31 +104,76 @@
 
 .orden {
   position: relative; // referencia del área clicable de .orden__enlace
-  gap: var(--mo-esp-8);
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+  padding: var(--mo-esp-20);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-16);
+  background-color: rgb(
+    255 255 255 / 60%
+  ); // deja ver la filigrana entera, sin cortes entre tarjetas
+  box-shadow: 0 1px 2px rgb(0 0 0 / 3%);
+  transition:
+    border-color var(--mo-transicion),
+    box-shadow var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  &:has(.orden__enlace:active) {
+    transform: scale(var(--mo-escala-tarjeta));
+  }
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      box-shadow: var(--mo-sombra-anillo);
+      border-color: var(--mo-niebla);
+      box-shadow: 0 8px 24px -12px rgb(0 0 0 / 18%);
     }
   }
+
+  @media (min-width: 768px) {
+    padding: var(--mo-esp-24);
+  }
+
 }
 
 .orden--presupuesto {
-  border: 1px solid var(--mo-tinta);
+  border-color: var(--mo-tinta);
 }
 
 .orden__cabecera {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--mo-esp-12) var(--mo-esp-16);
+}
+
+.orden__icono {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--mo-esp-8);
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-esp-48);
+  height: var(--mo-esp-48);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-crema);
+  color: var(--mo-tinta);
+
+  app-icono-coche {
+    width: var(--mo-esp-32);
+    height: var(--mo-esp-32);
+  }
 }
 
 .orden__titulo {
-  font-size: var(--mo-tipo-16);
+  min-width: 0;
+  font-size: inherit;
+  text-wrap: pretty;
 }
 
 .orden__enlace {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   color: inherit;
   text-decoration: none;
 
@@ -57,11 +184,108 @@
     inset: 0;
     border-radius: var(--mo-radio-16);
   }
+
+  // El foco rodea toda la tarjeta, que es el área que se puede pulsar
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+
+    &::after {
+      outline: 2px solid var(--mo-tinta);
+      outline-offset: 2px;
+    }
+  }
 }
 
-.orden__detalle {
+.orden__numero {
   color: var(--mo-acero);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+  letter-spacing: var(--mo-tracking-mono);
+}
+
+.orden__vehiculo {
+  font-size: var(--mo-tipo-18);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-titulo);
+  line-height: 24px;
+  overflow-wrap: anywhere;
+}
+
+// En tarjetas estrechas la etiqueta baja para que el nombre del vehículo tenga sitio
+@container (max-width: 440px) {
+  .orden__cabecera {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .estado-orden {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+.orden__datos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-8) var(--mo-esp-16);
+}
+
+.orden__servicio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mo-pizarra);
   font-size: var(--mo-tipo-14);
+}
+
+.progreso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+}
+
+.progreso__textos {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.progreso__etiqueta {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+}
+
+.progreso__valor {
+  font-size: var(--mo-tipo-14);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--mo-peso-medio);
+}
+
+.progreso__pista {
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-arena);
+}
+
+// Escala en lugar de anchura: la animación no recalcula la maquetación de la tarjeta
+.progreso__relleno {
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--tono);
+  transform: scaleX(clamp(0, calc(var(--progreso) / 100), 1));
+  transform-origin: left;
+  transition: transform 500ms var(--mo-curva-salida);
+
+  @starting-style {
+    transform: scaleX(calc(1 - var(--mo-movimiento)));
+  }
+}
+
+.orden__fecha {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
 }
 
 .orden__presupuesto {
@@ -70,6 +294,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--mo-esp-8);
+  padding-top: var(--mo-esp-16);
+  border-top: 1px solid var(--mo-arena);
 }
 
 .orden__total {
@@ -82,10 +308,36 @@
   position: relative;
 }
 
-// Sticky dentro del scroll del layout: siempre visible y sin tapar la barra de pestañas
-.nueva {
-  position: sticky;
-  bottom: var(--mo-esp-16);
-  align-self: flex-end;
-  box-shadow: var(--mo-sombra-anillo);
+// Escritorio: descripción y botón en la misma fila, sobre las pestañas y la lista
+@media (min-width: 768px) {
+  .ordenes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--mo-esp-24);
+  }
+
+  .ancho-completo {
+    grid-column: 1 / -1;
+  }
+
+  .descripcion {
+    margin-top: calc(var(--mo-esp-16) * -1);
+  }
+
+  .nueva {
+    position: static;
+    order: 0;
+    box-shadow: none;
+    margin-top: calc(var(--mo-esp-16) * -1);
+  }
+
+  .pestanas {
+    margin-top: calc(var(--mo-esp-8) * -1);
+  }
+
+  .pestana {
+    flex: none;
+    min-width: 72px;
+  }
 }

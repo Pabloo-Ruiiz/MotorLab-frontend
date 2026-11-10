@@ -1,0 +1,104 @@
+@let o = orden();
+
+<section class="exito" aria-labelledby="solicitud-enviada">
+  <!-- Confirmación -->
+  <div class="exito__cabecera">
+    <span class="sello" aria-hidden="true">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle class="sello__circulo" cx="12" cy="12" r="10" pathLength="1" />
+        <path class="sello__check" d="M7.5 12.5l3 3 6-7" pathLength="1" />
+      </svg>
+    </span>
+    <h2 id="solicitud-enviada" class="exito__titulo">Solicitud enviada</h2>
+    <p class="exito__principal">Tu solicitud se ha registrado correctamente.</p>
+    <p class="exito__secundario">
+      Nuestro equipo revisará la información y se pondrá en contacto contigo si es necesario.
+    </p>
+  </div>
+
+  <!-- Datos de la solicitud -->
+  <div class="datos">
+    <div class="datos__cabecera">
+      <p class="datos__orden">
+        <span class="datos__etiqueta">Orden</span>
+        <span class="datos__numero">#{{ o.id }}</span>
+      </p>
+      <p class="datos__urgencia">
+        <span class="datos__etiqueta">Urgencia asignada</span>
+        <span class="estado-orden" [attr.data-tono]="tonoUrgencia()">{{ urgencia() }}</span>
+      </p>
+    </div>
+
+    @if (vehiculo() || servicio()) {
+      <dl class="datos__lista">
+        @if (vehiculo(); as v) {
+          <div>
+            <dt class="datos__etiqueta">Vehículo</dt>
+            <dd>{{ v.marca }} {{ v.modelo }}</dd>
+          </div>
+          <div>
+            <dt class="datos__etiqueta">Matrícula</dt>
+            <dd>
+              <span class="placa">
+                <span class="placa__banda" aria-hidden="true">E</span>
+                {{ matriculaLegible(v.matricula) }}
+              </span>
+            </dd>
+          </div>
+        }
+        @if (servicio(); as s) {
+          <div>
+            <dt class="datos__etiqueta">Servicio</dt>
+            <dd>{{ s }}</dd>
+          </div>
+        }
+      </dl>
+    }
+  </div>
+
+  <!-- Acciones -->
+  <div class="acciones">
+    <a class="btn btn--primario" [routerLink]="['/cliente/ordenes', o.id]">
+      <ng-container *ngTemplateOutlet="icono; context: { $implicit: iconos.orden }" />
+      Ver la orden
+    </a>
+    <a class="btn btn--fantasma acciones__secundaria" routerLink="/cliente/ordenes">
+      <ng-container *ngTemplateOutlet="icono; context: { $implicit: iconos.lista }" />
+      Ir a mis órdenes
+    </a>
+  </div>
+
+  <!-- Próximos pasos -->
+  <div class="siguiente">
+    <h3 class="siguiente__titulo">¿Qué ocurre ahora?</h3>
+    <ol class="siguiente__lista">
+      @for (paso of siguientes; track paso.titulo) {
+        <li class="siguiente__paso" [class.siguiente__paso--hecho]="paso.hecho">
+          <span class="siguiente__icono">
+            <ng-container *ngTemplateOutlet="icono; context: { $implicit: paso.icono }" />
+          </span>
+          <div>
+            <p class="siguiente__nombre">{{ paso.titulo }}</p>
+            <p class="siguiente__texto">{{ paso.texto }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+  </div>
+</section>
+
+<ng-template #icono let-trazado>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path [attr.d]="trazado" />
+  </svg>
+</ng-template>

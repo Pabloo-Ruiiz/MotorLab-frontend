@@ -16,6 +16,7 @@ import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacio
 import { PillEstadoComponent } from '@shared/components/pill-estado/pill-estado.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
 import { EurosPipe } from '@shared/pipes/euros.pipe';
+import { IconoCocheComponent } from '@shared/components/icono-coche/icono-coche.component';
 
 const MAX_MOTIVO = 255;
 const FORMATO_NUMERO = new Intl.NumberFormat('es-ES');
@@ -31,10 +32,11 @@ interface DatosPresupuesto {
     CargandoComponent,
     ErroresCampoComponent,
     EurosPipe,
+    IconoCocheComponent,
     ModalConfirmacionComponent,
     PillEstadoComponent,
     ReactiveFormsModule,
-    VacioComponent,
+    VacioComponent
   ],
   templateUrl: './presupuesto-cliente.component.html',
   styleUrl: './presupuesto-cliente.component.scss',

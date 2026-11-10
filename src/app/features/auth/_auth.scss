@@ -38,15 +38,14 @@
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--mo-esp-48);
-  height: var(--mo-esp-48);
-  border-radius: var(--mo-radio-pildora);
-  background-color: var(--mo-tinta);
-  color: var(--mo-blanco);
-  font-size: var(--mo-tipo-24);
+  width: var(--mo-esp-64);
+  height: var(--mo-esp-64);
+  color: var(--mo-tinta);
+}
+
+// El logo de fondo solo existe en el panel de escritorio
+.cabecera__fondo {
+  display: none;
 }
 
 .subtitulo,
@@ -92,8 +91,25 @@
     height: 100vh;
     height: 100dvh;
     padding: var(--mo-esp-64);
+    overflow: hidden;
     border-bottom: 0;
     background-color: var(--mo-arena);
+  }
+
+  // Marca de agua recortada por el borde del panel, un tono por encima de la arena
+  .cabecera__fondo {
+    display: block;
+    position: absolute;
+    top: -12%;
+    left: -30%;
+    width: 130%;
+    aspect-ratio: 1;
+    color: color-mix(in srgb, var(--mo-tinta) 8%, var(--mo-arena));
+  }
+
+  .cabecera__titulo,
+  .cabecera__subtitulo {
+    position: relative;
   }
 
   .cabecera__titulo {

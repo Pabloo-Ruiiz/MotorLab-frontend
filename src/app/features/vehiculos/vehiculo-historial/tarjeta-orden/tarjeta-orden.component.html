@@ -1,0 +1,86 @@
+<ng-template #icono let-trazado let-tamano="tamano">
+  <svg
+    [attr.width]="tamano"
+    [attr.height]="tamano"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path [attr.d]="trazado" />
+  </svg>
+</ng-template>
+
+@let o = orden();
+
+<article class="orden" [class.orden--finalizada]="finalizada()" [attr.data-tono]="tono()">
+  <div class="orden__cabecera">
+    <span class="orden__icono" [attr.title]="servicio()">
+      <ng-container
+        *ngTemplateOutlet="icono; context: { $implicit: iconoServicio(), tamano: 22 }"
+      />
+    </span>
+
+    <h3 class="orden__titulo">
+      <a class="orden__enlace" [routerLink]="['/cliente/ordenes', o.ordenId]">
+        <span class="orden__numero">#{{ o.ordenId }}</span>
+        <span class="orden__vehiculo">{{ o.marca }} {{ o.modelo }}</span>
+      </a>
+    </h3>
+
+    <span class="estado-orden">{{ estado() }}</span>
+  </div>
+
+  <div class="orden__datos">
+    <span class="orden__servicio">{{ servicio() }}</span>
+    @if (o.matricula) {
+      <span class="placa">
+        <span class="placa__banda" aria-hidden="true">E</span>
+        {{ matriculaLegible(o.matricula) }}
+      </span>
+    }
+  </div>
+
+  <div class="progreso">
+    <div class="progreso__textos">
+      <span class="progreso__etiqueta">Progreso</span>
+      <span class="progreso__valor">{{ o.progreso }}%</span>
+    </div>
+    <div
+      class="progreso__pista"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="o.progreso"
+      [attr.aria-label]="'Progreso de la orden ' + o.ordenId"
+    >
+      <div class="progreso__relleno" [style.--progreso]="o.progreso"></div>
+    </div>
+  </div>
+
+  @if (o.fechaEntrada || o.fechaEstimada) {
+    <dl class="orden__fechas">
+      @if (o.fechaEntrada; as fecha) {
+        <div class="orden__fecha">
+          <ng-container
+            *ngTemplateOutlet="icono; context: { $implicit: iconoCalendario, tamano: 14 }"
+          />
+          <dt>Entrada</dt>
+          <dd>{{ fecha | fechaHora: 'corta' }}</dd>
+        </div>
+      }
+      @if (o.fechaEstimada; as fecha) {
+        <div class="orden__fecha">
+          <ng-container
+            *ngTemplateOutlet="icono; context: { $implicit: iconoBandera, tamano: 14 }"
+          />
+          <dt>Listo estimado</dt>
+          <dd>{{ fecha | fechaHora: 'completa' }}</dd>
+        </div>
+      }
+    </dl>
+  }
+</article>

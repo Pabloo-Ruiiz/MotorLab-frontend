@@ -40,7 +40,9 @@
             <button
               type="button"
               class="tarjeta item"
+              [id]="'aviso-' + notificacion.id"
               [class.item--sin-leer]="!notificacion.leida"
+              [class.item--destacado]="destacado() === notificacion.id"
               [disabled]="notificacion.leida && notificacion.ordenId === null"
               (click)="abrir(notificacion)"
             >

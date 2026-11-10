@@ -21,7 +21,20 @@
       [attr.aria-current]="paso.actual ? 'step' : null"
     >
       <span class="paso__marca" aria-hidden="true">
-        @if (paso.hecho) {
+        @if (destacada() && (paso.actual || !paso.hecho)) {
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path [attr.d]="paso.icono" />
+          </svg>
+        } @else if (paso.hecho) {
           <svg
             width="16"
             height="16"
@@ -40,13 +53,16 @@
         <p class="paso__titulo">
           {{ paso.titulo }}
           <span class="sr-only">({{ paso.lectura }})</span>
+          @if (destacada() && paso.actual) {
+            <span class="paso__ahora" aria-hidden="true">Fase actual</span>
+          }
         </p>
         <p class="paso__descripcion">{{ paso.descripcion }}</p>
       </div>
 
       @if (paso.fechaHora; as fechaHora) {
         <time class="paso__hora" [attr.datetime]="fechaHora">{{
-          fechaHora | fechaHora: 'hora'
+          fechaHora | fechaHora: (destacada() ? 'completa' : 'hora')
         }}</time>
       }
     </li>

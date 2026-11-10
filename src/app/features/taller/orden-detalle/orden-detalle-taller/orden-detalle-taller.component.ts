@@ -43,6 +43,7 @@ import { PillUrgenciaComponent } from '@shared/components/pill-urgencia/pill-urg
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
 import { EurosPipe } from '@shared/pipes/euros.pipe';
 import { FechaHoraPipe } from '@shared/pipes/fecha-hora.pipe';
+import { IconoCocheComponent } from '@shared/components/icono-coche/icono-coche.component';
 
 const MAX_ELEVADOR = 20;
 const MAX_NOTA = 200;
@@ -70,6 +71,7 @@ interface DatosOrden {
     ErroresCampoComponent,
     EurosPipe,
     FechaHoraPipe,
+    IconoCocheComponent,
     LineaTiempoComponent,
     MatriculaComponent,
     ModalConfirmacionComponent,

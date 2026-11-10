@@ -32,11 +32,7 @@
       <section class="tarjeta" aria-labelledby="orden-vehiculo">
         <h2 class="etiqueta" id="orden-vehiculo">Vehículo</h2>
         <div class="vehiculo">
-          <svg class="vehiculo__icono" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path
-              d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11h1a2 2 0 0 1 2 2v3a1 1 0 0 1-1 1h-1a2.5 2.5 0 0 1-5 0H9a2.5 2.5 0 0 1-5 0H3a1 1 0 0 1-1-1v-3a2 2 0 0 1 2-2h1zm2.1 0h9.8l-1.2-3.6a.5.5 0 0 0-.5-.4H8.8a.5.5 0 0 0-.5.4L7.1 11z"
-            />
-          </svg>
+          <app-icono-coche class="vehiculo__icono" />
           <div>
             <strong>
               {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }}

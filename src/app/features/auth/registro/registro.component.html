@@ -1,92 +1,103 @@
 <header class="cabecera">
-  <p class="cabecera__titulo">Taller Martínez</p>
+  <app-logo class="cabecera__fondo" />
+  <p class="cabecera__titulo">Taller MotorLab</p>
   <p class="cabecera__subtitulo">Área de clientes</p>
 </header>
 
 <main class="pagina">
-  <div class="logo" aria-hidden="true">T</div>
-  <h1 class="titulo">Crea tu cuenta</h1>
-  <p class="subtitulo">Sigue tus reparaciones sin llamar al taller</p>
+  <app-logo class="logo" />
+  @if (correoPendiente(); as correo) {
+    <h1 class="titulo">Revisa tu correo</h1>
+    <p class="subtitulo">
+      Te hemos enviado un enlace a <strong>{{ correo }}</strong> para confirmar que es tuyo. Caduca
+      en 24 horas.
+    </p>
+    <app-reenviar-correo [email]="correo" />
+    <a class="btn btn--primario" routerLink="/login">Ir a iniciar sesión</a>
+  } @else {
+    <h1 class="titulo">Crea tu cuenta</h1>
+    <p class="subtitulo">Sigue tus reparaciones sin llamar al taller</p>
 
-  <nav class="segmentado" aria-label="Acceso">
-    <a class="segmentado__opcion pestana" routerLink="/login">Iniciar sesión</a>
-    <a class="segmentado__opcion segmentado__opcion--activa pestana" routerLink="/registro" aria-current="page">
-      Crear cuenta
-    </a>
-  </nav>
+    <nav class="segmentado" aria-label="Acceso">
+      <a class="segmentado__opcion pestana" routerLink="/login">Iniciar sesión</a>
+      <a class="segmentado__opcion segmentado__opcion--activa pestana" routerLink="/registro" aria-current="page">
+        Crear cuenta
+      </a>
+    </nav>
 
-  @if (errorGeneral(); as error) {
-    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
-  }
+    @if (errorGeneral(); as error) {
+      <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    }
 
-  <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()">
-    <div class="campo" [class.campo--error]="campoConError(form.controls.nombre)">
-      <label for="registro-nombre">Nombre</label>
-      <input
-        id="registro-nombre"
-        type="text"
-        autocomplete="name"
-        formControlName="nombre"
-        [attr.aria-invalid]="campoConError(form.controls.nombre)"
-        aria-describedby="registro-nombre-error"
-      />
-      <app-errores-campo id="registro-nombre-error" [control]="form.controls.nombre" />
-    </div>
-
-    <div class="campo" [class.campo--error]="campoConError(form.controls.email)">
-      <label for="registro-email">Correo electrónico</label>
-      <input
-        id="registro-email"
-        type="email"
-        autocomplete="email"
-        formControlName="email"
-        [attr.aria-invalid]="campoConError(form.controls.email)"
-        aria-describedby="registro-email-error"
-      />
-      <app-errores-campo id="registro-email-error" [control]="form.controls.email" />
-    </div>
-
-    <div class="campo" [class.campo--error]="campoConError(form.controls.telefono)">
-      <label for="registro-telefono">Teléfono</label>
-      <input
-        id="registro-telefono"
-        type="tel"
-        autocomplete="tel"
-        formControlName="telefono"
-        [attr.aria-invalid]="campoConError(form.controls.telefono)"
-        aria-describedby="registro-telefono-error"
-      />
-      <app-errores-campo id="registro-telefono-error" [control]="form.controls.telefono" />
-    </div>
-
-    <div class="campo" [class.campo--error]="campoConError(form.controls.password)">
-      <label for="registro-password">Contraseña</label>
-      <input
-        id="registro-password"
-        type="password"
-        autocomplete="new-password"
-        formControlName="password"
-        [attr.aria-invalid]="campoConError(form.controls.password)"
-        aria-describedby="registro-password-error"
-      />
-      <app-errores-campo id="registro-password-error" [control]="form.controls.password" />
-    </div>
-
-    <div class="campo">
-      <label class="casilla">
+    <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()">
+      <div class="campo" [class.campo--error]="campoConError(form.controls.nombre)">
+        <label for="registro-nombre">Nombre</label>
         <input
-          type="checkbox"
-          formControlName="aceptaPrivacidad"
-          aria-describedby="registro-privacidad-error"
-          [attr.aria-invalid]="campoConError(form.controls.aceptaPrivacidad)"
+          id="registro-nombre"
+          type="text"
+          autocomplete="name"
+          formControlName="nombre"
+          [attr.aria-invalid]="campoConError(form.controls.nombre)"
+          aria-describedby="registro-nombre-error"
         />
-        <span>Acepto la política de privacidad del taller</span>
-      </label>
-      <app-errores-campo id="registro-privacidad-error" [control]="form.controls.aceptaPrivacidad" />
-    </div>
+        <app-errores-campo id="registro-nombre-error" [control]="form.controls.nombre" />
+      </div>
 
-    <button type="submit" class="btn btn--primario" [disabled]="enviando()">
-      {{ enviando() ? 'Creando cuenta…' : 'Crear cuenta' }}
-    </button>
-  </form>
+      <div class="campo" [class.campo--error]="campoConError(form.controls.email)">
+        <label for="registro-email">Correo electrónico</label>
+        <input
+          id="registro-email"
+          type="email"
+          autocomplete="email"
+          formControlName="email"
+          [attr.aria-invalid]="campoConError(form.controls.email)"
+          aria-describedby="registro-email-error"
+        />
+        <app-errores-campo id="registro-email-error" [control]="form.controls.email" />
+      </div>
+
+      <div class="campo" [class.campo--error]="campoConError(form.controls.telefono)">
+        <label for="registro-telefono">Teléfono</label>
+        <input
+          id="registro-telefono"
+          type="tel"
+          autocomplete="tel"
+          formControlName="telefono"
+          [attr.aria-invalid]="campoConError(form.controls.telefono)"
+          aria-describedby="registro-telefono-error"
+        />
+        <app-errores-campo id="registro-telefono-error" [control]="form.controls.telefono" />
+      </div>
+
+      <div class="campo" [class.campo--error]="campoConError(form.controls.password)">
+        <label for="registro-password">Contraseña</label>
+        <input
+          id="registro-password"
+          type="password"
+          autocomplete="new-password"
+          formControlName="password"
+          [attr.aria-invalid]="campoConError(form.controls.password)"
+          aria-describedby="registro-password-error"
+        />
+        <app-errores-campo id="registro-password-error" [control]="form.controls.password" />
+      </div>
+
+      <div class="campo">
+        <label class="casilla">
+          <input
+            type="checkbox"
+            formControlName="aceptaPrivacidad"
+            aria-describedby="registro-privacidad-error"
+            [attr.aria-invalid]="campoConError(form.controls.aceptaPrivacidad)"
+          />
+          <span>Acepto la política de privacidad del taller</span>
+        </label>
+        <app-errores-campo id="registro-privacidad-error" [control]="form.controls.aceptaPrivacidad" />
+      </div>
+
+      <button type="submit" class="btn btn--primario" [disabled]="enviando()">
+        {{ enviando() ? 'Creando cuenta…' : 'Crear cuenta' }}
+      </button>
+    </form>
+  }
 </main>

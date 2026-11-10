@@ -1,10 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
 import { AuthService } from '@core/services/auth.service';
-import { ToastService } from '@core/services/toast.service';
 import { ApiError } from '@core/util/api-error';
 import { RegistroComponent } from './registro.component';
 
@@ -31,11 +30,7 @@ describe('RegistroComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [RegistroComponent],
-      providers: [
-        provideRouter([]),
-        { provide: AuthService, useValue: authSimulado },
-        { provide: ToastService, useValue: { exito: vi.fn() } }
-      ]
+      providers: [provideRouter([]), { provide: AuthService, useValue: authSimulado }]
     });
 
     fixture = TestBed.createComponent(RegistroComponent);
@@ -54,6 +49,22 @@ describe('RegistroComponent', () => {
     await enviar();
 
     expect(authSimulado.registro).not.toHaveBeenCalled();
+  });
+
+  it('un registro correcto pide revisar el correo y oculta el formulario', async () => {
+    authSimulado.registro.mockReturnValue(of({ email: 'laura@cliente.example' }));
+    escribir('#registro-nombre', 'Laura Gómez');
+    escribir('#registro-email', 'laura@cliente.example');
+    escribir('#registro-telefono', '600 000 000');
+    escribir('#registro-password', 'secreto123');
+    (elemento.querySelector('input[type=checkbox]') as HTMLInputElement).click();
+
+    await enviar();
+
+    expect(elemento.textContent).toContain('Revisa tu correo');
+    expect(elemento.textContent).toContain('laura@cliente.example');
+    expect(elemento.querySelector('form')).toBeNull();
+    expect(elemento.querySelector('app-reenviar-correo')).not.toBeNull();
   });
 
   it('un 409 EMAIL_DUPLICADO deja el error de servidor en el control email', async () => {

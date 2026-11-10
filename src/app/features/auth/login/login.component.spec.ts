@@ -85,4 +85,26 @@ describe('LoginComponent', () => {
     );
     expect(navegar).not.toHaveBeenCalled();
   });
+
+  it('sin correo confirmado ofrece reenviarlo', async () => {
+    const mensaje = 'Debes confirmar tu correo antes de iniciar sesión.';
+    authSimulado.login.mockReturnValue(
+      throwError(() => new ApiError(403, 'EMAIL_NO_VERIFICADO', mensaje))
+    );
+
+    await rellenarYEnviar();
+
+    expect(elemento.querySelector('.aviso--rojo')?.textContent).toContain(mensaje);
+    expect(elemento.querySelector('app-reenviar-correo')).not.toBeNull();
+  });
+
+  it('con credenciales incorrectas no ofrece reenviar el correo', async () => {
+    authSimulado.login.mockReturnValue(
+      throwError(() => new ApiError(401, 'NO_AUTENTICADO', 'Credenciales incorrectas'))
+    );
+
+    await rellenarYEnviar();
+
+    expect(elemento.querySelector('app-reenviar-correo')).toBeNull();
+  });
 });

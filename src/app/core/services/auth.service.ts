@@ -3,7 +3,15 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, EMPTY, map, Observable, of, tap } from 'rxjs';
 
-import type { LoginRequest, LoginResponse, RegistroRequest, Rol, Usuario } from '@core/models';
+import type {
+  LoginRequest,
+  LoginResponse,
+  ReenviarVerificacionRequest,
+  RegistroRequest,
+  Rol,
+  Usuario,
+  VerificarEmailRequest
+} from '@core/models';
 import { environment } from '@env/environment';
 
 const CLAVE_TOKEN = 'motorlab.token';
@@ -34,6 +42,18 @@ export class AuthService {
 
   registro(datos: RegistroRequest): Observable<Usuario> {
     return this.http.post<Usuario>(`${environment.apiUrl}/auth/registro`, datos);
+  }
+
+  verificarEmail(token: string): Observable<void> {
+    const cuerpo: VerificarEmailRequest = { token };
+
+    return this.http.post<void>(`${environment.apiUrl}/auth/verificar-email`, cuerpo);
+  }
+
+  reenviarVerificacion(email: string): Observable<void> {
+    const cuerpo: ReenviarVerificacionRequest = { email };
+
+    return this.http.post<void>(`${environment.apiUrl}/auth/reenviar-verificacion`, cuerpo);
   }
 
   // Nunca emite un error: un fallo aquí no debe impedir que arranque la aplicación

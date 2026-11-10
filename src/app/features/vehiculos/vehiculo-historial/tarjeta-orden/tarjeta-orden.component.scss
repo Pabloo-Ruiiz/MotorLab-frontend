@@ -1,0 +1,242 @@
+:host {
+  display: block;
+}
+
+.orden {
+  position: relative; // referencia del área clicable de .orden__enlace
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+  padding: var(--mo-esp-16);
+  overflow: hidden;
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-16);
+  background-color: rgb(255 255 255 / 70%); // deja ver la filigrana sin cortes
+  box-shadow: 0 1px 2px rgb(0 0 0 / 3%);
+  transition:
+    border-color var(--mo-transicion),
+    box-shadow var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  // Filete de color del estado en el borde izquierdo
+  &::before {
+    content: '';
+    position: absolute;
+    top: var(--mo-esp-16);
+    bottom: var(--mo-esp-16);
+    left: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background-color: var(--tono);
+    opacity: 0.7;
+  }
+
+  &:has(.orden__enlace:active) {
+    transform: scale(var(--mo-escala-tarjeta));
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-niebla);
+      box-shadow: 0 8px 24px -12px rgb(0 0 0 / 18%);
+    }
+  }
+
+  @media (min-width: 768px) {
+    padding: var(--mo-esp-20) var(--mo-esp-24);
+  }
+}
+
+.orden__cabecera {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--mo-esp-12) var(--mo-esp-16);
+}
+
+.orden__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-esp-48);
+  height: var(--mo-esp-48);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-crema);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 4%);
+  color: var(--mo-tinta);
+}
+
+.orden__titulo {
+  min-width: 0;
+  font-size: inherit;
+}
+
+.orden__enlace {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: inherit;
+  text-decoration: none;
+
+  // Extiende el enlace a toda la tarjeta
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--mo-radio-16);
+  }
+
+  // El foco rodea toda la tarjeta, que es el área que se puede pulsar
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+
+    &::after {
+      outline: 2px solid var(--mo-tinta);
+      outline-offset: -2px;
+    }
+  }
+}
+
+.orden__numero {
+  color: var(--mo-acero);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+  letter-spacing: var(--mo-tracking-mono);
+}
+
+.orden__vehiculo {
+  font-size: var(--mo-tipo-18);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-titulo);
+  line-height: 24px;
+  overflow-wrap: anywhere;
+}
+
+// En tarjetas estrechas el estado baja para que el nombre del vehículo tenga sitio
+@container (max-width: 440px) {
+  .orden__cabecera {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .estado-orden {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+.orden__datos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-8);
+}
+
+.orden__servicio {
+  padding: 2px var(--mo-esp-8);
+  border-radius: var(--mo-radio-6);
+  background-color: var(--mo-arena);
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-medio);
+  line-height: 22px;
+}
+
+// .placa es global (_componentes.scss): aquí, más discreta y con la banda a toda altura
+.placa {
+  font-size: var(--mo-tipo-12);
+}
+
+.placa__banda {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progreso {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progreso__textos {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.progreso__etiqueta {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+}
+
+.progreso__valor {
+  color: var(--tono);
+  font-size: var(--mo-tipo-14);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--mo-peso-medio);
+}
+
+.progreso__pista {
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-arena);
+}
+
+// Escala en lugar de anchura: la animación no recalcula la maquetación de la tarjeta
+.progreso__relleno {
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--tono);
+  transform: scaleX(clamp(0, calc(var(--progreso) / 100), 1));
+  transform-origin: left;
+  transition: transform 600ms var(--mo-curva-salida);
+
+  @starting-style {
+    transform: scaleX(calc(1 - var(--mo-movimiento)));
+  }
+}
+
+.orden__fechas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-4) var(--mo-esp-20);
+  margin: 0;
+  padding-top: var(--mo-esp-12);
+  border-top: 1px solid var(--mo-arena);
+}
+
+.orden__fecha {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+
+  svg {
+    flex-shrink: 0;
+    color: var(--mo-niebla);
+  }
+
+  dt::after {
+    content: ':';
+  }
+
+  dd {
+    margin: 0;
+    color: var(--mo-pizarra);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// Las órdenes cerradas pasan a segundo plano sin perder legibilidad
+.orden--finalizada {
+  background-color: rgb(249 248 246 / 70%);
+
+  .orden__icono {
+    color: var(--mo-acero);
+  }
+}

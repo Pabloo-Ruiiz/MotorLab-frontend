@@ -35,6 +35,14 @@ export interface LoginResponse {
   usuario: Usuario;
 }
 
+export interface VerificarEmailRequest {
+  token: string;
+}
+
+export interface ReenviarVerificacionRequest {
+  email: string;
+}
+
 export interface UsuarioCreateRequest {
   nombre: string;
   email: string;

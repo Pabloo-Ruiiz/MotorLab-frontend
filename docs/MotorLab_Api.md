@@ -191,14 +191,16 @@ interface Metricas {                                                            
 
 ## 3. Endpoints por recurso
 
-Leyenda de roles: **C** = cliente, **M** = mecánico, **A** = administrador. Todos los endpoints llevan `Bearer` salvo `auth/registro` y `auth/login`.
+Leyenda de roles: **C** = cliente, **M** = mecánico, **A** = administrador. Todos los endpoints llevan `Bearer` salvo `auth/registro`, `auth/login`, `auth/verificar-email` y `auth/reenviar-verificacion`.
 
 ### Autenticación
 
 | Método y ruta | Roles | Cuerpo | Respuesta |
 |---|---|---|---|
 | `POST /auth/registro` | público | `RegistroRequest` | 201 `Usuario` |
-| `POST /auth/login` | público | `LoginRequest` | 200 `LoginResponse` |
+| `POST /auth/login` | público | `LoginRequest` | 200 `LoginResponse` (403 `EMAIL_NO_VERIFICADO` si falta confirmar el correo) |
+| `POST /auth/verificar-email` | público | `VerificarEmailRequest` | 204 (400 `TOKEN_INVALIDO`) |
+| `POST /auth/reenviar-verificacion` | público | `ReenviarVerificacionRequest` | 204 siempre |
 | `GET /auth/yo` | todos | — | 200 `Usuario` |
 
 ### Vehículos

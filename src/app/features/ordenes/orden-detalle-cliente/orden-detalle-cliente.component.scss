@@ -1,11 +1,92 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
 }
 
+// Fija al centro del área de contenido: no se mueve al desplazar la pantalla
+.filigrana {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  width: min(72vw, 600px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.04;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+
+  @media (min-width: 768px) {
+    left: calc(50% + var(--mo-ancho-lateral) / 2);
+  }
+}
+
+// El contenedor decide la rejilla: la barra lateral resta ancho a la pantalla
 .detalle {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-32);
+  gap: var(--mo-esp-20);
+}
+
+// Acerca el texto al título, que pinta el layout con su propio margen inferior
+.descripcion {
+  margin-top: calc(var(--mo-esp-12) * -1);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-16);
+
+  @media (min-width: 768px) {
+    margin-top: calc(var(--mo-esp-16) * -1);
+  }
+}
+
+.resumen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-8) var(--mo-esp-16);
+}
+
+.resumen__orden {
+  display: flex;
+  align-items: baseline;
+  gap: var(--mo-esp-8);
+}
+
+.resumen__etiqueta {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+}
+
+.resumen__numero {
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-24);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-mono);
+}
+
+// Translúcido, como las tarjetas de «Mis órdenes»: la filigrana se ve entera, sin cortes
+.panel {
+  padding: var(--mo-esp-20);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-16);
+  background-color: rgb(255 255 255 / 60%);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 3%);
+
+  @media (min-width: 768px) {
+    padding: var(--mo-esp-24);
+  }
+}
+
+.panel__titulo {
+  margin-bottom: var(--mo-esp-20);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: 0;
+  line-height: 20px;
 }
 
 .presupuesto {
@@ -14,8 +95,12 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--mo-esp-12);
-  border: 1px solid var(--mo-tinta);
-  background-color: var(--mo-arena);
+  border-color: var(--mo-tinta);
+}
+
+.presupuesto__texto {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
 }
 
 .presupuesto__total {
@@ -23,54 +108,171 @@
   font-weight: var(--mo-peso-normal);
 }
 
+.presupuesto-autorizado {
+  align-self: flex-start;
+  font-size: var(--mo-tipo-14);
+}
+
+// El elemento principal: la única superficie oscura de la pantalla
 .estimado {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-8);
-}
-
-.estimado__etiqueta {
-  color: var(--mo-acero);
-  font-size: var(--mo-tipo-14);
+  gap: var(--mo-esp-16);
+  padding: var(--mo-esp-24);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-tinta);
+  color: var(--mo-blanco);
+  box-shadow: 0 12px 28px -18px rgb(0 0 0 / 45%);
 }
 
 .estimado__fila {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: var(--mo-esp-8);
+  gap: var(--mo-esp-16);
+}
+
+.estimado__etiqueta {
+  color: rgb(255 255 255 / 70%);
+  font-size: var(--mo-tipo-12);
 }
 
 .estimado__fecha {
-  font-size: var(--mo-tipo-24);
+  display: block;
+  font-size: var(--mo-tipo-18);
+  font-variant-numeric: tabular-nums;
   font-weight: var(--mo-peso-normal);
+  line-height: 28px;
+
+  @media (min-width: 768px) {
+    font-size: var(--mo-tipo-24);
+    line-height: 32px;
+  }
 }
 
 .estimado__porcentaje {
-  color: var(--mo-tinta);
-  font-size: var(--mo-tipo-16);
+  font-size: var(--mo-tipo-48);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--mo-peso-normal);
+  letter-spacing: var(--mo-tracking-titulo);
+  line-height: 1;
 }
 
-.tarjeta__titulo {
-  margin-bottom: var(--mo-esp-8);
-  font-size: var(--mo-tipo-16);
+.estimado__pista {
+  height: var(--mo-esp-8);
+  overflow: hidden;
+  border-radius: var(--mo-radio-pildora);
+  background-color: rgb(255 255 255 / 18%);
+}
+
+// Escala en lugar de anchura: la animación no recalcula la maquetación
+.estimado__relleno {
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--mo-blanco);
+  transform: scaleX(clamp(0, calc(var(--progreso) / 100), 1));
+  transform-origin: left;
+  transition: transform 600ms var(--mo-curva-salida);
+
+  @starting-style {
+    transform: scaleX(calc(1 - var(--mo-movimiento)));
+  }
+}
+
+.estimado__estado {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+}
+
+.rejilla,
+.columna {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--mo-esp-20);
+}
+
+@container (min-width: 640px) {
+  .rejilla {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+}
+
+.vehiculo {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+}
+
+.vehiculo__icono {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-esp-48);
+  height: var(--mo-esp-48);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-crema);
+
+  app-icono-coche {
+    width: var(--mo-esp-32);
+    height: var(--mo-esp-32);
+  }
+}
+
+.vehiculo__nombre {
+  min-width: 0;
+  font-size: var(--mo-tipo-18);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-titulo);
+  overflow-wrap: anywhere;
+}
+
+.vehiculo__placa {
+  margin-top: var(--mo-esp-16);
 }
 
 .datos {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-12);
+  gap: var(--mo-esp-16);
   margin: 0;
+}
+
+// El icono va dentro de <dt> porque un grupo de <dl> solo admite <dt> y <dd>
+.dato {
+  position: relative;
+  padding-left: var(--mo-esp-32);
 
   dt {
     color: var(--mo-acero);
-    font-size: var(--mo-tipo-14);
-    font-weight: var(--mo-peso-medio);
+    font-size: var(--mo-tipo-12);
   }
 
   dd {
-    margin: 0;
+    margin: 2px 0 0;
+    font-size: var(--mo-tipo-14);
     overflow-wrap: anywhere;
+  }
+
+  svg {
+    position: absolute;
+    top: 2px;
+    left: 0;
+  }
+}
+
+// Más suave que el botón de peligro general; se rellena de rojo solo al apuntar
+.cancelar {
+  align-self: flex-end;
+  border-color: transparent;
+  background-color: var(--mo-error-fondo);
+
+  @container (max-width: 479px) {
+    align-self: stretch;
   }
 }
