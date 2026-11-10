@@ -24,13 +24,15 @@
   position: relative; // referencia del área clicable de .orden__enlace
   gap: var(--mo-esp-8);
 
-  &:hover {
-    box-shadow: var(--mo-sombra-media);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: var(--mo-sombra-anillo);
+    }
   }
 }
 
 .orden--presupuesto {
-  border: 2px solid var(--mo-naranja);
+  border: 1px solid var(--mo-tinta);
 }
 
 .orden__cabecera {
@@ -53,12 +55,12 @@
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: var(--mo-radio-12);
+    border-radius: var(--mo-radio-16);
   }
 }
 
 .orden__detalle {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
@@ -71,8 +73,8 @@
 }
 
 .orden__total {
-  font-size: var(--mo-tipo-21);
-  font-weight: 800;
+  font-size: var(--mo-tipo-24);
+  font-weight: var(--mo-peso-normal);
 }
 
 // Por encima del área clicable de la tarjeta
@@ -85,5 +87,5 @@
   position: sticky;
   bottom: var(--mo-esp-16);
   align-self: flex-end;
-  box-shadow: var(--mo-sombra-media);
+  box-shadow: var(--mo-sombra-anillo);
 }

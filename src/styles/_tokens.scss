@@ -1,60 +1,105 @@
-// Tokens de diseño de MotorLab, disponibles como variables CSS en toda la aplicación.
+// Tokens de diseño de MotorLab (docs/DESIGN.md), disponibles como variables CSS en toda la aplicación.
 
 :root {
-  // Colores de marca y de estado
-  --mo-naranja: #e8651a;
-  --mo-naranja-claro: #fdebdd;
-  --mo-noche: #1b1c2b;
-  --mo-fondo: #f4f5f7;
-  --mo-texto: #15151c;
-  --mo-gris: #7c808c;
-  --mo-linea: #e4e6eb;
-  --mo-verde: #1fa463;
-  --mo-verde-claro: #e3f5eb;
-  --mo-rojo: #e5383b;
-  --mo-rojo-claro: #fde8e8;
-  --mo-ambar: #8a5e06;
-  --mo-ambar-claro: #fff1d0;
-  --mo-azul: #2f6fde;
-  --mo-azul-claro: #e5eefd;
+  // Superficies
   --mo-blanco: #ffffff;
+  --mo-crema: #f9f8f6;
+  --mo-arena: #f2ede5;
+  --mo-carbon: #151515;
+  --mo-velo: rgb(10 10 10 / 40%);
 
-  // Variantes oscuras para texto: garantizan un contraste mínimo de 4,5:1 (WCAG AA)
-  --mo-naranja-oscuro: #b34709;
-  --mo-verde-oscuro: #14703f;
-  --mo-rojo-oscuro: #b42326;
-  --mo-azul-oscuro: #1f55b8;
-  --mo-gris-oscuro: #5c606b;
+  // Texto. El texto informativo usa --mo-acero: --mo-niebla (3,7:1) y --mo-peltre (2,7:1) no
+  // alcanzan el 4,5:1 de WCAG AA y se reservan para iconos, bordes de controles y detalles
+  --mo-tinta: #0a0a0a;
+  --mo-pizarra: #3b3b3b;
+  --mo-acero: #545454;
+  --mo-niebla: #858585;
+  --mo-peltre: #9d9d9d;
 
-  // Texto sobre fondo naranja: el blanco solo alcanza 3,33:1
-  --mo-sobre-naranja: var(--mo-noche);
+  // Bordes
+  --mo-linea: #d5d9e2;
 
-  // Espaciado
+  // Colores funcionales: solo para errores y para el punto de estado de las etiquetas
+  --mo-error: #b42326;
+  --mo-error-fondo: #fbefec;
+  --mo-punto-rojo: #ff5f57;
+  --mo-punto-ambar: #ffbd2e;
+  --mo-punto-verde: #28c840;
+
+  // Espaciado (múltiplos de 4 px)
   --mo-esp-4: 4px;
   --mo-esp-8: 8px;
   --mo-esp-12: 12px;
   --mo-esp-16: 16px;
+  --mo-esp-20: 20px;
   --mo-esp-24: 24px;
   --mo-esp-32: 32px;
+  --mo-esp-40: 40px;
+  --mo-esp-48: 48px;
+  --mo-esp-64: 64px;
+  --mo-esp-96: 96px;
+
+  // Medidas de la interfaz
+  --mo-ancho-pagina: 1200px;
+  --mo-ancho-cliente: 760px;
+  --mo-ancho-lateral: 248px;
+  --mo-alto-barra: 64px;
+  --mo-relleno-tarjeta: var(--mo-esp-24);
+  --mo-tactil: 44px;
 
   // Radios
+  --mo-radio-6: 6px;
   --mo-radio-8: 8px;
-  --mo-radio-12: 12px;
-  --mo-radio-pildora: 999px;
+  --mo-radio-16: 16px;
+  --mo-radio-pildora: 9999px;
 
-  // Sombras
-  --mo-sombra-suave: 0 1px 3px rgb(27 28 43 / 8%);
-  --mo-sombra-media: 0 4px 12px rgb(27 28 43 / 10%);
+  // Sombras: un anillo fino como única profundidad; la elevada queda para capas flotantes
+  --mo-sombra-anillo: 0 0 0 1px rgb(10 10 10 / 15%);
+  --mo-sombra-elevada: 0 0 0 1px rgb(0 0 0 / 6%), 0 18px 40px -24px rgb(15 23 42 / 18%);
 
-  // Tipografía
-  --mo-familia: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  // Movimiento. La salida siempre es más rápida que la entrada: el usuario ya ha decidido
+  --mo-transicion: 150ms ease; // cambios de color al apuntar
+  --mo-curva-salida: cubic-bezier(0.23, 1, 0.32, 1);
+  --mo-pulsar: 160ms var(--mo-curva-salida);
+  --mo-duracion-entrada: 200ms;
+  --mo-duracion-salida: 120ms;
+  --mo-escala-pulsado: 0.97;
+  --mo-escala-tarjeta: 0.99;
+  --mo-escala-entrada: 0.96;
+  --mo-movimiento: 1; // multiplica los desplazamientos
+
+  // Tipografía. Inter variable aplica por sí sola su corte Display en los tamaños grandes
+  --mo-familia:
+    'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --mo-mono:
+    'Geist Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --mo-tipo-12: 12px;
-  --mo-tipo-13: 13px;
   --mo-tipo-14: 14px;
   --mo-tipo-16: 16px;
-  --mo-tipo-21: 21px;
-  --mo-tipo-26: 26px;
+  --mo-tipo-18: 18px;
+  --mo-tipo-24: 24px;
+  --mo-tipo-30: 30px;
+  --mo-tipo-48: 48px;
+  --mo-tipo-72: 72px;
+  --mo-peso-normal: 400;
+  --mo-peso-medio: 500;
+  --mo-tracking-titulo: -0.025em;
+  --mo-tracking-mono: -0.01em;
+}
 
-  // Tamaño mínimo de los objetivos táctiles
-  --mo-tactil: 44px;
+@media (min-width: 768px) {
+  :root {
+    --mo-relleno-tarjeta: var(--mo-esp-32);
+  }
+}
+
+// Movimiento reducido: sin escalas ni desplazamientos, pero se conservan los fundidos y colores
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --mo-escala-pulsado: 1;
+    --mo-escala-tarjeta: 1;
+    --mo-escala-entrada: 1;
+    --mo-movimiento: 0;
+  }
 }

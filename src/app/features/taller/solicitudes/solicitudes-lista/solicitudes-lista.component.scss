@@ -5,19 +5,7 @@
 .solicitudes {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-16);
-}
-
-.encabezado {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--mo-esp-16);
-}
-
-.encabezado__texto {
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-14);
+  gap: var(--mo-esp-32);
 }
 
 .filtros {
@@ -34,36 +22,29 @@
   }
 }
 
-.reintentar {
-  align-self: flex-start;
-}
-
-// En pantallas estrechas la tabla se desplaza dentro de su contenedor, no toda la página
-.tabla-contenedor {
-  overflow-x: auto;
-}
-
 .fila {
   cursor: pointer;
 
-  &:hover,
   &:focus-within {
-    background-color: var(--mo-fondo);
+    background-color: var(--mo-arena);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: var(--mo-arena);
+    }
   }
 }
 
 .fila--alta {
-  background-color: color-mix(in srgb, var(--mo-naranja-claro) 40%, transparent);
-
-  &:hover,
-  &:focus-within {
-    background-color: var(--mo-naranja-claro);
-  }
+  background-color: color-mix(in srgb, var(--mo-arena) 40%, transparent);
 }
 
 .fila__numero {
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
   white-space: nowrap;
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
 }
 
 .fila__enlace {
@@ -71,15 +52,3 @@
   text-decoration: none;
 }
 
-.pie {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--mo-esp-12);
-}
-
-.pie__texto {
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-14);
-}

@@ -17,7 +17,7 @@
 
 // Mismo aspecto que un campo deshabilitado de _componentes.scss
 .campo input[readonly] {
-  background-color: var(--mo-fondo);
-  color: var(--mo-gris-oscuro);
+  background-color: var(--mo-arena);
+  color: var(--mo-acero);
   cursor: not-allowed;
 }

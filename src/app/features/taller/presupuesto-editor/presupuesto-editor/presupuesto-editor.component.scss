@@ -5,15 +5,11 @@
 .editor {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-16);
-}
-
-.reintentar {
-  align-self: flex-start;
+  gap: var(--mo-esp-32);
 }
 
 .texto-suave {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
 }
 
 .encabezado {
@@ -25,11 +21,6 @@
   .texto-suave {
     font-size: var(--mo-tipo-14);
   }
-}
-
-// En pantallas estrechas la tabla se desplaza dentro de su contenedor, no toda la página
-.tabla-contenedor {
-  overflow-x: auto;
 }
 
 .concepto {
@@ -50,7 +41,7 @@ th.numero {
 }
 
 .importe {
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
 }
 
 .sin-salto {
@@ -71,17 +62,23 @@ th.numero {
   border: 0;
   border-radius: var(--mo-radio-8);
   background-color: transparent;
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   cursor: pointer;
+  transition:
+    background-color var(--mo-transicion),
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
 
   svg {
     width: 20px;
     height: 20px;
   }
 
-  &:hover:not(:disabled) {
-    background-color: var(--mo-fondo);
-    color: var(--mo-texto);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background-color: var(--mo-arena);
+      color: var(--mo-tinta);
+    }
   }
 
   &:disabled {
@@ -127,7 +124,7 @@ th.numero {
   flex-direction: column;
   gap: var(--mo-esp-4);
   margin: 0;
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 
   dd {
@@ -144,13 +141,13 @@ th.numero {
 
 .totales__fila--total {
   margin-top: var(--mo-esp-8);
-  color: var(--mo-texto);
+  color: var(--mo-tinta);
   font-size: var(--mo-tipo-16);
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
 
   dd {
-    font-size: var(--mo-tipo-26);
-    font-weight: 800;
+    font-size: var(--mo-tipo-30);
+    font-weight: var(--mo-peso-normal);
     white-space: nowrap;
   }
 }

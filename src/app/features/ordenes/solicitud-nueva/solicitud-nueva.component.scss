@@ -31,29 +31,30 @@
 
 .progreso__actual {
   font-size: var(--mo-tipo-14);
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
 }
 
 .progreso__otros {
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-13);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
 }
 
 // Mismo aspecto que el <label> de .campo, para los grupos que no tienen un único control
 .campo__etiqueta {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
-  font-weight: 600;
+  font-weight: var(--mo-peso-medio);
 }
 
 .contador {
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-13);
+  color: var(--mo-acero);
   text-align: right;
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
 }
 
 .contador--ok {
-  color: var(--mo-verde-oscuro);
+  color: var(--mo-tinta);
 }
 
 .casilla {
@@ -79,9 +80,9 @@
 
 .resumen__fila {
   dt {
-    color: var(--mo-gris-oscuro);
-    font-size: var(--mo-tipo-13);
-    font-weight: 600;
+    color: var(--mo-acero);
+    font-size: var(--mo-tipo-14);
+    font-weight: var(--mo-peso-medio);
   }
 
   dd {

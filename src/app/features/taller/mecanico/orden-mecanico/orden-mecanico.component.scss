@@ -5,15 +5,11 @@
 .detalle {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-16);
-}
-
-.reintentar {
-  align-self: flex-start;
+  gap: var(--mo-esp-32);
 }
 
 .migas {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
@@ -27,16 +23,6 @@
 
 .encabezado {
   justify-content: space-between;
-}
-
-// También se aplica a la etiqueta del campo: debe ganar a los estilos globales de .campo label
-.etiqueta {
-  margin-bottom: var(--mo-esp-8);
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-12);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .datos {
@@ -66,18 +52,18 @@
 
 // Deshabilitadas, pero informan: no deben verse apagadas como las opciones no disponibles
 .opcion--actual:disabled {
-  border-color: var(--mo-naranja);
-  background-color: var(--mo-naranja);
-  color: var(--mo-sobre-naranja);
-  font-weight: 700;
+  border-color: var(--mo-tinta);
+  background-color: var(--mo-tinta);
+  color: var(--mo-blanco);
+  font-weight: var(--mo-peso-medio);
   opacity: 1;
 }
 
 .opcion--hecha:disabled {
-  border-color: var(--mo-verde-claro);
-  background-color: var(--mo-verde-claro);
-  color: var(--mo-verde-oscuro);
-  font-weight: 700;
+  border-color: var(--mo-arena);
+  background-color: var(--mo-arena);
+  color: var(--mo-tinta);
+  font-weight: var(--mo-peso-medio);
   opacity: 1;
 }
 

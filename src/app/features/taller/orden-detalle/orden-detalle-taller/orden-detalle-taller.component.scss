@@ -5,16 +5,12 @@
 .detalle {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-16);
-}
-
-.reintentar {
-  align-self: flex-start;
+  gap: var(--mo-esp-32);
 }
 
 .migas,
 .texto-suave {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
@@ -26,18 +22,9 @@
   gap: var(--mo-esp-8);
 }
 
-.etiqueta {
-  margin-bottom: var(--mo-esp-8);
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-12);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
 .rejilla {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
   gap: var(--mo-esp-16);
 }
 
@@ -51,7 +38,7 @@
   flex-shrink: 0;
   width: 56px;
   height: 56px;
-  color: var(--mo-naranja);
+  color: var(--mo-tinta);
 }
 
 .sintoma {
@@ -68,7 +55,7 @@
 .barra {
   height: var(--mo-esp-8);
   border-radius: var(--mo-radio-pildora);
-  background-color: var(--mo-rojo);
+  background-color: var(--mo-tinta);
 }
 
 .regla {
@@ -117,6 +104,6 @@
 }
 
 .presupuesto__total {
-  font-size: var(--mo-tipo-21);
-  font-weight: 800;
+  font-size: var(--mo-tipo-24);
+  font-weight: var(--mo-peso-normal);
 }

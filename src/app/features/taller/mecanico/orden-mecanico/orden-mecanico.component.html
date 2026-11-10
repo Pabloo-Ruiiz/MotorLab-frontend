@@ -30,7 +30,7 @@
       </div>
     </header>
 
-    <section class="tarjeta tarjeta--fondo" aria-label="Datos de la orden">
+    <section class="tarjeta" aria-label="Datos de la orden">
       <dl class="datos">
         <div>
           <dt class="etiqueta">Vehículo</dt>
@@ -54,7 +54,7 @@
       </dl>
     </section>
 
-    <form class="tarjeta tarjeta--fondo panel" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+    <form class="tarjeta panel" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
       <div>
         <h2 class="etiqueta" id="orden-cambiar-estado">Cambiar estado</h2>
         <div class="chips" role="group" aria-labelledby="orden-cambiar-estado">
@@ -71,9 +71,13 @@
             >
               <!-- Marcas visibles: el estado no se indica solo con el color -->
               @if (opcion.hecha) {
-                <span aria-hidden="true">✓</span>
+                <svg class="icono-linea" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12l5 5 9-10" />
+                </svg>
               } @else if (opcion.actual) {
-                <span aria-hidden="true">●</span>
+                <svg class="icono-linea" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4" />
+                </svg>
               }
               {{ opcion.texto }}
             </button>
@@ -143,7 +147,7 @@
       }
     </form>
 
-    <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-seguimiento">
+    <section class="tarjeta" aria-labelledby="orden-seguimiento">
       <h2 class="etiqueta" id="orden-seguimiento">Seguimiento</h2>
       <app-linea-tiempo [eventos]="datos.seguimiento.eventos" [estado]="datos.orden.estado" />
     </section>

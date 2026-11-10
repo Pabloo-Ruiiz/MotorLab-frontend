@@ -1,19 +1,5 @@
 .dialogo {
   width: min(520px, calc(100% - var(--mo-esp-32)));
-  padding: var(--mo-esp-24);
-  border: 0;
-  border-radius: var(--mo-radio-12);
-  background-color: var(--mo-blanco);
-  box-shadow: var(--mo-sombra-media);
-  color: var(--mo-texto);
-
-  &::backdrop {
-    background-color: rgb(27 28 43 / 50%);
-  }
-}
-
-.dialogo__titulo {
-  margin-bottom: var(--mo-esp-16);
 }
 
 .formulario {
@@ -23,7 +9,7 @@
 }
 
 .nota {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
@@ -33,7 +19,7 @@
   padding: 0;
   overflow-y: auto;
   border: 1px solid var(--mo-linea);
-  border-radius: var(--mo-radio-12);
+  border-radius: var(--mo-radio-16);
   list-style: none;
 }
 
@@ -49,14 +35,19 @@
   text-align: left;
   cursor: pointer;
 
-  &:hover,
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: var(--mo-arena);
+    }
+  }
+
   &:focus-visible {
-    background-color: var(--mo-naranja-claro);
+    background-color: var(--mo-arena);
   }
 
   // Hacia dentro: la lista desplazable recortaría el contorno. El oscuro contrasta con el fondo
   &:focus-visible {
-    outline-color: var(--mo-naranja-oscuro);
+    outline-color: var(--mo-tinta);
     outline-offset: -3px;
     box-shadow: none;
   }
@@ -64,19 +55,11 @@
 
 .elegida {
   padding: var(--mo-esp-12);
-  border-radius: var(--mo-radio-12);
-  background-color: var(--mo-fondo);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-crema);
 }
 
 .elegida__nombre {
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
   overflow-wrap: anywhere;
-}
-
-.dialogo__acciones {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--mo-esp-8);
-  margin-top: var(--mo-esp-4);
 }

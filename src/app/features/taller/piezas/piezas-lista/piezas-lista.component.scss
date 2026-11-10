@@ -5,19 +5,7 @@
 .piezas {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-16);
-}
-
-.encabezado {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--mo-esp-16);
-}
-
-.encabezado__texto {
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-14);
+  gap: var(--mo-esp-32);
 }
 
 .filtros {
@@ -40,22 +28,15 @@
   cursor: pointer;
 }
 
-.reintentar {
-  align-self: flex-start;
-}
-
-// En pantallas estrechas la tabla se desplaza dentro de su contenedor, no toda la página
-.tabla-contenedor {
-  overflow-x: auto;
-}
-
 .fila--stock-bajo {
-  background-color: color-mix(in srgb, var(--mo-naranja-claro) 40%, transparent);
+  background-color: color-mix(in srgb, var(--mo-arena) 40%, transparent);
 }
 
 .referencia {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   white-space: nowrap;
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
 }
 
 .numero {
@@ -64,15 +45,15 @@
 }
 
 .stock {
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
 }
 
 .stock--bajo {
-  color: var(--mo-rojo-oscuro);
+  color: var(--mo-error);
 }
 
 .stock__nota {
-  font-size: var(--mo-tipo-13);
+  font-size: var(--mo-tipo-14);
 }
 
 .acciones {
@@ -86,15 +67,3 @@
   white-space: nowrap;
 }
 
-.pie {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--mo-esp-12);
-}
-
-.pie__texto {
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-14);
-}

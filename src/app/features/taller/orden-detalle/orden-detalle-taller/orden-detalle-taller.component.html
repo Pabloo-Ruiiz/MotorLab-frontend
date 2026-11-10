@@ -29,7 +29,7 @@
     </header>
 
     <div class="rejilla">
-      <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-vehiculo">
+      <section class="tarjeta" aria-labelledby="orden-vehiculo">
         <h2 class="etiqueta" id="orden-vehiculo">Vehículo</h2>
         <div class="vehiculo">
           <svg class="vehiculo__icono" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -50,12 +50,12 @@
         </div>
       </section>
 
-      <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-matricula">
+      <section class="tarjeta" aria-labelledby="orden-matricula">
         <h2 class="etiqueta" id="orden-matricula">Matrícula</h2>
         <app-matricula [matricula]="datos.orden.vehiculo.matricula" />
       </section>
 
-      <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-sintoma">
+      <section class="tarjeta" aria-labelledby="orden-sintoma">
         <h2 class="etiqueta" id="orden-sintoma">Síntoma</h2>
         <strong>{{ etiquetasServicio[datos.orden.tipoServicio] }}</strong>
         <p class="texto-suave sintoma">«{{ datos.orden.sintoma }}»</p>
@@ -67,7 +67,7 @@
         </p>
       </section>
 
-      <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-urgencia">
+      <section class="tarjeta" aria-labelledby="orden-urgencia">
         <h2 class="etiqueta" id="orden-urgencia">Urgencia</h2>
         <app-pill-urgencia [urgencia]="datos.orden.urgencia" />
         @if (datos.orden.urgencia === 'alta') {
@@ -83,7 +83,7 @@
       </section>
     </div>
 
-    <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-cliente">
+    <section class="tarjeta" aria-labelledby="orden-cliente">
       <h2 class="etiqueta" id="orden-cliente">Cliente</h2>
       <strong>{{ datos.orden.cliente.nombre }}</strong>
       <p class="texto-suave">
@@ -96,7 +96,7 @@
       </p>
     </section>
 
-    <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-asignacion">
+    <section class="tarjeta" aria-labelledby="orden-asignacion">
       <h2 class="etiqueta" id="orden-asignacion">Asignación</h2>
       <form class="asignacion" [formGroup]="asignacion" (ngSubmit)="guardarAsignacion()" novalidate>
         <div class="campo" [class.campo--error]="campoConError(asignacion.controls.mecanicoId)">
@@ -148,7 +148,7 @@
     </section>
 
     @if (siguientes().length > 0) {
-      <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-estado">
+      <section class="tarjeta" aria-labelledby="orden-estado">
         <h2 class="etiqueta" id="orden-estado">Cambiar estado</h2>
         <div class="campo" [class.campo--error]="campoConError(nota)">
           <label for="orden-nota">Nota para el cliente (opcional)</label>
@@ -179,7 +179,7 @@
     }
 
     @if (datos.orden.presupuesto; as presupuesto) {
-      <section class="tarjeta tarjeta--fondo presupuesto" aria-label="Presupuesto">
+      <section class="tarjeta presupuesto" aria-label="Presupuesto">
         <div class="presupuesto__datos">
           <app-pill-estado [estadoPresupuesto]="presupuesto.estado" />
           <strong class="presupuesto__total">{{ presupuesto.total | euros }}</strong>
@@ -211,7 +211,7 @@
       }
     </div>
 
-    <section class="tarjeta tarjeta--fondo" aria-labelledby="orden-seguimiento">
+    <section class="tarjeta" aria-labelledby="orden-seguimiento">
       <h2 class="etiqueta" id="orden-seguimiento">Seguimiento</h2>
       <app-linea-tiempo [eventos]="datos.seguimiento.eventos" [estado]="datos.orden.estado" />
     </section>

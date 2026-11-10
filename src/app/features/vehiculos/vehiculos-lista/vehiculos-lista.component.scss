@@ -29,7 +29,7 @@
 
 .vehiculo__icono {
   flex-shrink: 0;
-  color: var(--mo-naranja);
+  color: var(--mo-tinta);
 }
 
 .vehiculo__titulo {
@@ -37,7 +37,7 @@
 }
 
 .vehiculo__detalle {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
@@ -53,5 +53,5 @@
 }
 
 .vehiculo__acciones .vehiculo__baja {
-  color: var(--mo-rojo-oscuro);
+  color: var(--mo-error);
 }

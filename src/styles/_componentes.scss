@@ -1,19 +1,34 @@
 // Clases reutilizables del sistema de diseño de MotorLab.
 
+// En pantallas táctiles el :hover se queda «pegado» tras tocar: solo se aplica con puntero real
+@mixin al-apuntar {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      @content;
+    }
+  }
+}
+
 // Opción seleccionable compartida por .segmentado y .chips
-@mixin opcion($radio) {
+@mixin opcion {
   min-height: var(--mo-tactil);
   padding: var(--mo-esp-8) var(--mo-esp-16);
   border: 1px solid var(--mo-linea);
-  border-radius: $radio;
-  background-color: var(--mo-blanco);
-  color: var(--mo-gris-oscuro);
+  border-radius: var(--mo-radio-pildora);
+  background-color: transparent;
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
-  font-weight: 600;
+  font-weight: var(--mo-peso-medio);
   cursor: pointer;
+  transition:
+    background-color var(--mo-transicion),
+    border-color var(--mo-transicion),
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
 
-  &:hover:not(:disabled) {
-    border-color: var(--mo-naranja);
+  @include al-apuntar {
+    border-color: var(--mo-tinta);
+    color: var(--mo-tinta);
   }
 
   &:disabled {
@@ -22,23 +37,37 @@
   }
 }
 
-// El borde doble y la negrita distinguen la opción elegida también sin percibir el color
+// El relleno negro distingue la opción elegida también sin percibir el color
 @mixin opcion-activa {
-  border-color: var(--mo-naranja);
-  box-shadow: inset 0 0 0 1px var(--mo-naranja);
-  background-color: var(--mo-naranja-claro);
-  color: var(--mo-naranja-oscuro);
-  font-weight: 700;
+  border-color: var(--mo-tinta);
+  background-color: var(--mo-tinta);
+  color: var(--mo-blanco);
+
+  @include al-apuntar {
+    color: var(--mo-blanco);
+  }
 }
 
-@mixin pill-color($fondo, $texto) {
-  background-color: $fondo;
-  color: $texto;
+// Marca de la aplicación en las barras de navegación
+.marca {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+  font-size: var(--mo-tipo-16);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-titulo);
 }
 
-@mixin aviso-color($fondo, $texto) {
-  background-color: $fondo;
-  color: $texto;
+.marca__simbolo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-esp-32);
+  height: var(--mo-esp-32);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-tinta);
+  color: var(--mo-blanco);
+  font-size: var(--mo-tipo-14);
 }
 
 // Botones
@@ -49,13 +78,19 @@
   gap: var(--mo-esp-8);
   min-height: var(--mo-tactil);
   min-width: var(--mo-tactil);
-  padding: var(--mo-esp-8) var(--mo-esp-16);
+  padding: var(--mo-esp-12) var(--mo-esp-20);
   border: 1px solid transparent;
-  border-radius: var(--mo-radio-12);
-  font-size: var(--mo-tipo-16);
-  font-weight: 700;
+  border-radius: var(--mo-radio-pildora);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+  line-height: 20px;
   text-decoration: none;
   cursor: pointer;
+  transition:
+    background-color var(--mo-transicion),
+    border-color var(--mo-transicion),
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
 
   &:disabled,
   &[aria-disabled='true'] {
@@ -64,125 +99,233 @@
   }
 }
 
-.btn--primario {
-  background-color: var(--mo-naranja);
-  color: var(--mo-sobre-naranja);
+// Respuesta inmediata al pulsar cualquier control
+.btn,
+.chip,
+.segmentado__opcion,
+.accion,
+.hamburguesa,
+.toast__cerrar {
+  &:active:not(:disabled, [aria-disabled='true']) {
+    transform: scale(var(--mo-escala-pulsado));
+  }
+}
 
-  &:hover:not(:disabled) {
-    filter: brightness(1.08);
+.hamburguesa,
+.toast__cerrar {
+  transition:
+    background-color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  @include al-apuntar {
+    background-color: var(--mo-arena);
+  }
+}
+
+// Icono de trazo dentro de una línea de texto
+.icono-linea {
+  display: inline-block;
+  vertical-align: -3px;
+}
+
+// Fuera de la pantalla hasta que recibe el foco; sigue siendo el primer elemento con Tab
+.btn.saltar {
+  position: absolute;
+  top: var(--mo-esp-8);
+  left: var(--mo-esp-8);
+  z-index: 20;
+  transform: translateY(-200%);
+  transition: none; // aparece con el teclado: no debe animarse
+
+  &:focus {
+    transform: none;
+  }
+}
+
+.btn--primario {
+  background-color: var(--mo-tinta);
+  color: var(--mo-blanco);
+
+  @include al-apuntar {
+    background-color: var(--mo-pizarra);
   }
 }
 
 .btn--secundario {
-  border-color: var(--mo-linea);
-  background-color: var(--mo-blanco);
-  color: var(--mo-gris-oscuro);
+  background-color: transparent;
+  color: var(--mo-tinta);
 
-  &:hover:not(:disabled) {
-    border-color: var(--mo-gris);
-    color: var(--mo-texto);
+  @include al-apuntar {
+    border-color: var(--mo-linea);
   }
 }
 
+// Acción destructiva: discreta hasta que se apunta a ella
 .btn--peligro {
-  background-color: var(--mo-rojo-oscuro);
-  color: var(--mo-blanco);
+  border-color: var(--mo-error);
+  background-color: transparent;
+  color: var(--mo-error);
 
-  &:hover:not(:disabled) {
-    filter: brightness(1.08);
+  @include al-apuntar {
+    background-color: var(--mo-error);
+    color: var(--mo-blanco);
   }
 }
 
 .btn--fantasma {
-  border: 1px dashed var(--mo-naranja);
+  border-color: var(--mo-linea);
   background-color: transparent;
-  color: var(--mo-naranja-oscuro);
+  color: var(--mo-tinta);
 
-  &:hover:not(:disabled) {
-    background-color: var(--mo-naranja-claro);
+  @include al-apuntar {
+    border-color: var(--mo-tinta);
   }
 }
 
-// Etiquetas de estado y urgencia
+// Etiquetas de estado y urgencia. El texto da el significado; el punto solo lo refuerza
 .pill {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   padding: var(--mo-esp-4) var(--mo-esp-12);
   border-radius: var(--mo-radio-pildora);
-  font-size: var(--mo-tipo-13);
-  font-weight: 700;
-  line-height: 1.3;
+  background-color: var(--mo-arena);
+  color: var(--mo-tinta);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-medio);
+  line-height: 16px;
   white-space: nowrap;
+
+  &::before {
+    content: '';
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--mo-punto, var(--mo-tinta));
+  }
 }
 
 .pill--naranja {
-  @include pill-color(var(--mo-naranja-claro), var(--mo-naranja-oscuro));
+  --mo-punto: var(--mo-tinta);
 }
 
 .pill--verde {
-  @include pill-color(var(--mo-verde-claro), var(--mo-verde-oscuro));
+  --mo-punto: var(--mo-punto-verde);
 }
 
 .pill--rojo {
-  @include pill-color(var(--mo-rojo-claro), var(--mo-rojo-oscuro));
+  --mo-punto: var(--mo-punto-rojo);
 }
 
 .pill--ambar {
-  @include pill-color(var(--mo-ambar-claro), var(--mo-ambar));
+  --mo-punto: var(--mo-punto-ambar);
 }
 
 .pill--azul {
-  @include pill-color(var(--mo-azul-claro), var(--mo-azul-oscuro));
+  --mo-punto: var(--mo-acero);
 }
 
 .pill--gris {
-  @include pill-color(var(--mo-linea), var(--mo-gris-oscuro));
+  --mo-punto: var(--mo-peltre);
+
+  color: var(--mo-acero);
 }
 
-// Tarjetas
+// Tarjetas: la superficie crema las separa de la página, sin borde ni sombra
 .tarjeta {
-  padding: var(--mo-esp-16);
-  border-radius: var(--mo-radio-12);
-  background-color: var(--mo-blanco);
-  box-shadow: var(--mo-sombra-suave);
+  padding: var(--mo-relleno-tarjeta);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-crema);
+  transition:
+    background-color var(--mo-transicion),
+    box-shadow var(--mo-transicion),
+    transform var(--mo-pulsar);
 }
 
-.tarjeta--fondo {
-  background-color: var(--mo-fondo);
-  box-shadow: none;
+// Tarjetas pulsables: escala menor porque una superficie grande desplaza más píxeles
+.tarjeta:has(.orden__enlace:active),
+button.tarjeta:active:not(:disabled) {
+  transform: scale(var(--mo-escala-tarjeta));
+}
+
+// Encabezado de pantalla y pie de listado
+.encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mo-esp-16);
+}
+
+.encabezado__texto,
+.pie__texto {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+}
+
+.encabezado__texto {
+  margin-top: var(--mo-esp-8);
+}
+
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+}
+
+.reintentar {
+  align-self: flex-start;
+}
+
+// Título discreto de una sección o de un dato
+.etiqueta,
+.campo label.etiqueta {
+  margin-bottom: var(--mo-esp-12);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: 0;
+  line-height: 20px;
 }
 
 // Campos de formulario
 .campo {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-4);
+  gap: var(--mo-esp-8);
 
   label {
-    color: var(--mo-gris-oscuro);
+    color: var(--mo-pizarra);
     font-size: var(--mo-tipo-14);
-    font-weight: 600;
+    font-weight: var(--mo-peso-medio);
   }
 
-  // El borde usa --mo-gris porque un control necesita 3:1 frente a su fondo
+  // El borde usa --mo-niebla porque un control necesita 3:1 frente a su fondo
   input:not([type='checkbox'], [type='radio']),
   select,
   textarea {
     width: 100%;
     min-height: var(--mo-tactil);
     padding: var(--mo-esp-8) var(--mo-esp-12);
-    border: 1px solid var(--mo-gris);
-    border-radius: var(--mo-radio-12);
+    border: 1px solid var(--mo-niebla);
+    border-radius: var(--mo-radio-6);
     background-color: var(--mo-blanco);
     font-size: var(--mo-tipo-16);
+    transition: border-color var(--mo-transicion);
+
+    @include al-apuntar {
+      border-color: var(--mo-tinta);
+    }
 
     &::placeholder {
-      color: var(--mo-gris-oscuro);
+      color: var(--mo-acero);
     }
 
     &:disabled {
-      background-color: var(--mo-fondo);
-      color: var(--mo-gris-oscuro);
+      background-color: var(--mo-arena);
+      color: var(--mo-acero);
       cursor: not-allowed;
     }
   }
@@ -193,17 +336,16 @@
 }
 
 .campo__error {
-  color: var(--mo-rojo-oscuro);
-  font-size: var(--mo-tipo-13);
-  font-weight: 600;
+  color: var(--mo-error);
+  font-size: var(--mo-tipo-14);
 }
 
 .campo--error {
   input:not([type='checkbox'], [type='radio']),
   select,
   textarea {
-    border-width: 2px;
-    border-color: var(--mo-rojo);
+    border-color: var(--mo-error);
+    box-shadow: inset 0 0 0 1px var(--mo-error);
   }
 }
 
@@ -214,7 +356,8 @@
 }
 
 .segmentado__opcion {
-  @include opcion(var(--mo-radio-12));
+  @include opcion;
+
   flex: 1;
 }
 
@@ -231,7 +374,7 @@
 }
 
 .chip {
-  @include opcion(var(--mo-radio-pildora));
+  @include opcion;
 }
 
 .chip--activo,
@@ -239,7 +382,21 @@
   @include opcion-activa;
 }
 
-// Tablas
+// Tablas. En pantallas estrechas se desplazan dentro de su contenedor, no toda la página
+.tabla-contenedor {
+  overflow-x: auto;
+}
+
+// Las cifras alineadas permiten comparar importes de un vistazo
+.tabla,
+.totales,
+.orden__total,
+.presupuesto__total,
+.linea__importe,
+.paginador__estado {
+  font-variant-numeric: tabular-nums;
+}
+
 .tabla {
   width: 100%;
   border-collapse: collapse;
@@ -247,25 +404,41 @@
 
   th {
     padding: var(--mo-esp-12) var(--mo-esp-16);
-    background-color: var(--mo-fondo);
-    color: var(--mo-gris-oscuro);
+    border-bottom: 1px solid var(--mo-linea);
+    color: var(--mo-acero);
+    font-family: var(--mo-mono);
     font-size: var(--mo-tipo-12);
-    font-weight: 700;
-    letter-spacing: 0.05em;
+    font-weight: var(--mo-peso-normal);
+    letter-spacing: var(--mo-tracking-mono);
     text-align: left;
-    text-transform: uppercase;
+    white-space: nowrap;
   }
 
   td {
-    padding: var(--mo-esp-12) var(--mo-esp-16);
+    padding: var(--mo-esp-16);
     border-bottom: 1px solid var(--mo-linea);
+  }
+
+  tbody tr {
+    transition: background-color var(--mo-transicion);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  // En móvil, desplazamiento horizontal en lugar de celdas de cuatro líneas
+  @media (max-width: 767px) {
+    td {
+      white-space: nowrap;
+    }
   }
 }
 
 // Barra de progreso
 .barra-progreso {
   width: 100%;
-  height: var(--mo-esp-8);
+  height: var(--mo-esp-4);
   overflow: hidden;
   border-radius: var(--mo-radio-pildora);
   background-color: var(--mo-linea);
@@ -274,32 +447,91 @@
 .barra-progreso__relleno {
   height: 100%;
   border-radius: inherit;
-  background-color: var(--mo-naranja);
+  background-color: var(--mo-tinta);
 }
 
 // Avisos
 .aviso {
   padding: var(--mo-esp-12) var(--mo-esp-16);
-  border-radius: var(--mo-radio-12);
+  border-radius: var(--mo-radio-8);
   font-size: var(--mo-tipo-14);
 }
 
-.aviso--info {
-  @include aviso-color(var(--mo-azul-claro), var(--mo-azul-oscuro));
-}
-
+.aviso--info,
 .aviso--ambar {
-  @include aviso-color(var(--mo-ambar-claro), var(--mo-ambar));
+  background-color: var(--mo-arena);
+  color: var(--mo-tinta);
 }
 
 .aviso--rojo {
-  @include aviso-color(var(--mo-rojo-claro), var(--mo-rojo-oscuro));
+  background-color: var(--mo-error-fondo);
+  color: var(--mo-error);
 }
 
 // Estado vacío de listados
 .vacio {
-  padding: var(--mo-esp-32) var(--mo-esp-16);
-  color: var(--mo-gris-oscuro);
+  padding: var(--mo-esp-48) var(--mo-esp-16);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
   text-align: center;
+}
+
+// Modales y diálogos. Transiciones, no keyframes: se pueden interrumpir al abrir y cerrar rápido
+.dialogo,
+.modal {
+  width: min(480px, calc(100% - var(--mo-esp-32)));
+  padding: var(--mo-esp-32);
+  border: 0;
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-elevada);
+  color: var(--mo-tinta);
+  opacity: 0;
+  transform: scale(var(--mo-escala-entrada));
+  transition:
+    opacity var(--mo-duracion-salida) var(--mo-curva-salida),
+    transform var(--mo-duracion-salida) var(--mo-curva-salida),
+    display var(--mo-duracion-salida) allow-discrete,
+    overlay var(--mo-duracion-salida) allow-discrete;
+
+  &[open] {
+    opacity: 1;
+    transform: none;
+    transition-duration: var(--mo-duracion-entrada);
+
+    @starting-style {
+      opacity: 0;
+      transform: scale(var(--mo-escala-entrada));
+    }
+  }
+
+  &::backdrop {
+    background-color: var(--mo-velo);
+    opacity: 0;
+    transition:
+      opacity var(--mo-duracion-salida) ease,
+      display var(--mo-duracion-salida) allow-discrete,
+      overlay var(--mo-duracion-salida) allow-discrete;
+  }
+
+  &[open]::backdrop {
+    opacity: 1;
+    transition-duration: var(--mo-duracion-entrada);
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+}
+
+.dialogo__titulo {
+  margin-bottom: var(--mo-esp-24);
+}
+
+.dialogo__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--mo-esp-8);
+  margin-top: var(--mo-esp-8);
 }
