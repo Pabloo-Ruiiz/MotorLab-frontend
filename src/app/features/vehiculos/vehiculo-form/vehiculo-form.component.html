@@ -1,111 +1,190 @@
+@if (esEdicion) {
+  <app-logo class="filigrana" />
+}
+
 <main>
-  @if (cargando()) {
-    <app-cargando />
-  } @else if (errorCarga(); as error) {
-    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
-  } @else {
-    <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()">
-      @if (errorGeneral(); as error) {
+  <section class="ficha" aria-labelledby="vehiculo-form-titulo">
+    <header class="ficha__cabecera">
+      <h1 id="vehiculo-form-titulo" class="ficha__titulo">{{ titulo }}</h1>
+      <a class="ficha__cerrar" routerLink="/cliente/vehiculos" aria-label="Volver a mis vehículos">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      </a>
+    </header>
+
+    @if (cargando()) {
+      <div class="ficha__estado">
+        <app-cargando />
+      </div>
+    } @else if (errorCarga(); as error) {
+      <div class="ficha__estado">
         <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+      </div>
+    } @else {
+      @if (resumen(); as resumen) {
+        <p class="ficha__resumen">
+          <app-icono-coche class="ficha__coche" />
+          {{ resumen }}
+        </p>
       }
 
-      <div class="campo" [class.campo--error]="campoConError(form.controls.matricula)">
-        <label for="vehiculo-matricula">Matrícula</label>
-        <input
-          id="vehiculo-matricula"
-          type="text"
-          autocomplete="off"
-          autocapitalize="characters"
-          formControlName="matricula"
-          [readOnly]="esEdicion"
-          [attr.aria-invalid]="campoConError(form.controls.matricula)"
-          aria-describedby="vehiculo-matricula-error"
-        />
-        <app-errores-campo
-          id="vehiculo-matricula-error"
-          [control]="form.controls.matricula"
-          [mensajes]="mensajesMatricula"
-        />
-      </div>
+      <form [formGroup]="form" (ngSubmit)="enviar()">
+        <div class="ficha__cuerpo">
+          @if (errorGeneral(); as error) {
+            <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+          }
 
-      <div class="campo" [class.campo--error]="campoConError(form.controls.marca)">
-        <label for="vehiculo-marca">Marca</label>
-        <input
-          id="vehiculo-marca"
-          type="text"
-          autocomplete="off"
-          formControlName="marca"
-          [attr.aria-invalid]="campoConError(form.controls.marca)"
-          aria-describedby="vehiculo-marca-error"
-        />
-        <app-errores-campo id="vehiculo-marca-error" [control]="form.controls.marca" />
-      </div>
+          <div class="rejilla">
+            <div class="campo" [class.campo--error]="campoConError(form.controls.matricula)">
+              <label for="vehiculo-matricula">Matrícula</label>
+              <div class="placa-campo">
+                <span class="placa-campo__banda" aria-hidden="true">E</span>
+                <input
+                  id="vehiculo-matricula"
+                  type="text"
+                  autocomplete="off"
+                  autocapitalize="characters"
+                  formControlName="matricula"
+                  [readOnly]="esEdicion"
+                  [attr.aria-invalid]="campoConError(form.controls.matricula)"
+                  aria-describedby="vehiculo-matricula-error"
+                />
+              </div>
+              <app-errores-campo
+                id="vehiculo-matricula-error"
+                [control]="form.controls.matricula"
+                [mensajes]="mensajesMatricula"
+              />
+            </div>
 
-      <div class="campo" [class.campo--error]="campoConError(form.controls.modelo)">
-        <label for="vehiculo-modelo">Modelo</label>
-        <input
-          id="vehiculo-modelo"
-          type="text"
-          autocomplete="off"
-          formControlName="modelo"
-          [attr.aria-invalid]="campoConError(form.controls.modelo)"
-          aria-describedby="vehiculo-modelo-error"
-        />
-        <app-errores-campo id="vehiculo-modelo-error" [control]="form.controls.modelo" />
-      </div>
+            <div class="campo" [class.campo--error]="campoConError(form.controls.marca)">
+              <label for="vehiculo-marca">Marca</label>
+              <select
+                id="vehiculo-marca"
+                formControlName="marca"
+                [attr.aria-invalid]="campoConError(form.controls.marca)"
+                aria-describedby="vehiculo-marca-error"
+                (change)="alCambiarMarca()"
+              >
+                <option value="">Selecciona una marca</option>
+                @for (marca of marcas(); track marca) {
+                  <option [value]="marca">{{ marca }}</option>
+                }
+              </select>
+              <app-errores-campo id="vehiculo-marca-error" [control]="form.controls.marca" />
+            </div>
 
-      <div class="campo" [class.campo--error]="campoConError(form.controls.version)">
-        <label for="vehiculo-version">Versión (opcional)</label>
-        <input
-          id="vehiculo-version"
-          type="text"
-          autocomplete="off"
-          formControlName="version"
-          [attr.aria-invalid]="campoConError(form.controls.version)"
-          aria-describedby="vehiculo-version-error"
-        />
-        <app-errores-campo id="vehiculo-version-error" [control]="form.controls.version" />
-      </div>
+            <div class="campo" [class.campo--error]="campoConError(form.controls.modelo)">
+              <label for="vehiculo-modelo">Modelo</label>
+              <select
+                id="vehiculo-modelo"
+                formControlName="modelo"
+                [attr.aria-invalid]="campoConError(form.controls.modelo)"
+                aria-describedby="vehiculo-modelo-error"
+              >
+                <option value="">
+                  {{ marcaElegida() ? 'Selecciona un modelo' : 'Selecciona primero una marca' }}
+                </option>
+                @for (modelo of modelos(); track modelo) {
+                  <option [value]="modelo">{{ modelo }}</option>
+                }
+              </select>
+              <app-errores-campo id="vehiculo-modelo-error" [control]="form.controls.modelo" />
+            </div>
 
-      <div class="formulario__fila">
-        <div class="campo" [class.campo--error]="campoConError(form.controls.anio)">
-          <label for="vehiculo-anio">Año</label>
-          <input
-            id="vehiculo-anio"
-            type="number"
-            inputmode="numeric"
-            formControlName="anio"
-            [attr.aria-invalid]="campoConError(form.controls.anio)"
-            aria-describedby="vehiculo-anio-error"
-          />
-          <app-errores-campo
-            id="vehiculo-anio-error"
-            [control]="form.controls.anio"
-            [mensajes]="mensajesEntero"
-          />
+            <div class="campo" [class.campo--error]="campoConError(form.controls.version)">
+              <label for="vehiculo-version">Versión (opcional)</label>
+              <input
+                id="vehiculo-version"
+                type="text"
+                autocomplete="off"
+                formControlName="version"
+                [attr.aria-invalid]="campoConError(form.controls.version)"
+                aria-describedby="vehiculo-version-error"
+              />
+              <app-errores-campo id="vehiculo-version-error" [control]="form.controls.version" />
+            </div>
+
+            <div
+              class="campo campo--corto"
+              [class.campo--error]="campoConError(form.controls.anio)"
+            >
+              <label for="vehiculo-anio">Año</label>
+              <input
+                id="vehiculo-anio"
+                type="number"
+                inputmode="numeric"
+                formControlName="anio"
+                [attr.aria-invalid]="campoConError(form.controls.anio)"
+                aria-describedby="vehiculo-anio-error"
+              />
+              <app-errores-campo
+                id="vehiculo-anio-error"
+                [control]="form.controls.anio"
+                [mensajes]="mensajesEntero"
+              />
+            </div>
+
+            <div
+              class="campo campo--corto"
+              [class.campo--error]="campoConError(form.controls.kilometros)"
+            >
+              <label for="vehiculo-kilometros">Kilómetros</label>
+              <div class="con-sufijo">
+                <input
+                  id="vehiculo-kilometros"
+                  type="number"
+                  inputmode="numeric"
+                  formControlName="kilometros"
+                  [attr.aria-invalid]="campoConError(form.controls.kilometros)"
+                  aria-describedby="vehiculo-kilometros-error"
+                />
+                <span class="con-sufijo__unidad" aria-hidden="true">km</span>
+              </div>
+              <app-errores-campo
+                id="vehiculo-kilometros-error"
+                [control]="form.controls.kilometros"
+                [mensajes]="mensajesEntero"
+              />
+            </div>
+          </div>
         </div>
 
-        <div class="campo" [class.campo--error]="campoConError(form.controls.kilometros)">
-          <label for="vehiculo-kilometros">Kilómetros</label>
-          <input
-            id="vehiculo-kilometros"
-            type="number"
-            inputmode="numeric"
-            formControlName="kilometros"
-            [attr.aria-invalid]="campoConError(form.controls.kilometros)"
-            aria-describedby="vehiculo-kilometros-error"
-          />
-          <app-errores-campo
-            id="vehiculo-kilometros-error"
-            [control]="form.controls.kilometros"
-            [mensajes]="mensajesEntero"
-          />
-        </div>
-      </div>
-
-      <button type="submit" class="btn btn--primario" [disabled]="enviando()">
-        {{ enviando() ? 'Guardando…' : 'Guardar' }}
-      </button>
-    </form>
-  }
+        <footer class="ficha__pie">
+          <a class="btn btn--fantasma" routerLink="/cliente/vehiculos">Cancelar</a>
+          <button type="submit" class="btn btn--primario" [disabled]="enviando()">
+            @if (enviando()) {
+              Guardando…
+            } @else {
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12l5 5 9-10" />
+              </svg>
+              {{ esEdicion ? 'Guardar cambios' : 'Guardar' }}
+            }
+          </button>
+        </footer>
+      </form>
+    }
+  </section>
 </main>

@@ -1,4 +1,26 @@
+<app-logo class="filigrana" />
+
+<ng-template #icono let-trazado let-tamano="tamano">
+  <svg
+    [attr.width]="tamano ?? 16"
+    [attr.height]="tamano ?? 16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path [attr.d]="trazado" />
+  </svg>
+</ng-template>
+
 <main class="historial">
+  <p class="descripcion">
+    Consulta todas las intervenciones y reparaciones realizadas en tu vehículo.
+  </p>
+
   @if (cargando()) {
     <app-cargando />
   } @else if (noEncontrado()) {
@@ -7,41 +29,118 @@
     </app-vacio>
   } @else if (errorCarga(); as error) {
     <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
-    <button type="button" class="btn btn--secundario" (click)="reintentar()">Reintentar</button>
+    <button type="button" class="btn btn--secundario reintentar" (click)="reintentar()">
+      Reintentar
+    </button>
   } @else if (datos(); as datos) {
-    <h2 class="historial__titulo">Historial · {{ matriculaLegible(datos.vehiculo.matricula) }}</h2>
+    <!-- Ficha del vehículo -->
+    <section class="ficha" aria-labelledby="ficha-titulo">
+      <span class="ficha__icono"><app-icono-coche /></span>
 
-    @if (datos.historial.datos.length === 0) {
+      <div class="ficha__textos">
+        <p class="ficha__etiqueta">Historial</p>
+        <h2 class="ficha__titulo" id="ficha-titulo">
+          {{ datos.vehiculo.marca }} {{ datos.vehiculo.modelo }}
+        </h2>
+        <p class="ficha__detalle">
+          @if (datos.vehiculo.version; as version) {
+            {{ version }} ·
+          }
+          {{ datos.vehiculo.anio }}
+        </p>
+      </div>
+
+      <span class="placa placa--grande">
+        <span class="placa__banda" aria-hidden="true">E</span>
+        <span class="sr-only">Matrícula </span>
+        {{ matriculaLegible(datos.vehiculo.matricula) }}
+      </span>
+    </section>
+
+    @if (datos.historial.total === 0) {
       <app-vacio titulo="Este vehículo todavía no tiene órdenes" />
     } @else {
-      <ul class="lista">
-        @for (orden of datos.historial.datos; track orden.ordenId) {
-          <li>
-            <article class="tarjeta orden">
-              <div class="orden__cabecera">
-                <h3 class="orden__titulo">
-                  <a class="orden__enlace" [routerLink]="['/cliente/ordenes', orden.ordenId]">
-                    #{{ orden.ordenId }} · {{ orden.marca }} {{ orden.modelo }}
-                  </a>
-                </h3>
-                <app-pill-estado [estado]="orden.estado" />
-              </div>
+      <!-- Resumen -->
+      <section class="resumen" aria-label="Resumen del historial">
+        <div class="resumen__dato">
+          <span class="resumen__icono">
+            <ng-container
+              *ngTemplateOutlet="icono; context: { $implicit: iconos.orden, tamano: 18 }"
+            />
+          </span>
+          <span class="resumen__valor">{{ datos.historial.total }}</span>
+          <span class="resumen__texto">
+            {{ datos.historial.total === 1 ? 'Orden en total' : 'Órdenes en total' }}
+          </span>
+        </div>
+        <div class="resumen__dato" data-tono="informativo">
+          <span class="resumen__icono">
+            <ng-container
+              *ngTemplateOutlet="icono; context: { $implicit: iconos.activa, tamano: 18 }"
+            />
+          </span>
+          <span class="resumen__valor">{{ recuento().activas }}</span>
+          <span class="resumen__texto">{{ recuento().activas === 1 ? 'Activa' : 'Activas' }}</span>
+        </div>
+        <div class="resumen__dato" data-tono="exito">
+          <span class="resumen__icono">
+            <ng-container
+              *ngTemplateOutlet="icono; context: { $implicit: iconos.finalizada, tamano: 18 }"
+            />
+          </span>
+          <span class="resumen__valor">{{ recuento().finalizadas }}</span>
+          <span class="resumen__texto">
+            {{ recuento().finalizadas === 1 ? 'Finalizada' : 'Finalizadas' }}
+          </span>
+        </div>
+      </section>
 
-              <p class="orden__detalle">{{ etiquetasServicio[orden.tipoServicio] }}</p>
+      @if (datos.historial.totalPaginas > 1) {
+        <p class="nota">Activas y finalizadas se cuentan sobre la página actual.</p>
+      }
 
-              <app-barra-progreso
-                [progreso]="orden.progreso"
-                mostrarPorcentaje
-                [etiqueta]="'Progreso de la orden ' + orden.ordenId"
-              />
+      <!-- Herramientas: filtro por estado y orden cronológico -->
+      <div class="herramientas">
+        <div class="filtros" role="group" aria-label="Filtrar órdenes por estado">
+          @for (opcion of filtros(); track opcion.valor) {
+            <button
+              type="button"
+              class="filtro"
+              [attr.aria-pressed]="filtro() === opcion.valor"
+              (click)="filtro.set(opcion.valor)"
+            >
+              {{ opcion.texto }}
+              <span class="filtro__total">{{ opcion.total }}</span>
+            </button>
+          }
+        </div>
 
-              @if (orden.fechaEstimada; as fecha) {
-                <p class="orden__detalle">Listo estimado {{ fecha | fechaHora: 'completa' }}</p>
-              }
-            </article>
-          </li>
-        }
-      </ul>
+        <button
+          type="button"
+          class="ordenar"
+          [attr.aria-label]="
+            orden() === 'recientes'
+              ? 'Ordenado de más reciente a más antigua. Cambiar orden'
+              : 'Ordenado de más antigua a más reciente. Cambiar orden'
+          "
+          (click)="alternarOrden()"
+        >
+          <ng-container *ngTemplateOutlet="icono; context: { $implicit: iconos.ordenar }" />
+          {{ orden() === 'recientes' ? 'Más recientes' : 'Más antiguas' }}
+        </button>
+      </div>
+
+      @if (visibles().length === 0) {
+        <app-vacio [titulo]="tituloVacioFiltro()" />
+      } @else {
+        <ul class="lista">
+          @for (orden of visibles(); track orden.ordenId) {
+            <li [style.--i]="$index">
+              <app-tarjeta-orden [orden]="orden" />
+            </li>
+          }
+        </ul>
+      }
 
       <app-paginador
         [pagina]="datos.historial.pagina"

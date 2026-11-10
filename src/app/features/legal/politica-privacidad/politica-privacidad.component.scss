@@ -1,0 +1,103 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--mo-crema);
+}
+
+.politica {
+  max-width: var(--mo-ancho-cliente);
+  margin-inline: auto;
+  padding: var(--mo-esp-24) var(--mo-esp-16) var(--mo-esp-48);
+}
+
+.documento {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-32);
+  padding: var(--mo-relleno-tarjeta);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-blanco);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 6%);
+  font-size: var(--mo-tipo-14);
+  line-height: 22px;
+}
+
+.documento__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+  padding-bottom: var(--mo-esp-24);
+  border-bottom: 1px solid var(--mo-linea);
+}
+
+.documento__titulo {
+  font-size: var(--mo-tipo-30);
+  line-height: 38px;
+}
+
+.documento__fecha {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+}
+
+h2 {
+  font-size: var(--mo-tipo-18);
+  font-weight: var(--mo-peso-medio);
+  line-height: 24px;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-4);
+  margin: 0;
+  padding-left: var(--mo-esp-20);
+}
+
+strong {
+  font-weight: var(--mo-peso-medio);
+}
+
+.responsable {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+  margin: 0;
+
+  dt {
+    color: var(--mo-acero);
+    font-size: var(--mo-tipo-12);
+  }
+
+  dd {
+    width: fit-content;
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.pendiente {
+  padding-inline: var(--mo-esp-4);
+  border-radius: var(--mo-radio-6);
+  background-color: var(--mo-error-fondo);
+  color: var(--mo-error);
+}
+
+// El documento debe poder imprimirse sin el fondo ni la sombra
+@media print {
+  :host {
+    background: none;
+  }
+
+  .documento {
+    padding: 0;
+    box-shadow: none;
+  }
+}

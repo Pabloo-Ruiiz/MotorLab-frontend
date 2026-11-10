@@ -21,20 +21,20 @@ describe('SolicitudNuevaComponent', () => {
     version: '1.5 TSI',
     anio: 2019,
     kilometros: 86400,
-    activo: true
+    activo: true,
   };
   const paginaVehiculos: Pagina<Vehiculo> = {
     datos: [vehiculo],
     pagina: 1,
     limite: 100,
     total: 1,
-    totalPaginas: 1
+    totalPaginas: 1,
   };
   const respuesta: OrdenCreateResponse = {
     id: 2481,
     estado: 'solicitud_recibida',
     urgencia: 'alta',
-    mensaje: 'Solicitud registrada'
+    mensaje: 'Solicitud registrada',
   };
 
   let ordenesSimulado: { crear: ReturnType<typeof vi.fn> };
@@ -56,14 +56,39 @@ describe('SolicitudNuevaComponent', () => {
     campo.dispatchEvent(new Event('input'));
   }
 
-  async function pulsar(texto: string): Promise<void> {
-    const boton = [...elemento.querySelectorAll('button')].find(
-      (candidato) => candidato.textContent?.trim() === texto
+  function boton(texto: string): HTMLButtonElement {
+    const encontrado = [...elemento.querySelectorAll('button')].find(
+      (candidato) => candidato.textContent?.trim() === texto,
     );
-    if (boton === undefined) {
+    if (encontrado === undefined) {
       throw new Error(`No existe el botón «${texto}»`);
     }
-    boton.click();
+    return encontrado;
+  }
+
+  async function pulsar(texto: string): Promise<void> {
+    boton(texto).click();
+    await fixture.whenStable();
+  }
+
+  async function elegirServicio(texto: string): Promise<void> {
+    const campo = elemento.querySelector('#solicitud-servicio') as HTMLSelectElement;
+    campo.selectedIndex = [...campo.options].findIndex(
+      (opcion) => opcion.textContent?.trim() === texto,
+    );
+    campo.dispatchEvent(new Event('change', { bubbles: true }));
+    await fixture.whenStable();
+  }
+
+  async function intro(selector: string, opciones: KeyboardEventInit = {}): Promise<void> {
+    elemento.querySelector(selector)?.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+        ...opciones,
+      }),
+    );
     await fixture.whenStable();
   }
 
@@ -82,7 +107,7 @@ describe('SolicitudNuevaComponent', () => {
   }
 
   async function rellenarPaso2(sintoma: string): Promise<void> {
-    await pulsar('Frenos');
+    await elegirServicio('Motor');
     escribir('#solicitud-sintoma', sintoma);
     await pulsar('Sí');
     await pulsar('Media');
@@ -113,8 +138,8 @@ describe('SolicitudNuevaComponent', () => {
       providers: [
         provideRouter([]),
         { provide: OrdenesService, useValue: ordenesSimulado },
-        { provide: VehiculosService, useValue: { listar: () => of(paginaVehiculos) } }
-      ]
+        { provide: VehiculosService, useValue: { listar: () => of(paginaVehiculos) } },
+      ],
     });
 
     fixture = TestBed.createComponent(SolicitudNuevaComponent);
@@ -168,7 +193,7 @@ describe('SolicitudNuevaComponent', () => {
     expect(ordenesSimulado.crear).toHaveBeenCalledTimes(1);
     expect(ordenesSimulado.crear).toHaveBeenCalledWith({
       vehiculoId: 7,
-      tipoServicio: 'frenos',
+      tipoServicio: 'motor',
       sintoma: SINTOMA_VALIDO,
       cuandoOcurre: null,
       conduccionSegura: 'si',
@@ -176,7 +201,95 @@ describe('SolicitudNuevaComponent', () => {
       fechaPreferida: fechaLocalDeHoy(),
       franjaPreferida: 'manana',
       contactoPreferido: 'telefono',
-      aceptaPrivacidad: true
+      aceptaPrivacidad: true,
+    });
+  });
+
+  describe('urgencia automática', () => {
+    beforeEach(() => completarPaso1());
+
+    it('con frenos marca Alta, bloquea la elección e informa del motivo', async () => {
+      await elegirServicio('Frenos');
+
+      expect(boton('Alta').getAttribute('aria-pressed')).toBe('true');
+      expect(boton('Baja').disabled).toBe(true);
+      expect(elemento.querySelector('.urgencia__motivo')?.textContent).toContain('frenos');
+    });
+
+    it('si no es seguro conducir marca Alta', async () => {
+      await elegirServicio('Motor');
+      await pulsar('No');
+
+      expect(boton('Alta').getAttribute('aria-pressed')).toBe('true');
+      expect(elemento.querySelector('.urgencia__motivo')?.textContent).toContain('conducir');
+    });
+
+    it('recupera la urgencia elegida a mano cuando deja de ser crítico', async () => {
+      await elegirServicio('Motor');
+      await pulsar('Media');
+      await elegirServicio('Frenos');
+      await elegirServicio('Motor');
+
+      expect(boton('Media').getAttribute('aria-pressed')).toBe('true');
+      expect(boton('Baja').disabled).toBe(false);
+      expect(elemento.querySelector('.urgencia__motivo')).toBeNull();
+    });
+
+    it('no pide elegir urgencia y envía Alta', async () => {
+      await elegirServicio('Frenos');
+      escribir('#solicitud-sintoma', SINTOMA_VALIDO);
+      await pulsar('Sí');
+      await avanzar();
+      await rellenarPaso3SinPrivacidad(fechaLocalDeHoy());
+      await aceptarPrivacidad();
+      await avanzar();
+      await avanzar();
+
+      expect(ordenesSimulado.crear).toHaveBeenCalledWith(
+        expect.objectContaining({ tipoServicio: 'frenos', urgencia: 'alta' }),
+      );
+    });
+  });
+
+  describe('tecla Intro', () => {
+    const CUANDO = '#solicitud-cuando';
+    const SINTOMA = '#solicitud-sintoma';
+    const PASO_2 = 'Paso 2 de 3 · Problema';
+    const PASO_3 = 'Paso 3 de 3 · Cita';
+
+    beforeEach(() => completarPaso1());
+
+    it('no avanza ni muestra errores si faltan campos obligatorios', async () => {
+      await intro(CUANDO);
+
+      expect(indicador()).toBe(PASO_2);
+      expect(elemento.querySelector('.campo__error')).toBeNull();
+    });
+
+    it('avanza con el paso completo', async () => {
+      await rellenarPaso2(SINTOMA_VALIDO);
+
+      await intro(CUANDO);
+
+      expect(indicador()).toBe(PASO_3);
+    });
+
+    it('en el síntoma solo avanza con Ctrl', async () => {
+      await rellenarPaso2(SINTOMA_VALIDO);
+
+      await intro(SINTOMA);
+      expect(indicador()).toBe(PASO_2);
+
+      await intro(SINTOMA, { ctrlKey: true });
+      expect(indicador()).toBe(PASO_3);
+    });
+
+    it('ignora la repetición de la tecla mantenida', async () => {
+      await rellenarPaso2(SINTOMA_VALIDO);
+
+      await intro(CUANDO, { repeat: true });
+
+      expect(indicador()).toBe(PASO_2);
     });
   });
 });

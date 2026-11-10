@@ -1,0 +1,76 @@
+.titulo {
+  margin-bottom: var(--mo-esp-16);
+  font-size: var(--mo-tipo-18);
+}
+
+.opciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+}
+
+.opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+  width: 100%;
+  min-height: var(--mo-tactil);
+  padding: var(--mo-esp-12) var(--mo-esp-16);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-8);
+  background: none;
+  color: var(--mo-tinta);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--mo-transicion),
+    border-color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  &:active {
+    transform: scale(var(--mo-escala-tarjeta));
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-tinta);
+      background-color: var(--mo-crema);
+    }
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.opcion--peligro {
+  border-color: var(--mo-error);
+  color: var(--mo-error);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-error);
+      background-color: var(--mo-error-fondo);
+    }
+  }
+}
+
+// Cuadrado y con el mismo recorte que la foto guardada. Como un espejo, solo en la vista previa
+.visor {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-carbon);
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--mo-esp-8);
+  margin-top: var(--mo-esp-16);
+}

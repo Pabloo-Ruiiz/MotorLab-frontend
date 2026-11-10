@@ -1,0 +1,62 @@
+:host {
+  display: block;
+}
+
+.vehiculo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--mo-esp-12) var(--mo-esp-16);
+  padding: var(--mo-esp-16);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-carbon);
+  color: var(--mo-blanco);
+  animation: entrar var(--mo-duracion-entrada) var(--mo-curva-salida);
+
+  .placa {
+    grid-column: 1 / -1;
+    justify-self: start;
+    border-color: transparent;
+    color: var(--mo-tinta);
+  }
+
+  @container (min-width: 440px) {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+
+    .placa {
+      grid-column: auto;
+    }
+  }
+}
+
+.vehiculo__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--mo-radio-8);
+  background-color: rgb(255 255 255 / 8%);
+
+  app-icono-coche {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.vehiculo__nombre {
+  font-weight: var(--mo-peso-medio);
+  overflow-wrap: anywhere;
+}
+
+.vehiculo__detalle {
+  color: var(--mo-peltre);
+  font-size: var(--mo-tipo-14);
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(calc(6px * var(--mo-movimiento)));
+  }
+}

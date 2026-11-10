@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import type { VehiculoRequest } from '@core/models';
@@ -16,13 +16,29 @@ import {
 import { matriculaValidator, normalizarMatricula } from '@core/util/matricula';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { ErroresCampoComponent } from '@shared/components/errores-campo/errores-campo.component';
+import { IconoCocheComponent } from '@shared/components/icono-coche/icono-coche.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
+
+import { buscarEnCatalogo, MARCAS, modelosDe } from './catalogo-vehiculos';
 
 const ANIO_MINIMO = 1980;
 const enteroValidator = Validators.pattern(/^-?\d+$/);
 
+// Un vehículo guardado puede tener un valor fuera del catálogo: sin esta opción se perdería al editar
+function conValorGuardado(opciones: readonly string[], valor?: string): readonly string[] {
+  return valor === undefined || opciones.includes(valor) ? opciones : [...opciones, valor];
+}
+
 @Component({
   selector: 'app-vehiculo-form',
-  imports: [CargandoComponent, ErroresCampoComponent, ReactiveFormsModule],
+  imports: [
+    CargandoComponent,
+    ErroresCampoComponent,
+    IconoCocheComponent,
+    LogoComponent,
+    ReactiveFormsModule,
+    RouterLink
+  ],
   templateUrl: './vehiculo-form.component.html',
   styleUrl: './vehiculo-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -35,13 +51,14 @@ export class VehiculoFormComponent {
 
   protected readonly campoConError = campoConError;
   protected readonly esEdicion = this.id !== null;
+  protected readonly titulo = this.esEdicion ? 'Editar vehículo' : 'Nuevo vehículo';
   protected readonly mensajesMatricula = { pattern: 'Formato no válido. Ejemplo: 4821 KLB' };
   protected readonly mensajesEntero = { pattern: 'Debe ser un número entero' };
 
   protected readonly form = inject(NonNullableFormBuilder).group({
     matricula: ['', [Validators.required, matriculaValidator]],
     marca: ['', [Validators.required, Validators.maxLength(50)]],
-    modelo: ['', [Validators.required, Validators.maxLength(80)]],
+    modelo: [{ value: '', disabled: true }, [Validators.required, Validators.maxLength(80)]],
     version: ['', [Validators.maxLength(80)]],
     anio: [
       null as number | null,
@@ -59,8 +76,32 @@ export class VehiculoFormComponent {
   protected readonly errorCarga = signal<string | null>(null);
   protected readonly enviando = signal(false);
   protected readonly errorGeneral = signal<string | null>(null);
+  // Refleja lo guardado, no lo que se está escribiendo: indica qué vehículo se edita
+  protected readonly resumen = signal<string | null>(null);
+
+  private readonly guardado = signal<{ marca: string; modelo: string } | null>(null);
+
+  protected readonly marcaElegida = toSignal(this.form.controls.marca.valueChanges, {
+    initialValue: ''
+  });
+  protected readonly marcas = computed(() => conValorGuardado(MARCAS, this.guardado()?.marca));
+  protected readonly modelos = computed(() => {
+    const marca = this.marcaElegida();
+    const guardado = this.guardado();
+
+    return conValorGuardado(
+      modelosDe(marca),
+      guardado?.marca === marca ? guardado.modelo : undefined
+    );
+  });
 
   constructor() {
+    const { marca: controlMarca, modelo: controlModelo } = this.form.controls;
+
+    controlMarca.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((marca) => (marca ? controlModelo.enable() : controlModelo.disable()));
+
     if (this.id === null) {
       return;
     }
@@ -72,17 +113,28 @@ export class VehiculoFormComponent {
         takeUntilDestroyed()
       )
       .subscribe({
-        next: ({ matricula, marca, modelo, version, anio, kilometros }) =>
+        next: ({ matricula, marca, modelo, version, anio, kilometros }) => {
+          const marcaCatalogo = buscarEnCatalogo(MARCAS, marca) ?? marca;
+          const modeloCatalogo = buscarEnCatalogo(modelosDe(marcaCatalogo), modelo) ?? modelo;
+
+          this.guardado.set({ marca: marcaCatalogo, modelo: modeloCatalogo });
+          this.resumen.set(`${marcaCatalogo} ${modeloCatalogo} · ${anio}`);
           this.form.setValue({
             matricula,
-            marca,
-            modelo,
+            marca: marcaCatalogo,
+            modelo: modeloCatalogo,
             version: version ?? '',
             anio,
             kilometros
-          }),
+          });
+        },
         error: (error: unknown) => this.errorCarga.set(mensajeDeError(error))
       });
+  }
+
+  // Solo al elegir el usuario: el modelo anterior no existe en la marca nueva
+  protected alCambiarMarca(): void {
+    this.form.controls.modelo.reset();
   }
 
   protected enviar(): void {

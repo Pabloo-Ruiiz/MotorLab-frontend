@@ -1,4 +1,24 @@
+<app-logo class="filigrana" />
+
+<ng-template #icono let-trazado>
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path [attr.d]="trazado" />
+  </svg>
+</ng-template>
+
 <main class="detalle">
+  <p class="descripcion">Consulta en tiempo real el estado de la reparación de tu vehículo.</p>
+
   @if (cargando()) {
     <app-cargando />
   } @else if (noEncontrada()) {
@@ -7,11 +27,21 @@
     <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
     <button type="button" class="btn btn--secundario" (click)="reintentar()">Reintentar</button>
   } @else if (datos(); as datos) {
+    <div class="resumen">
+      <p class="resumen__orden">
+        <span class="resumen__etiqueta">Orden</span>
+        <strong class="resumen__numero">#{{ datos.orden.id }}</strong>
+      </p>
+      <span class="estado-orden" [attr.data-tono]="tonosEstado[datos.orden.estado]">
+        {{ etiquetasEstado[datos.orden.estado] }}
+      </span>
+    </div>
+
     @if (datos.orden.presupuesto; as presupuesto) {
       @if (presupuesto.estado === 'enviado') {
-        <section class="aviso presupuesto" aria-label="Presupuesto pendiente de respuesta">
+        <section class="panel presupuesto" aria-label="Presupuesto pendiente de respuesta">
           <div>
-            <p>Tu presupuesto está listo</p>
+            <p class="presupuesto__texto">Tu presupuesto está listo</p>
             <strong class="presupuesto__total">{{ presupuesto.total | euros }}</strong>
           </div>
           <a
@@ -22,79 +52,148 @@
           </a>
         </section>
       } @else if (presupuesto.estado === 'autorizado') {
-        <a [routerLink]="['/cliente/ordenes', datos.orden.id, 'presupuesto']">
+        <a
+          class="presupuesto-autorizado"
+          [routerLink]="['/cliente/ordenes', datos.orden.id, 'presupuesto']"
+        >
           Ver presupuesto autorizado
         </a>
       }
     }
 
-    <section class="tarjeta estimado" aria-label="Fecha estimada y progreso">
-      <p class="estimado__etiqueta">Listo estimado</p>
+    <section class="estimado" aria-label="Fecha estimada y progreso">
       <div class="estimado__fila">
-        <strong class="estimado__fecha">{{
-          datos.seguimiento.listoEstimado | fechaHora: 'completa'
-        }}</strong>
-        <strong class="estimado__porcentaje">{{ datos.seguimiento.progreso }} %</strong>
+        <div>
+          <p class="estimado__etiqueta">Listo estimado</p>
+          <strong class="estimado__fecha">
+            {{
+              datos.seguimiento.listoEstimado
+                ? (datos.seguimiento.listoEstimado | fechaHora: 'completa')
+                : 'Por confirmar'
+            }}
+          </strong>
+        </div>
+        <strong class="estimado__porcentaje">{{ datos.seguimiento.progreso }}%</strong>
       </div>
-      <app-barra-progreso
-        [progreso]="datos.seguimiento.progreso"
-        etiqueta="Progreso de la reparación"
-      />
-    </section>
 
-    <app-linea-tiempo [eventos]="datos.seguimiento.eventos" [estado]="datos.orden.estado" />
+      <div
+        class="estimado__pista"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-valuenow]="datos.seguimiento.progreso"
+        aria-label="Progreso de la reparación"
+      >
+        <div class="estimado__relleno" [style.--progreso]="datos.seguimiento.progreso"></div>
+      </div>
 
-    <section class="tarjeta" aria-labelledby="orden-vehiculo">
-      <h2 class="tarjeta__titulo" id="orden-vehiculo">Vehículo</h2>
-      <p>
-        {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }} ·
-        {{ matriculaLegible(datos.orden.vehiculo.matricula) }}
+      <p class="estimado__estado">
+        <span class="estimado__etiqueta">Estado actual</span>
+        {{ etiquetasEstado[datos.orden.estado] }}
       </p>
     </section>
 
-    <section class="tarjeta" aria-labelledby="orden-datos">
-      <h2 class="tarjeta__titulo" id="orden-datos">Orden #{{ datos.orden.id }}</h2>
-      <dl class="datos">
-        <div>
-          <dt>Tipo de servicio</dt>
-          <dd>{{ etiquetasServicio[datos.orden.tipoServicio] }}</dd>
-        </div>
-        <div>
-          <dt>Síntoma</dt>
-          <dd>{{ datos.orden.sintoma }}</dd>
-        </div>
-        @if (datos.orden.cuandoOcurre; as cuando) {
-          <div>
-            <dt>Cuándo ocurre</dt>
-            <dd>{{ etiquetasCuando[cuando] }}</dd>
+    <div class="rejilla">
+      <section class="panel" aria-labelledby="orden-fases">
+        <h2 class="panel__titulo" id="orden-fases">Fases de la reparación</h2>
+        <app-linea-tiempo
+          destacada
+          [eventos]="datos.seguimiento.eventos"
+          [estado]="datos.orden.estado"
+        />
+      </section>
+
+      <div class="columna">
+        <section class="panel" aria-labelledby="orden-vehiculo">
+          <h2 class="panel__titulo" id="orden-vehiculo">Vehículo</h2>
+          <div class="vehiculo">
+            <span class="vehiculo__icono"><app-icono-coche /></span>
+            <p class="vehiculo__nombre">
+              {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }}
+            </p>
           </div>
-        }
-        <div>
-          <dt>Urgencia</dt>
-          <dd><app-pill-urgencia [urgencia]="datos.orden.urgencia" /></dd>
-        </div>
-        @if (datos.orden.mecanico; as mecanico) {
-          <div>
-            <dt>Mecánico</dt>
-            <dd>{{ mecanico.nombre }}</dd>
-          </div>
-        }
-        @if (datos.orden.elevador; as elevador) {
-          <div>
-            <dt>Elevador</dt>
-            <dd>{{ elevador }}</dd>
-          </div>
-        }
-      </dl>
-    </section>
+          <app-matricula class="vehiculo__placa" [matricula]="datos.orden.vehiculo.matricula" />
+        </section>
+
+        <section class="panel" aria-labelledby="orden-datos">
+          <h2 class="panel__titulo" id="orden-datos">Detalles de la orden</h2>
+          <dl class="datos">
+            <div class="dato">
+              <dt>
+                <ng-container *ngTemplateOutlet="icono; context: { $implicit: iconos.numero }" />
+                Número de orden
+              </dt>
+              <dd>#{{ datos.orden.id }}</dd>
+            </div>
+            <div class="dato">
+              <dt>
+                <ng-container *ngTemplateOutlet="icono; context: { $implicit: iconos.servicio }" />
+                Tipo de servicio
+              </dt>
+              <dd>{{ etiquetasServicio[datos.orden.tipoServicio] }}</dd>
+            </div>
+            <div class="dato">
+              <dt>
+                <ng-container *ngTemplateOutlet="icono; context: { $implicit: iconos.sintoma }" />
+                Síntoma
+              </dt>
+              <dd>{{ datos.orden.sintoma }}</dd>
+            </div>
+            @if (datos.orden.cuandoOcurre; as cuando) {
+              <div class="dato">
+                <dt>
+                  <ng-container *ngTemplateOutlet="icono; context: { $implicit: iconos.cuando }" />
+                  Cuándo ocurre
+                </dt>
+                <dd>{{ etiquetasCuando[cuando] }}</dd>
+              </div>
+            }
+            <div class="dato">
+              <dt>
+                <ng-container *ngTemplateOutlet="icono; context: { $implicit: iconos.urgencia }" />
+                Urgencia
+              </dt>
+              <dd>
+                <span class="estado-orden" [attr.data-tono]="tonosUrgencia[datos.orden.urgencia]">
+                  {{ etiquetasUrgencia[datos.orden.urgencia] }}
+                </span>
+              </dd>
+            </div>
+            @if (datos.orden.mecanico; as mecanico) {
+              <div class="dato">
+                <dt>
+                  <ng-container
+                    *ngTemplateOutlet="icono; context: { $implicit: iconos.mecanico }"
+                  />
+                  Mecánico
+                </dt>
+                <dd>{{ mecanico.nombre }}</dd>
+              </div>
+            }
+            @if (datos.orden.elevador; as elevador) {
+              <div class="dato">
+                <dt>
+                  <ng-container
+                    *ngTemplateOutlet="icono; context: { $implicit: iconos.elevador }"
+                  />
+                  Elevador
+                </dt>
+                <dd>{{ elevador }}</dd>
+              </div>
+            }
+          </dl>
+        </section>
+      </div>
+    </div>
 
     @if (cancelable()) {
       <button
         type="button"
-        class="btn btn--peligro"
+        class="btn btn--peligro cancelar"
         [disabled]="cancelando()"
         (click)="confirmandoCancelacion.set(true)"
       >
+        <ng-container *ngTemplateOutlet="icono; context: { $implicit: iconos.cancelar }" />
         {{ cancelando() ? 'Cancelando…' : 'Cancelar orden' }}
       </button>
     }

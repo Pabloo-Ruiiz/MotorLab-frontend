@@ -7,7 +7,16 @@
   height: 100dvh;
 }
 
+// Por delante del contenido: el logo de fondo de algunas pantallas es fijo y no debe taparlas
+.cabecera,
+.pestanas {
+  position: relative;
+  z-index: 1;
+}
+
+// Por encima de las pestañas: el desplegable de la campana se abre sobre ellas
 .cabecera {
+  z-index: 2;
   grid-row: 1;
   grid-column: 1;
   padding: env(safe-area-inset-top) calc(var(--mo-esp-16) + env(safe-area-inset-right)) 0
@@ -26,35 +35,14 @@
   margin-inline: auto;
 }
 
-.campana {
-  position: relative;
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: var(--mo-tactil);
-  height: var(--mo-tactil);
-}
-
-.campana__insignia {
-  position: absolute;
-  top: 2px;
-  right: 0;
-  min-width: 20px;
-  padding-inline: var(--mo-esp-4);
-  border-radius: var(--mo-radio-pildora);
-  background-color: var(--mo-tinta);
-  color: var(--mo-blanco);
-  font-family: var(--mo-mono);
-  font-size: var(--mo-tipo-12);
-  line-height: 20px;
-  text-align: center;
-}
-
 .contenido {
   grid-row: 2;
   grid-column: 1;
   overflow-y: auto;
+}
+
+.contenido--suave {
+  background-color: var(--mo-crema);
 }
 
 .contenido__ancho {
@@ -114,42 +102,160 @@
   color: var(--mo-tinta);
 }
 
-// Escritorio: una única barra superior con la navegación centrada
+.usuario {
+  display: none;
+}
+
+// Escritorio: columna lateral con el mismo formato que el menú del taller
 @media (min-width: 768px) {
   :host {
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-columns: calc(var(--mo-ancho-lateral) + env(safe-area-inset-left)) minmax(0, 1fr);
+    background-color: var(--mo-crema);
   }
 
   .cabecera {
-    padding-inline: var(--mo-esp-24);
+    padding-right: var(--mo-esp-24);
+    padding-left: calc(var(--mo-esp-24) + env(safe-area-inset-left));
+    border-bottom: 0;
+    background: none;
   }
 
   .pestanas {
-    grid-row: 1;
-    align-self: center;
-    justify-self: center;
-    padding: 0;
+    grid-row: 2;
+    padding: var(--mo-esp-8) var(--mo-esp-12) var(--mo-esp-16)
+      calc(var(--mo-esp-12) + env(safe-area-inset-left));
+    overflow-y: auto;
     border: 0;
     background: none;
   }
 
   .pestanas__lista {
     display: flex;
-    gap: var(--mo-esp-8);
+    flex-direction: column;
+    gap: var(--mo-esp-4);
   }
 
   .pestana {
-    padding-inline: var(--mo-esp-12);
+    position: relative;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--mo-esp-12);
+    padding: var(--mo-esp-8) var(--mo-esp-12);
+    border-radius: var(--mo-radio-8);
     font-size: var(--mo-tipo-14);
     line-height: 20px;
+    transition:
+      color var(--mo-transicion),
+      background-color var(--mo-transicion);
+
+    // Barra indicadora: con movimiento reducido solo aparece por fundido, sin crecer
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: var(--mo-esp-8);
+      left: 0;
+      width: 3px;
+      border-radius: var(--mo-radio-pildora);
+      background-color: var(--mo-tinta);
+      opacity: 0;
+      transform: scaleY(calc(1 - var(--mo-movimiento)));
+      transition:
+        opacity var(--mo-duracion-entrada) var(--mo-curva-salida),
+        transform var(--mo-duracion-entrada) var(--mo-curva-salida);
+    }
 
     svg {
-      display: none;
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
     }
   }
 
   .pestana--activa {
-    box-shadow: inset 0 -2px 0 var(--mo-tinta);
+    background-color: var(--mo-arena);
+    box-shadow: none;
+
+    &::before {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .usuario {
+    display: flex;
+    grid-row: 3;
+    grid-column: 1;
+    flex-direction: column;
+    gap: var(--mo-esp-12);
+    margin: 0 var(--mo-esp-12) calc(var(--mo-esp-16) + env(safe-area-inset-bottom))
+      calc(var(--mo-esp-12) + env(safe-area-inset-left));
+    padding: var(--mo-esp-16) var(--mo-esp-12) 0;
+    border-top: 1px solid var(--mo-linea);
+  }
+
+  .usuario__datos {
+    display: flex;
+    align-items: center;
+    gap: var(--mo-esp-12);
+  }
+
+  .usuario__avatar {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--mo-esp-32);
+    height: var(--mo-esp-32);
+    border-radius: var(--mo-radio-pildora);
+    background-color: var(--mo-arena);
+    font-size: var(--mo-tipo-14);
+  }
+
+  .usuario__avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+
+  .usuario__texto {
+    min-width: 0;
+  }
+
+  .usuario__nombre {
+    overflow: hidden;
+    font-size: var(--mo-tipo-14);
+    font-weight: var(--mo-peso-medio);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .usuario__rol {
+    color: var(--mo-acero);
+    font-size: var(--mo-tipo-12);
+  }
+
+  .usuario__salir {
+    width: 100%;
+    border-color: var(--mo-linea);
+    background: none;
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        border-color: var(--mo-tinta);
+      }
+    }
+  }
+
+  .contenido {
+    grid-row: 1 / -1;
+    grid-column: 2;
+    background-color: var(--mo-blanco);
+  }
+
+  .contenido--suave {
+    background-color: var(--mo-crema);
   }
 
   .contenido__ancho {

@@ -1,28 +1,11 @@
 <header class="cabecera">
   <div class="cabecera__fila">
     <div class="marca">
-      <span class="marca__simbolo" aria-hidden="true">M</span>
+      <app-logo class="marca__simbolo" />
       MotorLab
     </div>
 
-    <div class="campana" role="img" [attr.aria-label]="'Avisos sin leer: ' + noLeidas()">
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <path [attr.d]="iconoCampana" />
-      </svg>
-      @if (noLeidas() > 0) {
-        <span class="campana__insignia">{{ noLeidas() }}</span>
-      }
-    </div>
+    <app-campana-avisos />
   </div>
 </header>
 
@@ -57,10 +40,34 @@
   </ul>
 </nav>
 
+<!-- Solo en escritorio: en móvil se cierra sesión desde Perfil -->
+@if (auth.usuario(); as usuario) {
+  <div class="usuario">
+    <div class="usuario__datos">
+      <span class="usuario__avatar" aria-hidden="true">
+        @if (foto(); as foto) {
+          <img [src]="foto" alt="" />
+        } @else {
+          {{ usuario.nombre.charAt(0) }}
+        }
+      </span>
+      <div class="usuario__texto">
+        <p class="usuario__nombre">{{ usuario.nombre }}</p>
+        <p class="usuario__rol">{{ etiquetasRol[usuario.rol] }}</p>
+      </div>
+    </div>
+    <button type="button" class="btn usuario__salir" (click)="auth.cerrarSesion()">
+      Cerrar sesión
+    </button>
+  </div>
+}
+
 <!-- Cada pantalla aporta su propio <main>; al cambiar de pantalla el scroll vuelve arriba -->
-<div #contenido class="contenido">
+<div #contenido class="contenido" [class.contenido--suave]="fichaPropia()">
   <div class="contenido__ancho">
-    <h1 class="contenido__titulo">{{ titulo() }}</h1>
+    @if (!fichaPropia()) {
+      <h1 class="contenido__titulo">{{ titulo() }}</h1>
+    }
     <router-outlet (activate)="contenido.scrollTop = 0" />
   </div>
 </div>

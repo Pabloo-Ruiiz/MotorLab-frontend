@@ -1,4 +1,4 @@
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
@@ -11,25 +11,38 @@ import { aApiError, mensajeDeError } from '@core/util/api-error';
 import { FocoTrasCarga } from '@core/util/foco';
 import { matriculaLegible } from '@core/util/matricula';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacion/modal-confirmacion.component';
 import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
+import { IconoCocheComponent } from '@shared/components/icono-coche/icono-coche.component';
 
 const LIMITE = 10;
+
+// Atributo «d» de cada icono, sobre una cuadrícula de 24x24
+const ICONOS = {
+  mas: 'M12 5v14M5 12h14',
+  reloj: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM12 7v5l3 2',
+  lapiz: 'M4 20l1-4L16 5a2.12 2.12 0 0 1 3 3L8 19l-4 1ZM14 7l3 3',
+  papelera: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
+} as const;
 
 @Component({
   selector: 'app-vehiculos-lista',
   imports: [
     CargandoComponent,
     DecimalPipe,
+    IconoCocheComponent,
+    LogoComponent,
     ModalConfirmacionComponent,
+    NgTemplateOutlet,
     PaginadorComponent,
     RouterLink,
-    VacioComponent
+    VacioComponent,
   ],
   templateUrl: './vehiculos-lista.component.html',
   styleUrl: './vehiculos-lista.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VehiculosListaComponent {
   private readonly vehiculos = inject(VehiculosService);
@@ -38,6 +51,7 @@ export class VehiculosListaComponent {
 
   private readonly paginaPedida = new Subject<number>();
 
+  protected readonly iconos = ICONOS;
   protected readonly matriculaLegible = matriculaLegible;
 
   protected readonly cargando = signal(true);
@@ -65,10 +79,10 @@ export class VehiculosListaComponent {
             catchError((error: unknown) => {
               this.errorCarga.set(mensajeDeError(error));
               return of(null);
-            })
-          )
+            }),
+          ),
         ),
-        takeUntilDestroyed()
+        takeUntilDestroyed(),
       )
       .subscribe((resultado) => {
         this.resultado.set(resultado);
@@ -111,7 +125,7 @@ export class VehiculosListaComponent {
         if (apiError.status >= 400 && apiError.status < 500) {
           this.toast.error(apiError.mensaje);
         }
-      }
+      },
     });
   }
 

@@ -1,0 +1,4 @@
+<button type="button" class="btn btn--fantasma" [disabled]="enviando()" (click)="reenviar()">
+  {{ enviando() ? 'Enviando…' : 'Reenviar correo' }}
+</button>
+<p class="resultado" role="status">{{ resultado() }}</p>

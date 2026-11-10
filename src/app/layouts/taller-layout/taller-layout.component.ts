@@ -4,6 +4,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ETIQUETAS_ROL } from '@core/models';
 import { AuthService } from '@core/services/auth.service';
 import { enfocarPrincipal } from '@core/util/foco';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 
 interface Opcion {
   ruta: string;
@@ -52,7 +53,7 @@ const OPCIONES_MECANICO: readonly Opcion[] = [
 
 @Component({
   selector: 'app-taller-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [LogoComponent, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './taller-layout.component.html',
   styleUrl: './taller-layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

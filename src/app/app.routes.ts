@@ -44,6 +44,22 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@features/auth/registro/registro.component').then((m) => m.RegistroComponent),
   },
+  {
+    path: 'verificar-correo',
+    loadComponent: () =>
+      import('@features/auth/verificar-correo/verificar-correo.component').then(
+        (m) => m.VerificarCorreoComponent,
+      ),
+  },
+
+  {
+    path: 'privacidad',
+    title: 'Política de privacidad · MotorLab',
+    loadComponent: () =>
+      import('@features/legal/politica-privacidad/politica-privacidad.component').then(
+        (m) => m.PoliticaPrivacidadComponent,
+      ),
+  },
 
   {
     path: 'cliente',
@@ -64,12 +80,12 @@ export const routes: Routes = [
       },
       {
         path: 'vehiculos/nuevo',
-        data: { titulo: 'Nuevo vehículo' },
+        data: { titulo: 'Nuevo vehículo', fichaPropia: true },
         loadComponent: vehiculoForm,
       },
       {
         path: 'vehiculos/:id/editar',
-        data: { titulo: 'Editar vehículo' },
+        data: { titulo: 'Editar vehículo', fichaPropia: true },
         loadComponent: vehiculoForm,
       },
       {
@@ -115,7 +131,7 @@ export const routes: Routes = [
       { path: 'avisos', data: { titulo: 'Avisos' }, loadComponent: avisos },
       {
         path: 'perfil',
-        data: { titulo: 'Perfil' },
+        data: { titulo: 'Perfil', fichaPropia: true },
         loadComponent: () =>
           import('@features/perfil/perfil/perfil.component').then((m) => m.PerfilComponent),
       },

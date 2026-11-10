@@ -1,0 +1,10 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+}
+
+.resultado {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+}

@@ -59,15 +59,10 @@
 }
 
 .marca__simbolo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
   width: var(--mo-esp-32);
   height: var(--mo-esp-32);
-  border-radius: var(--mo-radio-pildora);
-  background-color: var(--mo-tinta);
-  color: var(--mo-blanco);
-  font-size: var(--mo-tipo-14);
+  color: var(--mo-tinta);
 }
 
 // Botones
@@ -534,4 +529,87 @@ button.tarjeta:active:not(:disabled) {
   justify-content: flex-end;
   gap: var(--mo-esp-8);
   margin-top: var(--mo-esp-8);
+}
+
+// Tono de una orden o urgencia (data-tono): color de texto y fondo suave que superan el 4,5:1
+[data-tono='informativo'] {
+  --tono: #3b4a6b;
+  --tono-fondo: #eef1f7;
+}
+
+[data-tono='exito'] {
+  --tono: #1a6b2f;
+  --tono-fondo: #eaf6ec;
+}
+
+[data-tono='aviso'] {
+  --tono: #8a5300;
+  --tono-fondo: #fdf3e0;
+}
+
+[data-tono='error'] {
+  --tono: var(--mo-error);
+  --tono-fondo: var(--mo-error-fondo);
+}
+
+[data-tono='neutro'] {
+  --tono: var(--mo-acero);
+  --tono-fondo: var(--mo-arena);
+}
+
+.estado-orden {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--mo-esp-4) var(--mo-esp-12);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--tono-fondo);
+  color: var(--tono);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-medio);
+  line-height: 16px;
+  white-space: nowrap;
+  transition:
+    background-color var(--mo-transicion),
+    color var(--mo-transicion);
+
+  &::before {
+    content: '';
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+}
+
+// Matrícula compacta para tarjetas (versión ligera de app-matricula)
+.placa {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  overflow: hidden;
+  padding-right: var(--mo-esp-8);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-6);
+  background-color: var(--mo-blanco);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-14);
+  letter-spacing: 0.04em;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
+.placa__banda {
+  width: var(--mo-esp-16);
+  background-color: var(--mo-carbon);
+  color: var(--mo-blanco);
+  font-size: 10px;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+// La confirmación de «Solicitud enviada» ya tiene su propio título: sin el de la pantalla
+.contenido__ancho:has(app-solicitud-enviada) > .contenido__titulo {
+  display: none;
 }

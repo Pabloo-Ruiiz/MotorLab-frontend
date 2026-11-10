@@ -1,0 +1,227 @@
+<main class="politica">
+  <article class="documento">
+    <header class="documento__cabecera">
+      <div class="marca">
+        <app-logo class="marca__simbolo" />
+        MotorLab
+      </div>
+      <h1 class="documento__titulo">Política de privacidad</h1>
+      <p class="documento__fecha">Última actualización: 10 de noviembre de 2026</p>
+    </header>
+
+    <section>
+      <h2>1. Responsable del tratamiento</h2>
+      <dl class="responsable">
+        @for (fila of responsable; track fila.dato) {
+          <div>
+            <dt>{{ fila.dato }}</dt>
+            <dd [class.pendiente]="fila.valor.startsWith('[')">{{ fila.valor }}</dd>
+          </div>
+        }
+      </dl>
+    </section>
+
+    <section>
+      <h2>2. Normativa aplicable</h2>
+      <p>
+        Tratamos tus datos conforme al Reglamento (UE) 2016/679, General de Protección de Datos
+        (RGPD), y a la Ley Orgánica 3/2018, de Protección de Datos Personales y garantía de los
+        derechos digitales (LOPDGDD).
+      </p>
+    </section>
+
+    <section>
+      <h2>3. Datos personales que tratamos</h2>
+      <ul>
+        <li>
+          <strong>Datos de cuenta:</strong> nombre, correo electrónico, teléfono y contraseña.
+        </li>
+        <li>
+          <strong>Datos del vehículo:</strong> matrícula, marca, modelo, versión, año y kilómetros.
+        </li>
+        <li>
+          <strong>Datos del servicio:</strong> tipo de servicio, descripción de la avería, urgencia,
+          si el vehículo se puede conducir con seguridad, fecha, franja y medio de contacto
+          preferidos, órdenes de trabajo, presupuestos e historial de reparaciones.
+        </li>
+        <li><strong>Comunicaciones:</strong> avisos sobre el estado de tus solicitudes.</li>
+        <li>
+          <strong>Datos técnicos:</strong> los necesarios para mantener tu sesión iniciada y
+          proteger el servicio.
+        </li>
+      </ul>
+      <p>
+        No necesitamos categorías especiales de datos. Te pedimos que no las incluyas en la
+        descripción de la avería.
+      </p>
+    </section>
+
+    <section>
+      <h2>4. Protección de los datos de tus vehículos</h2>
+      <p>
+        La matrícula y el historial de un vehículo pueden identificarte cuando están asociados a tu
+        cuenta, por lo que les aplicamos las mismas garantías que al resto de tus datos. Solo
+        acceden a ellos las personas del taller que los necesitan para atender tu solicitud.
+      </p>
+      <p>
+        Si das de baja un vehículo, deja de aparecer en tu lista, pero su historial de reparaciones
+        puede conservarse durante los plazos indicados en el apartado 7.
+      </p>
+    </section>
+
+    <section>
+      <h2>5. Finalidades y base jurídica</h2>
+      <div class="tabla-contenedor">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th scope="col">Finalidad</th>
+              <th scope="col">Base jurídica</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Crear y gestionar tu cuenta</td>
+              <td>Ejecución de un contrato (art. 6.1.b RGPD)</td>
+            </tr>
+            <tr>
+              <td>Gestionar solicitudes, citas, presupuestos y reparaciones</td>
+              <td>Ejecución de un contrato (art. 6.1.b RGPD)</td>
+            </tr>
+            <tr>
+              <td>Enviarte avisos sobre tus solicitudes</td>
+              <td>Ejecución de un contrato (art. 6.1.b RGPD)</td>
+            </tr>
+            <tr>
+              <td>Cumplir obligaciones fiscales, contables y de garantía</td>
+              <td>Obligación legal (art. 6.1.c RGPD)</td>
+            </tr>
+            <tr>
+              <td>Proteger la seguridad de la aplicación</td>
+              <td>Interés legítimo (art. 6.1.f RGPD)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>No utilizamos tus datos para enviarte publicidad.</p>
+    </section>
+
+    <section>
+      <h2>6. Foto de perfil</h2>
+      <p>
+        La foto de perfil es opcional. Se guarda únicamente en el navegador del dispositivo donde la
+        eliges y no se envía a nuestros servidores, por lo que el taller no tiene acceso a ella. El
+        acceso a la cámara solo se solicita cuando eliges hacer una foto. Puedes eliminarla desde tu
+        perfil, con la opción «Eliminar foto actual», o borrando los datos de este sitio en tu
+        navegador.
+      </p>
+    </section>
+
+    <section>
+      <h2>7. Plazo de conservación</h2>
+      <p>
+        Conservamos tus datos mientras mantengas tu cuenta y sean necesarios para prestarte el
+        servicio. Después permanecerán bloqueados, a disposición únicamente de las autoridades
+        competentes, durante los plazos legales aplicables:
+      </p>
+      <ul>
+        <li>Documentación contable y facturas: 6 años (art. 30 del Código de Comercio).</li>
+        <li>Obligaciones tributarias: 4 años (art. 66 de la Ley General Tributaria).</li>
+        <li>Reclamaciones contractuales: 5 años (art. 1964.2 del Código Civil).</li>
+        <li>Reparaciones: como mínimo, durante su periodo de garantía legal.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>8. Destinatarios</h2>
+      <p>No vendemos tus datos. Solo pueden acceder a ellos:</p>
+      <ul>
+        <li>El personal autorizado del taller (administración y mecánicos).</li>
+        <li>
+          Proveedores que nos prestan servicios de alojamiento y envío de correo, como encargados
+          del tratamiento y con contrato conforme al art. 28 RGPD.
+        </li>
+        <li>Administraciones públicas, jueces y tribunales, cuando exista obligación legal.</li>
+        <li>Otros terceros, como aseguradoras, solo si nos lo pides o lo consientes.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>9. Transferencias internacionales</h2>
+      <p>
+        Si algún proveedor tratara datos fuera del Espacio Económico Europeo, lo haría únicamente
+        con las garantías previstas en el capítulo V del RGPD. Puedes solicitarnos más información.
+      </p>
+    </section>
+
+    <section>
+      <h2>10. Tus derechos (ARCO y otros)</h2>
+      <p>Puedes ejercer en cualquier momento, y de forma gratuita, los derechos de:</p>
+      <ul>
+        <li><strong>Acceso:</strong> saber qué datos tuyos tratamos.</li>
+        <li><strong>Rectificación:</strong> corregir datos inexactos o incompletos.</li>
+        <li><strong>Supresión:</strong> pedir que eliminemos tus datos.</li>
+        <li><strong>Oposición:</strong> oponerte a determinados tratamientos.</li>
+        <li><strong>Limitación:</strong> pedir que restrinjamos su tratamiento.</li>
+        <li><strong>Portabilidad:</strong> recibir tus datos en un formato de uso común.</li>
+        <li>
+          <strong>Retirada del consentimiento,</strong> cuando el tratamiento se base en él, sin
+          efectos sobre el tratamiento anterior.
+        </li>
+      </ul>
+      <p>
+        Escríbenos a los datos de contacto del apartado 1, indicando el derecho que ejerces y
+        acreditando tu identidad. Responderemos en el plazo de un mes, ampliable dos meses más en
+        casos complejos (art. 12.3 RGPD).
+      </p>
+      <p>
+        Si consideras que no hemos atendido correctamente tus derechos, puedes reclamar ante la
+        Agencia Española de Protección de Datos (C/ Jorge Juan, 6, 28001 Madrid,
+        <a href="https://www.aepd.es" target="_blank" rel="noopener">www.aepd.es</a>).
+      </p>
+    </section>
+
+    <section>
+      <h2>11. Medidas de seguridad</h2>
+      <p>
+        Aplicamos medidas técnicas y organizativas adecuadas al riesgo, como el acceso autenticado y
+        la limitación de permisos según la función de cada persona, para evitar la pérdida, el uso
+        indebido o el acceso no autorizado a tus datos.
+      </p>
+    </section>
+
+    <section>
+      <h2>12. Almacenamiento en tu navegador</h2>
+      <p>
+        La aplicación guarda en tu navegador la información técnica necesaria para mantener tu
+        sesión iniciada y, si la eliges, tu foto de perfil. No utiliza cookies publicitarias ni de
+        analítica.
+      </p>
+    </section>
+
+    <section>
+      <h2>13. Menores de edad</h2>
+      <p>
+        Para crear una cuenta debes tener al menos 14 años (art. 7 LOPDGDD). Por debajo de esa edad
+        es necesario el consentimiento de quien ejerza la patria potestad o la tutela.
+      </p>
+    </section>
+
+    <section>
+      <h2>14. Decisiones automatizadas</h2>
+      <p>
+        No tomamos decisiones automatizadas con efectos jurídicos sobre ti. La aplicación asigna
+        automáticamente una urgencia alta a las averías de frenos o cuando no es seguro conducir,
+        pero solo sirve para priorizar la atención en el taller.
+      </p>
+    </section>
+
+    <section>
+      <h2>15. Cambios en esta política</h2>
+      <p>
+        Podemos actualizar esta política para adaptarla a cambios legales o del servicio.
+        Publicaremos cada nueva versión en esta página, con su fecha de actualización.
+      </p>
+    </section>
+  </article>
+</main>

@@ -1,23 +1,222 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo crema del layout
 :host {
   display: block;
+  isolation: isolate;
 }
 
-.formulario {
+// En la esquina y no al centro: la ficha, opaca, la taparía casi por completo
+.filigrana {
+  position: fixed;
+  right: -48px;
+  bottom: -48px;
+  z-index: -1;
+  width: min(70vw, 480px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+// La rejilla depende del ancho de la ficha, no de la ventana, porque la barra lateral le resta espacio
+.ficha {
+  container-type: inline-size;
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-blanco);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 6%);
+}
+
+.ficha__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-16);
+  padding: var(--mo-esp-16) var(--mo-relleno-tarjeta);
+  border-bottom: 1px solid var(--mo-linea);
+}
+
+.ficha__titulo {
+  font-size: var(--mo-tipo-24);
+  line-height: 32px;
+}
+
+// Margen negativo: el área táctil sobresale y el icono queda alineado con los campos
+.ficha__cerrar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-tactil);
+  height: var(--mo-tactil);
+  margin-right: calc(var(--mo-esp-8) * -1);
+  border-radius: var(--mo-radio-pildora);
+  color: var(--mo-acero);
+  transition:
+    background-color var(--mo-transicion),
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  &:active {
+    transform: scale(var(--mo-escala-pulsado));
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: var(--mo-arena);
+      color: var(--mo-tinta);
+    }
+  }
+}
+
+.ficha__resumen {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+  padding: var(--mo-esp-12) var(--mo-relleno-tarjeta);
+  border-bottom: 1px solid var(--mo-linea);
+  background-color: var(--mo-crema);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+}
+
+.ficha__coche {
+  flex-shrink: 0;
+  width: var(--mo-esp-24);
+  height: var(--mo-esp-24);
+}
+
+.ficha__estado,
+.ficha__cuerpo {
+  padding: var(--mo-relleno-tarjeta);
+}
+
+.ficha__cuerpo {
   display: flex;
   flex-direction: column;
   gap: var(--mo-esp-16);
 }
 
-.formulario__fila {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: start;
-  gap: var(--mo-esp-16);
+.ficha__pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+  padding: var(--mo-esp-16) var(--mo-relleno-tarjeta);
+  border-top: 1px solid var(--mo-linea);
 }
 
-// Mismo aspecto que un campo deshabilitado de _componentes.scss
-.campo input[readonly] {
-  background-color: var(--mo-arena);
+// Año y kilómetros son cifras cortas: siguen en dos columnas también en pantallas estrechas
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--mo-esp-20) var(--mo-esp-16);
+
+  > .campo {
+    grid-column: 1 / -1;
+  }
+
+  > .campo--corto {
+    grid-column: auto;
+  }
+}
+
+@container (min-width: 480px) {
+  .rejilla > .campo {
+    grid-column: auto;
+  }
+}
+
+// Misma altura y foco en todos los controles. Con error se conserva el borde rojo global
+.campo {
+  input,
+  select {
+    height: var(--mo-tactil);
+    transition:
+      border-color var(--mo-transicion),
+      box-shadow var(--mo-transicion);
+  }
+
+  &:not(.campo--error) {
+    input:focus,
+    select:focus {
+      border-color: var(--mo-tinta);
+      outline: none;
+      box-shadow: 0 0 0 1px var(--mo-tinta);
+    }
+  }
+
+  // El color del trazo equivale a --mo-acero: una URL no puede leer variables CSS
+  select {
+    padding-right: var(--mo-esp-40);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23545454' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--mo-esp-12) center;
+    background-size: 18px;
+    appearance: none;
+  }
+
+  // Sin flechas del navegador: taparían la unidad y desigualarían los campos numéricos
+  input[type='number'] {
+    font-variant-numeric: tabular-nums;
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      margin: 0;
+      appearance: none;
+    }
+  }
+
+  // Mismo aspecto que un campo deshabilitado de _componentes.scss
+  input[readonly] {
+    background-color: var(--mo-arena);
+    color: var(--mo-acero);
+    cursor: not-allowed;
+  }
+}
+
+.placa-campo,
+.con-sufijo {
+  position: relative;
+}
+
+// Misma banda que el componente app-matricula. Dentro del borde de 1 px del campo
+.placa-campo__banda {
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  left: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-esp-24);
+  border-radius: 5px 0 0 5px;
+  background-color: var(--mo-carbon);
+  color: var(--mo-blanco);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+}
+
+.placa-campo input {
+  padding-left: var(--mo-esp-32);
+  font-family: var(--mo-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.con-sufijo input {
+  padding-right: var(--mo-esp-40);
+}
+
+// El clic en la unidad debe llegar al campo
+.con-sufijo__unidad {
+  position: absolute;
+  top: 0;
+  right: var(--mo-esp-12);
+  display: flex;
+  align-items: center;
+  height: var(--mo-tactil);
   color: var(--mo-acero);
-  cursor: not-allowed;
+  font-size: var(--mo-tipo-14);
+  pointer-events: none;
 }

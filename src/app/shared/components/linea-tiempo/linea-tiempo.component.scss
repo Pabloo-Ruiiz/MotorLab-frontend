@@ -106,3 +106,104 @@ $marca: 28px;
   font-size: var(--mo-tipo-12);
   white-space: nowrap;
 }
+
+// Variante de la pantalla de seguimiento del cliente
+$marca-destacada: 40px;
+
+:host(.linea--destacada) {
+  gap: var(--mo-esp-20);
+
+  .previos {
+    padding-bottom: var(--mo-esp-16);
+    border-bottom-color: var(--mo-arena);
+    font-size: var(--mo-tipo-12);
+  }
+
+  .paso {
+    grid-template-columns: $marca-destacada minmax(0, 1fr);
+    padding-bottom: var(--mo-esp-20);
+
+    &:not(:last-child)::before {
+      top: calc(#{$marca-destacada} + var(--mo-esp-4));
+      bottom: var(--mo-esp-4);
+      left: calc(#{$marca-destacada} / 2 - 1px);
+      border-radius: var(--mo-radio-pildora);
+      transition: background-color var(--mo-duracion-entrada) ease;
+    }
+  }
+
+  .paso__marca {
+    position: relative;
+    grid-row: 1 / span 2;
+    width: $marca-destacada;
+    height: $marca-destacada;
+    border: 1px solid var(--mo-linea);
+    background-color: var(--mo-crema);
+    color: var(--mo-niebla);
+    transition:
+      background-color var(--mo-duracion-entrada) ease,
+      border-color var(--mo-duracion-entrada) ease,
+      color var(--mo-duracion-entrada) ease;
+
+    svg {
+      stroke-width: 2;
+    }
+  }
+
+  .paso--hecho .paso__marca,
+  .paso--actual .paso__marca {
+    border-color: var(--mo-tinta);
+    background-color: var(--mo-tinta);
+    color: var(--mo-blanco);
+    box-shadow: none;
+  }
+
+  // Anillo que identifica la fase en curso; late solo si no se ha pedido reducir el movimiento
+  .paso--actual .paso__marca::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border: 2px solid var(--mo-tinta);
+    border-radius: var(--mo-radio-pildora);
+    opacity: 0.2;
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: latido 2400ms ease-out infinite;
+    }
+  }
+
+  .paso__titulo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--mo-esp-4) var(--mo-esp-8);
+    transition: color var(--mo-duracion-entrada) ease;
+  }
+
+  .paso__ahora {
+    padding: 2px var(--mo-esp-8);
+    border-radius: var(--mo-radio-pildora);
+    background-color: var(--mo-arena);
+    color: var(--mo-tinta);
+    font-size: var(--mo-tipo-12);
+    font-weight: var(--mo-peso-medio);
+    line-height: 16px;
+  }
+
+  .paso__hora {
+    grid-column: 2;
+    margin-top: var(--mo-esp-4);
+  }
+}
+
+@keyframes latido {
+  from {
+    opacity: 0.35;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
