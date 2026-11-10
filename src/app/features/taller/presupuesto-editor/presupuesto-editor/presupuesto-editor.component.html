@@ -12,7 +12,7 @@
     @if (datos.presupuesto; as presupuesto) {
       <header class="encabezado">
         <div>
-          <h1>Presupuesto P-{{ presupuesto.id }}</h1>
+          <h1>Presupuesto <span class="sin-salto">P-{{ presupuesto.id }}</span></h1>
           <p class="texto-suave">
             {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }} ·
             {{ matriculaLegible(datos.orden.vehiculo.matricula) }} ·

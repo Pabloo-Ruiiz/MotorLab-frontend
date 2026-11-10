@@ -18,9 +18,14 @@
   gap: var(--mo-esp-8);
   height: 100%;
 
-  &:hover,
   &:focus-within {
-    box-shadow: var(--mo-sombra-media);
+    box-shadow: var(--mo-sombra-anillo);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: var(--mo-sombra-anillo);
+    }
   }
 }
 
@@ -52,20 +57,20 @@
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: var(--mo-radio-12);
+    border-radius: var(--mo-radio-16);
   }
 
   &:focus-visible {
     outline: none;
 
     &::after {
-      outline: 2px solid var(--mo-naranja);
+      outline: 2px solid var(--mo-tinta);
     }
   }
 }
 
 .orden__detalle,
 .orden__porcentaje {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }

@@ -5,15 +5,15 @@
 .presupuesto {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-16);
+  gap: var(--mo-esp-32);
 }
 
 .presupuesto__titulo {
-  font-size: var(--mo-tipo-21);
+  font-size: var(--mo-tipo-24);
 }
 
 .presupuesto__orden {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
@@ -27,7 +27,7 @@
   flex-shrink: 0;
   width: 48px;
   height: 48px;
-  color: var(--mo-naranja);
+  color: var(--mo-tinta);
 }
 
 // min-width: 0 permite que el síntoma se recorte en lugar de ensanchar la tarjeta
@@ -37,7 +37,7 @@
 
 .vehiculo__detalle {
   overflow: hidden;
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -56,7 +56,7 @@
   display: flex;
   justify-content: space-between;
   gap: var(--mo-esp-16);
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
 }
 
 .linea__concepto {
@@ -74,7 +74,7 @@
   margin: 0;
   padding-top: var(--mo-esp-12);
   border-top: 1px solid var(--mo-linea);
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 
   dd {
@@ -91,13 +91,13 @@
 
 .totales__fila--total {
   margin-top: var(--mo-esp-8);
-  color: var(--mo-texto);
+  color: var(--mo-tinta);
   font-size: var(--mo-tipo-16);
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
 
   dd {
-    font-size: var(--mo-tipo-26);
-    font-weight: 800;
+    font-size: var(--mo-tipo-30);
+    font-weight: var(--mo-peso-normal);
     white-space: nowrap;
   }
 }
@@ -117,7 +117,7 @@
 
 .respuesta__nota,
 .respuesta__motivo {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
   overflow-wrap: anywhere;
 }

@@ -4,16 +4,16 @@ import { ToastService, type TipoToast } from '@core/services/toast.service';
 
 // Distinguen el tipo de aviso sin depender del color
 const ICONOS: Record<TipoToast, string> = {
-  exito: '✓',
-  error: '!',
-  info: 'i'
+  exito: 'M5 12l5 5 9-10',
+  error: 'M12 6v8M12 18h.01',
+  info: 'M12 11v7M12 6h.01',
 };
 
 @Component({
   selector: 'app-toast-contenedor',
   templateUrl: './toast-contenedor.component.html',
   styleUrl: './toast-contenedor.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToastContenedorComponent {
   protected readonly toast = inject(ToastService);
@@ -25,7 +25,7 @@ export class ToastContenedorComponent {
 
     return [
       { rol: 'status', avisos: avisos.filter(({ tipo }) => tipo !== 'error') },
-      { rol: 'alert', avisos: avisos.filter(({ tipo }) => tipo === 'error') }
+      { rol: 'alert', avisos: avisos.filter(({ tipo }) => tipo === 'error') },
     ];
   });
 }

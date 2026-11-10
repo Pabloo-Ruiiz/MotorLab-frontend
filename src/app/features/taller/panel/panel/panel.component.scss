@@ -5,25 +5,12 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-16);
+  gap: var(--mo-esp-32);
 }
 
 .subtitulo {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
-}
-
-.reintentar {
-  align-self: flex-start;
-}
-
-.etiqueta {
-  margin-bottom: var(--mo-esp-8);
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-12);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .indicadores {
@@ -38,17 +25,17 @@
 }
 
 .indicador__valor {
-  font-size: var(--mo-tipo-26);
+  font-size: var(--mo-tipo-30);
   font-variant-numeric: tabular-nums;
-  font-weight: 800;
+  font-weight: var(--mo-peso-normal);
 }
 
 .indicador__valor--naranja {
-  color: var(--mo-naranja-oscuro);
+  color: var(--mo-tinta);
 }
 
 .indicador__valor--rojo {
-  color: var(--mo-rojo-oscuro);
+  color: var(--mo-error);
 }
 
 .indicador__enlace {
@@ -76,7 +63,7 @@
 
 .barra__pista {
   display: block;
-  height: 20px;
+  height: var(--mo-esp-8);
   overflow: hidden;
   border-radius: var(--mo-radio-pildora);
   background-color: var(--mo-linea);
@@ -90,6 +77,6 @@
 
 .barra__total {
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
   text-align: right;
 }

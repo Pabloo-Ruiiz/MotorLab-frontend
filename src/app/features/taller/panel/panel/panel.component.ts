@@ -20,18 +20,18 @@ import { EurosPipe } from '@shared/pipes/euros.pipe';
 // Cada estado conserva su color aunque cambien los demás. El color acompaña: el nombre y el
 // recuento de cada barra están siempre en texto.
 const COLORES_ESTADO: Record<EstadoOrden, string> = {
-  solicitud_recibida: 'var(--mo-naranja)',
-  pendiente_presupuesto: 'var(--mo-azul)',
-  presupuesto_enviado: 'var(--mo-ambar)',
-  presupuesto_autorizado: 'var(--mo-verde)',
-  recibido: 'var(--mo-azul)',
-  en_preparacion: 'var(--mo-gris)',
-  esperando_pieza: 'var(--mo-naranja)',
-  arreglando: 'var(--mo-verde)',
-  listo: 'var(--mo-noche)',
-  entregado: 'var(--mo-gris)',
-  rechazada: 'var(--mo-rojo)',
-  cancelada: 'var(--mo-rojo)'
+  solicitud_recibida: 'var(--mo-tinta)',
+  pendiente_presupuesto: 'var(--mo-acero)',
+  presupuesto_enviado: 'var(--mo-acero)',
+  presupuesto_autorizado: 'var(--mo-tinta)',
+  recibido: 'var(--mo-acero)',
+  en_preparacion: 'var(--mo-acero)',
+  esperando_pieza: 'var(--mo-acero)',
+  arreglando: 'var(--mo-tinta)',
+  listo: 'var(--mo-tinta)',
+  entregado: 'var(--mo-niebla)',
+  rechazada: 'var(--mo-peltre)',
+  cancelada: 'var(--mo-peltre)'
 };
 
 @Component({

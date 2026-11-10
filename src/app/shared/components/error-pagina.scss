@@ -15,12 +15,11 @@
 }
 
 .error__codigo {
-  color: var(--mo-naranja-oscuro);
-  font-size: var(--mo-tipo-26);
-  font-weight: 800;
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-14);
 }
 
 .error__texto {
   max-width: 420px;
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
 }

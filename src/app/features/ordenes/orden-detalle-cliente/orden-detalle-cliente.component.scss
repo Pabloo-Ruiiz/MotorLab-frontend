@@ -5,7 +5,7 @@
 .detalle {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-16);
+  gap: var(--mo-esp-32);
 }
 
 .presupuesto {
@@ -14,13 +14,13 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--mo-esp-12);
-  border: 1px solid var(--mo-naranja);
-  background-color: var(--mo-naranja-claro);
+  border: 1px solid var(--mo-tinta);
+  background-color: var(--mo-arena);
 }
 
 .presupuesto__total {
-  font-size: var(--mo-tipo-21);
-  font-weight: 800;
+  font-size: var(--mo-tipo-24);
+  font-weight: var(--mo-peso-normal);
 }
 
 .estimado {
@@ -30,7 +30,7 @@
 }
 
 .estimado__etiqueta {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
@@ -43,12 +43,12 @@
 }
 
 .estimado__fecha {
-  font-size: var(--mo-tipo-21);
-  font-weight: 800;
+  font-size: var(--mo-tipo-24);
+  font-weight: var(--mo-peso-normal);
 }
 
 .estimado__porcentaje {
-  color: var(--mo-naranja-oscuro);
+  color: var(--mo-tinta);
   font-size: var(--mo-tipo-16);
 }
 
@@ -64,9 +64,9 @@
   margin: 0;
 
   dt {
-    color: var(--mo-gris-oscuro);
-    font-size: var(--mo-tipo-13);
-    font-weight: 600;
+    color: var(--mo-acero);
+    font-size: var(--mo-tipo-14);
+    font-weight: var(--mo-peso-medio);
   }
 
   dd {

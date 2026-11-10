@@ -24,17 +24,32 @@ html {
 
 body {
   min-height: 100vh;
-  background-color: var(--mo-fondo);
-  color: var(--mo-texto);
+  background-color: var(--mo-blanco);
+  color: var(--mo-tinta);
   font-family: var(--mo-familia);
   font-size: var(--mo-tipo-16);
+  font-optical-sizing: auto;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  accent-color: var(--mo-tinta);
+  caret-color: var(--mo-tinta);
+  scrollbar-color: var(--mo-peltre) transparent;
+}
+
+::selection {
+  background-color: var(--mo-tinta);
+  color: var(--mo-blanco);
 }
 
 img,
 svg {
   display: block;
   max-width: 100%;
+}
+
+// Iconos de trazo fino, sin depender del grosor escrito en cada plantilla
+svg[stroke='currentColor'] {
+  stroke-width: 1.5;
 }
 
 button,
@@ -46,24 +61,44 @@ textarea {
 }
 
 a {
-  color: var(--mo-naranja-oscuro);
+  color: var(--mo-tinta);
+  text-decoration-color: var(--mo-linea);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--mo-transicion);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration-color: currentcolor;
+    }
+  }
 }
 
+h1,
+h2 {
+  font-weight: var(--mo-peso-normal);
+  letter-spacing: var(--mo-tracking-titulo);
+  text-wrap: balance;
+}
+
+// Escala fija por punto de corte: en una aplicación, un título fluido no aporta
 h1 {
-  font-size: var(--mo-tipo-26);
-  font-weight: 800;
-  line-height: 1.2;
+  font-size: var(--mo-tipo-30);
+  line-height: 1.05;
+
+  @media (min-width: 768px) {
+    font-size: var(--mo-tipo-48);
+  }
 }
 
 h2 {
-  font-size: var(--mo-tipo-21);
-  font-weight: 700;
-  line-height: 1.25;
+  font-size: var(--mo-tipo-24);
+  line-height: 1.33;
 }
 
 h3 {
-  font-size: var(--mo-tipo-16);
-  font-weight: 700;
+  font-size: var(--mo-tipo-18);
+  font-weight: var(--mo-peso-medio);
   line-height: 1.3;
 }
 
@@ -71,13 +106,13 @@ h4,
 h5,
 h6 {
   font-size: var(--mo-tipo-14);
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
   line-height: 1.3;
 }
 
-// El halo blanco mantiene visible el foco también sobre fondos naranjas
+// El halo blanco mantiene visible el foco también sobre superficies oscuras
 :focus-visible {
-  outline: 3px solid var(--mo-naranja);
+  outline: 2px solid var(--mo-tinta);
   outline-offset: 2px;
   box-shadow: 0 0 0 2px var(--mo-blanco);
 }

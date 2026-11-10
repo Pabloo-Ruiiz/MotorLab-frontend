@@ -9,8 +9,9 @@
   gap: var(--mo-esp-16);
 }
 
-.avisos__titulo {
-  font-size: var(--mo-tipo-26);
+// En la zona del cliente el título ya lo muestra el layout
+:host-context(.contenido__ancho) .avisos__titulo {
+  display: none;
 }
 
 .avisos__marcar {
@@ -29,13 +30,15 @@
   gap: var(--mo-esp-12);
   width: 100%;
   border: 0;
-  color: var(--mo-texto);
+  color: var(--mo-tinta);
   font: inherit;
   text-align: left;
   cursor: pointer;
 
-  &:hover:not(:disabled) {
-    box-shadow: var(--mo-sombra-media);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      box-shadow: var(--mo-sombra-anillo);
+    }
   }
 
   &:disabled {
@@ -47,16 +50,16 @@
   flex-shrink: 0;
   width: 24px;
   height: 24px;
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
 }
 
 .item--sin-leer {
   .item__icono {
-    color: var(--mo-naranja-oscuro);
+    color: var(--mo-tinta);
   }
 
   .item__mensaje {
-    font-weight: 700;
+    font-weight: var(--mo-peso-medio);
   }
 }
 
@@ -74,8 +77,9 @@
 }
 
 .item__fecha {
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-13);
+  color: var(--mo-acero);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
 }
 
 .item__punto {
@@ -83,5 +87,5 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: var(--mo-naranja);
+  background-color: var(--mo-tinta);
 }

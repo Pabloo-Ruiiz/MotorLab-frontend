@@ -15,7 +15,7 @@
 }
 
 .historial__titulo {
-  font-size: var(--mo-tipo-21);
+  font-size: var(--mo-tipo-24);
 }
 
 .lista {
@@ -28,8 +28,10 @@
   position: relative; // referencia del área clicable de .orden__enlace
   gap: var(--mo-esp-8);
 
-  &:hover {
-    box-shadow: var(--mo-sombra-media);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: var(--mo-sombra-anillo);
+    }
   }
 }
 
@@ -53,11 +55,11 @@
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: var(--mo-radio-12);
+    border-radius: var(--mo-radio-16);
   }
 }
 
 .orden__detalle {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }

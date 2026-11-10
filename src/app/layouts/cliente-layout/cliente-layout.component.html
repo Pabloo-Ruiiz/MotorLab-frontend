@@ -1,6 +1,9 @@
 <header class="cabecera">
   <div class="cabecera__fila">
-    <h1>{{ titulo() }}</h1>
+    <div class="marca">
+      <span class="marca__simbolo" aria-hidden="true">M</span>
+      MotorLab
+    </div>
 
     <div class="campana" role="img" [attr.aria-label]="'Avisos sin leer: ' + noLeidas()">
       <svg
@@ -23,13 +26,7 @@
   </div>
 </header>
 
-<!-- Cada pantalla aporta su propio <main>; al cambiar de pantalla el scroll vuelve arriba -->
-<div #contenido class="contenido">
-  <div class="contenido__ancho">
-    <router-outlet (activate)="contenido.scrollTop = 0" />
-  </div>
-</div>
-
+<!-- En móvil se coloca abajo por CSS; va antes del contenido para que el orden de Tab coincida en escritorio -->
 <nav class="pestanas" aria-label="Navegación principal">
   <ul class="pestanas__lista">
     @for (pestana of pestanas; track pestana.ruta) {
@@ -59,3 +56,11 @@
     }
   </ul>
 </nav>
+
+<!-- Cada pantalla aporta su propio <main>; al cambiar de pantalla el scroll vuelve arriba -->
+<div #contenido class="contenido">
+  <div class="contenido__ancho">
+    <h1 class="contenido__titulo">{{ titulo() }}</h1>
+    <router-outlet (activate)="contenido.scrollTop = 0" />
+  </div>
+</div>

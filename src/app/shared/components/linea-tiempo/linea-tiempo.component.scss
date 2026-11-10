@@ -19,8 +19,8 @@ $marca: 28px;
   gap: var(--mo-esp-4);
   padding-bottom: var(--mo-esp-12);
   border-bottom: 1px solid var(--mo-linea);
-  color: var(--mo-gris-oscuro);
-  font-size: var(--mo-tipo-13);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
 }
 
 .previo {
@@ -54,7 +54,7 @@ $marca: 28px;
 }
 
 .paso--linea-hecha:not(:last-child)::before {
-  background-color: var(--mo-naranja);
+  background-color: var(--mo-tinta);
 }
 
 // Pendiente: marcador hueco; hecho: relleno y con tic
@@ -64,21 +64,21 @@ $marca: 28px;
   justify-content: center;
   width: $marca;
   height: $marca;
-  border: 2px solid var(--mo-gris);
+  border: 2px solid var(--mo-niebla);
   border-radius: var(--mo-radio-pildora);
   background-color: var(--mo-blanco);
-  color: var(--mo-sobre-naranja);
+  color: var(--mo-blanco);
   font-size: var(--mo-tipo-14);
-  font-weight: 800;
+  font-weight: var(--mo-peso-normal);
 }
 
 .paso--hecho .paso__marca {
-  border-color: var(--mo-naranja);
-  background-color: var(--mo-naranja);
+  border-color: var(--mo-tinta);
+  background-color: var(--mo-tinta);
 }
 
 .paso--actual .paso__marca {
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--mo-naranja) 30%, transparent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--mo-tinta) 30%, transparent);
 }
 
 .paso__textos {
@@ -86,21 +86,23 @@ $marca: 28px;
 }
 
 .paso__titulo {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-16);
 }
 
 .paso--hecho .paso__titulo {
-  color: var(--mo-texto);
-  font-weight: 700;
+  color: var(--mo-tinta);
+  font-weight: var(--mo-peso-medio);
 }
 
 .paso__descripcion,
 .paso__hora {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
 .paso__hora {
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
   white-space: nowrap;
 }

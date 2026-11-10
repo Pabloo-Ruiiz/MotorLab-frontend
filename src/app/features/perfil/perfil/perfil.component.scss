@@ -5,17 +5,17 @@
 .perfil {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-16);
+  gap: var(--mo-esp-32);
 }
 
 .perfil__nombre {
   margin-bottom: var(--mo-esp-12);
-  font-size: var(--mo-tipo-21);
+  font-size: var(--mo-tipo-24);
   overflow-wrap: anywhere;
 }
 
 .perfil__nota {
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
@@ -26,9 +26,9 @@
   margin: 0;
 
   dt {
-    color: var(--mo-gris-oscuro);
-    font-size: var(--mo-tipo-13);
-    font-weight: 600;
+    color: var(--mo-acero);
+    font-size: var(--mo-tipo-14);
+    font-weight: var(--mo-peso-medio);
   }
 
   dd {

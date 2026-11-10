@@ -33,35 +33,40 @@
   align-items: center;
   gap: var(--mo-esp-8);
   padding-left: var(--mo-esp-16);
-  border-left: 4px solid;
-  border-radius: var(--mo-radio-12);
-  box-shadow: var(--mo-sombra-media);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-elevada);
+  color: var(--mo-tinta);
   font-size: var(--mo-tipo-14);
-  font-weight: 600;
   pointer-events: auto;
+  transition:
+    opacity var(--mo-duracion-entrada) var(--mo-curva-salida),
+    transform var(--mo-duracion-entrada) var(--mo-curva-salida);
+
+  // Entra y sale por el mismo lado: el borde superior de la pantalla
+  @starting-style {
+    opacity: 0;
+    transform: translateY(calc(-100% * var(--mo-movimiento)));
+  }
 }
 
-.toast--exito {
-  border-left-color: var(--mo-verde);
-  background-color: var(--mo-verde-claro);
-  color: var(--mo-verde-oscuro);
+.toast--saliendo {
+  opacity: 0;
+  transform: translateY(calc(-100% * var(--mo-movimiento)));
+  transition-duration: var(--mo-duracion-salida);
 }
 
 .toast--error {
-  border-left-color: var(--mo-rojo);
-  background-color: var(--mo-rojo-claro);
-  color: var(--mo-rojo-oscuro);
-}
-
-.toast--info {
-  border-left-color: var(--mo-azul);
-  background-color: var(--mo-azul-claro);
-  color: var(--mo-azul-oscuro);
+  background-color: var(--mo-error-fondo);
+  color: var(--mo-error);
 }
 
 .toast__icono {
   flex-shrink: 0;
-  font-weight: 800;
+}
+
+.toast__x {
+  margin: auto;
 }
 
 .toast__mensaje {
@@ -74,8 +79,7 @@
   width: var(--mo-tactil);
   height: var(--mo-tactil);
   border: 0;
+  border-radius: var(--mo-radio-pildora);
   background: none;
-  font-size: var(--mo-tipo-21);
-  line-height: 1;
   cursor: pointer;
 }

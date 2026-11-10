@@ -1,15 +1,5 @@
 .modal {
   width: min(420px, calc(100% - var(--mo-esp-32)));
-  padding: var(--mo-esp-24);
-  border: 0;
-  border-radius: var(--mo-radio-12);
-  background-color: var(--mo-blanco);
-  box-shadow: var(--mo-sombra-media);
-  color: var(--mo-texto);
-
-  &::backdrop {
-    background-color: rgb(27 28 43 / 50%);
-  }
 }
 
 .modal__titulo {
@@ -18,7 +8,7 @@
 
 .modal__mensaje {
   margin-bottom: var(--mo-esp-16);
-  color: var(--mo-gris-oscuro);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 

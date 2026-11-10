@@ -1,7 +1,3 @@
-$ancho-lateral: 220px;
-$alto-barra: 60px;
-$texto-tenue: rgb(255 255 255 / 75%);
-
 // Móvil primero: barra superior con menú desplegable. Solo se desplaza el área principal
 :host {
   display: flex;
@@ -15,49 +11,16 @@ $texto-tenue: rgb(255 255 255 / 75%);
   z-index: 10; // el menú desplegable se superpone al área principal
   flex-shrink: 0;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
-  background-color: var(--mo-noche);
-  color: var(--mo-blanco);
-}
-
-// Fuera de la pantalla hasta que recibe el foco; sigue siendo el primer elemento con Tab
-.saltar {
-  position: absolute;
-  top: var(--mo-esp-8);
-  left: var(--mo-esp-8);
-  z-index: 20;
-  transform: translateY(-200%);
-
-  &:focus {
-    transform: none;
-  }
+  border-bottom: 1px solid var(--mo-linea);
+  background-color: var(--mo-blanco);
 }
 
 .lateral__barra {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: $alto-barra;
+  min-height: var(--mo-alto-barra);
   padding-inline: var(--mo-esp-16);
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: var(--mo-esp-12);
-  font-size: var(--mo-tipo-16);
-  font-weight: 700;
-}
-
-.logo__cuadrado {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--mo-radio-8);
-  background-color: var(--mo-naranja);
-  color: var(--mo-sobre-naranja);
-  font-weight: 800;
 }
 
 .hamburguesa {
@@ -67,9 +30,8 @@ $texto-tenue: rgb(255 255 255 / 75%);
   width: var(--mo-tactil);
   height: var(--mo-tactil);
   border: 0;
-  border-radius: var(--mo-radio-8);
+  border-radius: var(--mo-radio-pildora);
   background: none;
-  color: var(--mo-blanco);
   cursor: pointer;
 }
 
@@ -81,16 +43,31 @@ $texto-tenue: rgb(255 255 255 / 75%);
   display: none;
   flex-direction: column;
   gap: var(--mo-esp-16);
-  max-height: calc(100dvh - #{$alto-barra} - env(safe-area-inset-top));
+  max-height: calc(100dvh - var(--mo-alto-barra) - env(safe-area-inset-top));
   padding: var(--mo-esp-8) var(--mo-esp-16);
   padding-bottom: calc(var(--mo-esp-16) + env(safe-area-inset-bottom));
   overflow-y: auto;
-  background-color: var(--mo-noche);
-  box-shadow: var(--mo-sombra-media);
+  border-top: 1px solid var(--mo-linea);
+  background-color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-elevada);
+  opacity: 0;
+  transform: translateY(calc(var(--mo-esp-8) * -1 * var(--mo-movimiento)));
+  transition:
+    opacity var(--mo-duracion-salida) var(--mo-curva-salida),
+    transform var(--mo-duracion-salida) var(--mo-curva-salida),
+    display var(--mo-duracion-salida) allow-discrete;
 }
 
 .menu--abierto {
   display: flex;
+  opacity: 1;
+  transform: none;
+  transition-duration: var(--mo-duracion-entrada);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(calc(var(--mo-esp-8) * -1 * var(--mo-movimiento)));
+  }
 }
 
 .menu__lista {
@@ -108,13 +85,17 @@ $texto-tenue: rgb(255 255 255 / 75%);
   gap: var(--mo-esp-12);
   min-height: var(--mo-tactil);
   padding: var(--mo-esp-8) var(--mo-esp-12);
-  border-radius: var(--mo-radio-12);
-  color: $texto-tenue;
-  font-size: var(--mo-tipo-16);
+  border-radius: var(--mo-radio-8);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
   text-decoration: none;
+  transition: color var(--mo-transicion);
 
-  &:hover {
-    color: var(--mo-blanco);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--mo-tinta);
+    }
   }
 
   svg {
@@ -122,14 +103,10 @@ $texto-tenue: rgb(255 255 255 / 75%);
   }
 }
 
+// El fondo distingue la opción activa también sin percibir la diferencia de tono del texto
 .opcion--activa {
-  background-color: color-mix(in srgb, var(--mo-naranja) 25%, transparent);
-  color: var(--mo-blanco);
-  font-weight: 700;
-
-  svg {
-    color: var(--mo-naranja);
-  }
+  background-color: var(--mo-arena);
+  color: var(--mo-tinta);
 }
 
 .usuario {
@@ -137,7 +114,7 @@ $texto-tenue: rgb(255 255 255 / 75%);
   flex-direction: column;
   gap: var(--mo-esp-12);
   padding-top: var(--mo-esp-16);
-  border-top: 1px solid rgb(255 255 255 / 15%);
+  border-top: 1px solid var(--mo-linea);
 }
 
 .usuario__datos {
@@ -151,11 +128,11 @@ $texto-tenue: rgb(255 255 255 / 75%);
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: var(--mo-esp-32);
+  height: var(--mo-esp-32);
   border-radius: var(--mo-radio-pildora);
-  background-color: rgb(255 255 255 / 15%);
-  font-weight: 700;
+  background-color: var(--mo-arena);
+  font-size: var(--mo-tipo-14);
 }
 
 .usuario__texto {
@@ -165,38 +142,38 @@ $texto-tenue: rgb(255 255 255 / 75%);
 .usuario__nombre {
   overflow: hidden;
   font-size: var(--mo-tipo-14);
-  font-weight: 700;
+  font-weight: var(--mo-peso-medio);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .usuario__rol {
-  color: $texto-tenue;
-  font-size: var(--mo-tipo-13);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
 }
 
 .usuario__salir {
   width: 100%;
-  border-color: rgb(255 255 255 / 30%);
+  border-color: var(--mo-linea);
   background: none;
-  color: var(--mo-blanco);
-  font-size: var(--mo-tipo-14);
 
-  &:hover {
-    background-color: rgb(255 255 255 / 10%);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-tinta);
+    }
   }
 }
 
+// Centra el contenido en el ancho de página sin envolver cada pantalla
 .contenido {
+  --relleno: var(--mo-esp-24);
+
   flex: 1;
   min-width: 0; // sin esto, una tabla ancha estiraría la columna en lugar de desplazarse
   min-height: 0;
-  padding: var(--mo-esp-24);
-  padding-right: calc(var(--mo-esp-24) + env(safe-area-inset-right));
-  padding-bottom: calc(var(--mo-esp-24) + env(safe-area-inset-bottom));
-  padding-left: calc(var(--mo-esp-24) + env(safe-area-inset-left));
+  padding-block: var(--relleno) calc(var(--relleno) + env(safe-area-inset-bottom));
+  padding-inline: max(var(--relleno), (100% - var(--mo-ancho-pagina)) / 2);
   overflow-y: auto;
-  background-color: var(--mo-blanco);
 }
 
 @media (min-width: 900px) {
@@ -207,9 +184,15 @@ $texto-tenue: rgb(255 255 255 / 75%);
   .lateral {
     display: flex;
     flex-direction: column;
-    width: calc(#{$ancho-lateral} + env(safe-area-inset-left));
+    width: calc(var(--mo-ancho-lateral) + env(safe-area-inset-left));
     padding-right: 0;
     padding-bottom: env(safe-area-inset-bottom);
+    border-bottom: 0;
+    background-color: var(--mo-crema);
+  }
+
+  .lateral__barra {
+    padding-inline: var(--mo-esp-24);
   }
 
   .hamburguesa {
@@ -222,10 +205,20 @@ $texto-tenue: rgb(255 255 255 / 75%);
     flex: 1;
     justify-content: space-between;
     max-height: none;
+    padding-inline: var(--mo-esp-12);
+    border-top: 0;
+    background-color: transparent;
     box-shadow: none;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .usuario {
+    padding-inline: var(--mo-esp-12);
   }
 
   .contenido {
-    padding-left: var(--mo-esp-24);
+    --relleno: var(--mo-esp-48);
   }
 }
