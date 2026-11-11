@@ -29,10 +29,11 @@ import { ToastService } from '@core/services/toast.service';
 import { aApiError, mensajeDeError } from '@core/util/api-error';
 import { FocoTrasCarga } from '@core/util/foco';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
-import { VacioComponent } from '@shared/components/vacio/vacio.component';
 import { FechaHoraPipe } from '@shared/pipes/fecha-hora.pipe';
-import { ICONOS_NOTIFICACION } from '@shared/util/notificaciones';
+
+import { ICONOS_AVISOS, presentarAviso } from './avisos.presentacion';
 
 type Filtro = 'todas' | 'sin_leer';
 
@@ -40,7 +41,7 @@ const LIMITE = 20;
 
 @Component({
   selector: 'app-avisos',
-  imports: [CargandoComponent, FechaHoraPipe, PaginadorComponent, VacioComponent],
+  imports: [CargandoComponent, FechaHoraPipe, LogoComponent, PaginadorComponent],
   templateUrl: './avisos.component.html',
   styleUrl: './avisos.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,7 +58,7 @@ export class AvisosComponent {
 
   private readonly peticiones = new Subject<void>();
 
-  protected readonly iconos = ICONOS_NOTIFICACION;
+  protected readonly iconos = ICONOS_AVISOS;
 
   // Aviso elegido en el desplegable de la campana (?aviso=id): se resalta en la lista
   protected readonly destacado = toSignal(
@@ -82,9 +83,37 @@ export class AvisosComponent {
     return rol === 'admin' || rol === 'mecanico';
   });
 
-  protected readonly tituloVacio = computed(() =>
-    this.filtro() === 'sin_leer' ? 'No tienes avisos sin leer' : 'No tienes avisos',
+  // Avisos de la página actual con su icono, título y tono (solo presentación)
+  protected readonly avisos = computed(() => this.resultado()?.datos.map(presentarAviso) ?? []);
+
+  // Resumen con valores reales: el total sale del listado sin filtrar y las no leídas del contador
+  protected readonly noLeidas = this.contador.noLeidas;
+  private readonly totalAvisos = signal<number | null>(null);
+  protected readonly resumen = computed(() => {
+    const total = this.totalAvisos();
+    if (total === null || total === 0) {
+      return null;
+    }
+    const noLeidas = Math.min(this.noLeidas(), total);
+    return { total, noLeidas, leidas: total - noLeidas };
+  });
+
+  // Solo tiene sentido marcar todas si queda alguna sin leer (según el contador o la página visible)
+  protected readonly hayNoLeidas = computed(
+    () => this.noLeidas() > 0 || (this.resultado()?.datos.some((aviso) => !aviso.leida) ?? false),
   );
+
+  protected readonly vacio = computed(() => {
+    if (this.filtro() === 'sin_leer') {
+      return { titulo: 'Estás al día', texto: 'No tienes avisos pendientes de leer.' };
+    }
+    return {
+      titulo: 'No tienes avisos por el momento',
+      texto: this.enTaller()
+        ? 'Te avisaremos cuando haya novedades en el taller.'
+        : 'Te avisaremos cuando haya novedades sobre tus vehículos.',
+    };
+  });
 
   constructor() {
     // switchMap descarta la respuesta anterior si se cambia de filtro o de página antes de que llegue
@@ -174,6 +203,9 @@ export class AvisosComponent {
 
     this.cargando.set(false);
     if (resultado !== null) {
+      if (this.filtro() === 'todas') {
+        this.totalAvisos.set(resultado.total);
+      }
       this.resultado.set(resultado);
       this.errorCarga.set(null);
     }

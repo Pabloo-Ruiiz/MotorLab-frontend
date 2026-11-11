@@ -1,25 +1,138 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
+}
+
+// Logo de MotorLab como marca de agua: fijo en la esquina, muy tenue y sin recibir clics
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)); // sobre las pestañas
+  z-index: -1;
+  width: clamp(160px, 26vw, 320px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.035;
+  pointer-events: none;
+
+  @media (min-width: 900px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
 }
 
 .editor {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-32);
+  gap: var(--mo-esp-24);
 }
 
-.texto-suave {
-  color: var(--mo-acero);
-}
-
-.encabezado {
+// Cabecera
+.cabecera {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--mo-esp-16);
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+}
 
-  .texto-suave {
-    font-size: var(--mo-tipo-14);
+.cabecera__linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-8) var(--mo-esp-12);
+  margin-top: var(--mo-esp-4);
+
+  h1 {
+    letter-spacing: var(--mo-tracking-titulo);
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-8) var(--mo-esp-20);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.meta__dato {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-14);
+
+  .ico {
+    color: var(--mo-niebla);
+  }
+}
+
+// Desglose
+.desglose {
+  gap: var(--mo-esp-12);
+}
+
+.desglose__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+}
+
+.desglose__cuenta {
+  color: var(--mo-acero);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+}
+
+// La tabla ocupa todo el ancho del bloque: el relleno lo pone cada celda
+.desglose .tabla-contenedor {
+  margin-inline: calc(var(--mo-esp-20) * -1);
+
+  @media (min-width: 768px) {
+    margin-inline: calc(var(--mo-esp-24) * -1);
+  }
+}
+
+.tabla {
+  th {
+    padding-block: var(--mo-esp-12);
+    border-top: 1px solid color-mix(in srgb, var(--mo-linea) 60%, transparent);
+    border-bottom-color: var(--mo-linea);
+    color: var(--mo-acero);
+    font-family: var(--mo-familia);
+    font-size: 11px;
+    font-weight: var(--mo-peso-medio);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding-block: 14px;
+    border-bottom-color: color-mix(in srgb, var(--mo-linea) 55%, transparent);
+    vertical-align: middle;
+  }
+
+  th:first-child,
+  td:first-child {
+    padding-left: var(--mo-esp-24);
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: var(--mo-esp-24);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 1px solid color-mix(in srgb, var(--mo-linea) 55%, transparent);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    tbody tr:hover {
+      background-color: color-mix(in srgb, var(--mo-blanco) 70%, transparent);
+    }
   }
 }
 
@@ -28,27 +141,41 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--mo-esp-8);
+  font-weight: var(--mo-peso-medio);
 }
 
+.referencia {
+  color: var(--mo-acero);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+  letter-spacing: var(--mo-tracking-mono);
+  white-space: nowrap;
+}
+
+// Cifras alineadas a la derecha con anchura fija por dígito para leerlas como en un libro de cuentas
 .numero {
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-14);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--mo-tracking-mono);
   text-align: right;
   white-space: nowrap;
 }
 
 // Más específico que .tabla th, que alinea a la izquierda
-th.numero {
+.tabla th.numero {
+  font-family: var(--mo-familia);
+  font-size: 11px;
   text-align: right;
 }
 
 .importe {
+  color: var(--mo-tinta);
   font-weight: var(--mo-peso-medio);
 }
 
-.sin-salto {
-  white-space: nowrap;
-}
-
 .acciones-linea {
+  width: 1%;
   white-space: nowrap;
 }
 
@@ -56,9 +183,8 @@ th.numero {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--mo-tactil);
-  height: var(--mo-tactil);
-  padding: var(--mo-esp-8);
+  width: 36px;
+  height: 36px;
   border: 0;
   border-radius: var(--mo-radio-8);
   background-color: transparent;
@@ -69,9 +195,9 @@ th.numero {
     color var(--mo-transicion),
     transform var(--mo-pulsar);
 
-  svg {
-    width: 20px;
-    height: 20px;
+  .ico {
+    width: 18px;
+    height: 18px;
   }
 
   @media (hover: hover) and (pointer: fine) {
@@ -87,48 +213,107 @@ th.numero {
   }
 }
 
+.accion--peligro {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background-color: var(--mo-error-fondo);
+      color: var(--mo-error);
+    }
+  }
+}
+
 .anadir {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--mo-esp-12);
+  gap: var(--mo-esp-8);
+  padding-top: var(--mo-esp-4);
 }
 
+// Condiciones y totales
 .resumen {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-  align-items: start;
-  gap: var(--mo-esp-24);
-}
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--mo-esp-16);
 
-.resumen__datos {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--mo-esp-8);
+  @media (min-width: 800px) {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
+  }
 }
 
 .condiciones {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
   align-items: start;
   gap: var(--mo-esp-12);
-  width: 100%;
 
   .btn {
     align-self: end;
   }
 }
 
+.indicadores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &:empty {
+    display: none;
+  }
+}
+
+// Indicador: icono, etiqueta gris y valor; con data-tono toma el color del estado
+.indicador {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  padding: var(--mo-esp-8) var(--mo-esp-12);
+  border: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-blanco);
+  font-size: var(--mo-tipo-14);
+
+  .ico {
+    color: var(--mo-niebla);
+  }
+
+  strong {
+    font-weight: var(--mo-peso-medio);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.indicador__texto {
+  color: var(--mo-acero);
+}
+
+.indicador[data-tono] {
+  border-color: color-mix(in srgb, var(--tono) 20%, transparent);
+  background-color: var(--tono-fondo);
+
+  .ico,
+  strong {
+    color: var(--tono);
+  }
+}
+
 .totales {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-4);
+  gap: var(--mo-esp-8);
   margin: 0;
   color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 
   dd {
     margin: 0;
+    font-family: var(--mo-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--mo-tracking-mono);
+    white-space: nowrap;
   }
 }
 
@@ -139,19 +324,25 @@ th.numero {
   gap: var(--mo-esp-16);
 }
 
+// El total cierra el bloque: separado por una línea y en negro corporativo
 .totales__fila--total {
   margin-top: var(--mo-esp-8);
+  padding-top: var(--mo-esp-16);
+  border-top: 1px solid var(--mo-linea);
   color: var(--mo-tinta);
   font-size: var(--mo-tipo-16);
   font-weight: var(--mo-peso-medio);
 
   dd {
+    color: #0d0d0d;
+    font-family: var(--mo-familia);
     font-size: var(--mo-tipo-30);
-    font-weight: var(--mo-peso-normal);
-    white-space: nowrap;
+    font-weight: 600;
+    letter-spacing: var(--mo-tracking-titulo);
   }
 }
 
 .enviar {
   width: 100%;
+  margin-top: auto;
 }

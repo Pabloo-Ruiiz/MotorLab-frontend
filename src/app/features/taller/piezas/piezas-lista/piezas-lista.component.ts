@@ -31,6 +31,7 @@ import { ToastService } from '@core/services/toast.service';
 import { aApiError, mensajeDeError } from '@core/util/api-error';
 import { FocoTrasCarga } from '@core/util/foco';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacion/modal-confirmacion.component';
 import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
@@ -66,6 +67,7 @@ function leerFiltros(params: ParamMap): FiltrosUrl {
   imports: [
     CargandoComponent,
     EurosPipe,
+    LogoComponent,
     ModalConfirmacionComponent,
     PaginadorComponent,
     PiezaDialogComponent,

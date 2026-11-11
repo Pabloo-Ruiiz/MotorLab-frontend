@@ -1,3 +1,5 @@
+<app-logo class="filigrana" />
+
 <main class="detalle">
   @if (cargando()) {
     <app-cargando />
@@ -9,208 +11,343 @@
       Reintentar
     </button>
   } @else if (datos(); as datos) {
-    <header>
+    <header class="cabecera">
       <nav class="migas" aria-label="Ruta de navegación">
-        <a routerLink="/taller/solicitudes">Solicitudes</a> › Orden #{{ datos.orden.id }}
+        <ol class="migas__lista">
+          <li><a class="migas__enlace" routerLink="/taller/solicitudes">Solicitudes</a></li>
+          <li aria-hidden="true">
+            <svg class="ico ico--14" viewBox="0 0 24 24"><path [attr.d]="iconos.chevron" /></svg>
+          </li>
+          <li><span aria-current="page">Orden #{{ datos.orden.id }}</span></li>
+        </ol>
       </nav>
-      <div class="encabezado">
-        <h1>Orden de trabajo #{{ datos.orden.id }}</h1>
-        <app-pill-estado [estado]="datos.orden.estado" />
-      </div>
-      @if (creada(); as creada) {
-        <p class="texto-suave">
-          @if (creada.esHoy) {
-            Creada hoy {{ creada.fechaHora | fechaHora: 'hora' }}
-          } @else {
-            Creada el {{ creada.fechaHora | fechaHora: 'completa' }}
+
+      <div class="cabecera__fila">
+        <div class="cabecera__titulo">
+          <div class="cabecera__linea">
+            <h1>Orden de trabajo <span class="cabecera__numero">#{{ datos.orden.id }}</span></h1>
+            <span
+              class="estado-orden estado-orden--grande"
+              [attr.data-tono]="tonosEstado[datos.orden.estado]"
+            >
+              {{ etiquetasEstado[datos.orden.estado] }}
+            </span>
+          </div>
+          @if (creada(); as creada) {
+            <p class="texto-suave">
+              @if (creada.esHoy) {
+                Creada hoy {{ creada.fechaHora | fechaHora: 'hora' }}
+              } @else {
+                Creada el {{ creada.fechaHora | fechaHora: 'completa' }}
+              }
+            </p>
           }
-        </p>
-      }
+        </div>
+
+        @if (cancelable() || puedeCrearPresupuesto()) {
+          <div class="barra-acciones">
+            @if (cancelable()) {
+              <button
+                type="button"
+                class="btn barra-acciones__cancelar"
+                [disabled]="procesando()"
+                (click)="confirmandoCancelacion.set(true)"
+              >
+                <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.cerrar" /></svg>
+                Cancelar orden
+              </button>
+            }
+            @if (puedeCrearPresupuesto()) {
+              <button
+                type="button"
+                class="btn btn--primario"
+                [disabled]="procesando()"
+                (click)="crearPresupuesto()"
+              >
+                <svg class="ico ico--16" viewBox="0 0 24 24">
+                  <path [attr.d]="iconos.presupuesto" />
+                </svg>
+                Crear presupuesto
+              </button>
+            }
+          </div>
+        }
+      </div>
     </header>
 
-    <div class="rejilla">
-      <section class="tarjeta" aria-labelledby="orden-vehiculo">
-        <h2 class="etiqueta" id="orden-vehiculo">Vehículo</h2>
+    <!-- Resumen: vehículo, avería y cliente -->
+    <div class="resumen">
+      <section class="bloque" aria-labelledby="orden-vehiculo">
+        <h2 class="bloque__titulo" id="orden-vehiculo">
+          <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.coche" /></svg>
+          Vehículo
+        </h2>
         <div class="vehiculo">
           <app-icono-coche class="vehiculo__icono" />
-          <div>
-            <strong>
+          <div class="vehiculo__datos">
+            <p class="vehiculo__nombre">
               {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }}
               {{ datos.orden.vehiculo.version }}
-            </strong>
-            <p class="texto-suave">
-              {{ datos.orden.vehiculo.anio }} ·
-              {{ datos.orden.vehiculo.kilometros | number: '1.0-0' }} km
+            </p>
+            <p class="datos-linea">
+              <span>{{ datos.orden.vehiculo.anio }}</span>
+              <span class="datos-linea__sep" aria-hidden="true"></span>
+              <span>{{ datos.orden.vehiculo.kilometros | number: '1.0-0' }} km</span>
             </p>
           </div>
         </div>
+        <div class="bloque__pie">
+          <span class="sr-only">Matrícula:</span>
+          <app-matricula class="vehiculo__matricula" [matricula]="datos.orden.vehiculo.matricula" />
+        </div>
       </section>
 
-      <section class="tarjeta" aria-labelledby="orden-matricula">
-        <h2 class="etiqueta" id="orden-matricula">Matrícula</h2>
-        <app-matricula [matricula]="datos.orden.vehiculo.matricula" />
-      </section>
-
-      <section class="tarjeta" aria-labelledby="orden-sintoma">
-        <h2 class="etiqueta" id="orden-sintoma">Síntoma</h2>
-        <strong>{{ etiquetasServicio[datos.orden.tipoServicio] }}</strong>
-        <p class="texto-suave sintoma">«{{ datos.orden.sintoma }}»</p>
-        <p class="texto-suave">
-          @if (datos.orden.cuandoOcurre; as cuando) {
-            Cuándo: {{ etiquetasCuando[cuando] }} ·
-          }
-          ¿Conducible con seguridad?: {{ etiquetasConduccion[datos.orden.conduccionSegura] }}
-        </p>
-      </section>
-
-      <section class="tarjeta" aria-labelledby="orden-urgencia">
-        <h2 class="etiqueta" id="orden-urgencia">Urgencia</h2>
-        <app-pill-urgencia [urgencia]="datos.orden.urgencia" />
-        @if (datos.orden.urgencia === 'alta') {
-          <div class="barras" aria-hidden="true">
-            <span class="barra"></span>
-            <span class="barra"></span>
-            <span class="barra"></span>
+      <section class="bloque" aria-labelledby="orden-sintoma">
+        <h2 class="bloque__titulo" id="orden-sintoma">
+          <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.aviso" /></svg>
+          Síntoma y urgencia
+        </h2>
+        <div class="averia">
+          <div class="averia__cabecera">
+            <p class="averia__servicio">{{ etiquetasServicio[datos.orden.tipoServicio] }}</p>
+            <span class="estado-orden" [attr.data-tono]="tonosUrgencia[datos.orden.urgencia]">
+              {{ etiquetasUrgencia[datos.orden.urgencia] }}
+            </span>
           </div>
-        }
-        @if (reglaAutomatica()) {
-          <p class="texto-suave regla">Regla automática: frenos</p>
-        }
-      </section>
-    </div>
-
-    <section class="tarjeta" aria-labelledby="orden-cliente">
-      <h2 class="etiqueta" id="orden-cliente">Cliente</h2>
-      <strong>{{ datos.orden.cliente.nombre }}</strong>
-      <p class="texto-suave">
-        {{ datos.orden.cliente.telefono }} · prefiere
-        {{ etiquetasContacto[datos.orden.contactoPreferido].toLowerCase() }}
-      </p>
-      <p class="texto-suave">
-        Fecha preferida: {{ datos.orden.fechaPreferida | fechaHora: 'corta' }} ·
-        {{ etiquetasFranja[datos.orden.franjaPreferida] }}
-      </p>
-    </section>
-
-    <section class="tarjeta" aria-labelledby="orden-asignacion">
-      <h2 class="etiqueta" id="orden-asignacion">Asignación</h2>
-      <form class="asignacion" [formGroup]="asignacion" (ngSubmit)="guardarAsignacion()" novalidate>
-        <div class="campo" [class.campo--error]="campoConError(asignacion.controls.mecanicoId)">
-          <label for="orden-mecanico">Mecánico</label>
-          <select
-            id="orden-mecanico"
-            formControlName="mecanicoId"
-            aria-describedby="orden-mecanico-error"
-            [attr.aria-invalid]="campoConError(asignacion.controls.mecanicoId)"
-          >
-            <option value="">Sin asignar</option>
-            @for (mecanico of opcionesMecanico(); track mecanico.id) {
-              <option [value]="mecanico.id">{{ mecanico.nombre }}</option>
+          <blockquote class="averia__sintoma">{{ datos.orden.sintoma }}</blockquote>
+          <dl class="datos-lista">
+            @if (datos.orden.cuandoOcurre; as cuando) {
+              <div>
+                <dt>Cuándo ocurre</dt>
+                <dd>{{ etiquetasCuando[cuando] }}</dd>
+              </div>
             }
-          </select>
-          <app-errores-campo id="orden-mecanico-error" [control]="asignacion.controls.mecanicoId" />
+            <div>
+              <dt>Conducible con seguridad</dt>
+              <dd>{{ etiquetasConduccion[datos.orden.conduccionSegura] }}</dd>
+            </div>
+          </dl>
         </div>
-
-        <div class="campo" [class.campo--error]="campoConError(asignacion.controls.elevador)">
-          <label for="orden-elevador">Elevador</label>
-          <input
-            id="orden-elevador"
-            type="text"
-            autocomplete="off"
-            [attr.maxlength]="maxElevador"
-            formControlName="elevador"
-            aria-describedby="orden-elevador-error"
-            [attr.aria-invalid]="campoConError(asignacion.controls.elevador)"
-          />
-          <app-errores-campo id="orden-elevador-error" [control]="asignacion.controls.elevador" />
-        </div>
-
-        <div class="campo" [class.campo--error]="campoConError(asignacion.controls.fechaEstimada)">
-          <label for="orden-fecha">Fecha estimada</label>
-          <input
-            id="orden-fecha"
-            type="datetime-local"
-            formControlName="fechaEstimada"
-            aria-describedby="orden-fecha-error"
-            [attr.aria-invalid]="campoConError(asignacion.controls.fechaEstimada)"
-          />
-          <app-errores-campo id="orden-fecha-error" [control]="asignacion.controls.fechaEstimada" />
-        </div>
-
-        <button type="submit" class="btn btn--secundario" [disabled]="procesando()">
-          Guardar asignación
-        </button>
-      </form>
-    </section>
-
-    @if (siguientes().length > 0) {
-      <section class="tarjeta" aria-labelledby="orden-estado">
-        <h2 class="etiqueta" id="orden-estado">Cambiar estado</h2>
-        <div class="campo" [class.campo--error]="campoConError(nota)">
-          <label for="orden-nota">Nota para el cliente (opcional)</label>
-          <input
-            id="orden-nota"
-            type="text"
-            autocomplete="off"
-            [attr.maxlength]="maxNota"
-            [formControl]="nota"
-            aria-describedby="orden-nota-error"
-            [attr.aria-invalid]="campoConError(nota)"
-          />
-          <app-errores-campo id="orden-nota-error" [control]="nota" />
-        </div>
-        <div class="acciones">
-          @for (estado of siguientes(); track estado) {
-            <button
-              type="button"
-              class="btn btn--primario"
-              [disabled]="procesando()"
-              (click)="cambiarEstado(estado)"
-            >
-              {{ textoAccion(estado) }}
-            </button>
+        <div class="bloque__pie urgencia" [attr.data-tono]="tonosUrgencia[datos.orden.urgencia]">
+          <div class="urgencia__medidor" aria-hidden="true">
+            @for (nivel of [1, 2, 3]; track nivel) {
+              <span class="urgencia__tramo" [class.urgencia__tramo--lleno]="nivel <= nivelUrgencia()"></span>
+            }
+          </div>
+          @if (reglaAutomatica(); as regla) {
+            <p class="urgencia__regla">
+              <svg class="ico ico--14" viewBox="0 0 24 24"><path [attr.d]="iconos.rayo" /></svg>
+              Regla automática: {{ regla }}
+            </p>
           }
         </div>
       </section>
-    }
 
-    @if (datos.orden.presupuesto; as presupuesto) {
-      <section class="tarjeta presupuesto" aria-label="Presupuesto">
-        <div class="presupuesto__datos">
-          <app-pill-estado [estadoPresupuesto]="presupuesto.estado" />
-          <strong class="presupuesto__total">{{ presupuesto.total | euros }}</strong>
+      <section class="bloque" aria-labelledby="orden-cliente">
+        <h2 class="bloque__titulo" id="orden-cliente">
+          <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.usuario" /></svg>
+          Datos del cliente
+        </h2>
+        <div class="cliente">
+          <span class="cliente__avatar" aria-hidden="true">
+            {{ datos.orden.cliente.nombre.charAt(0) }}
+          </span>
+          <p class="cliente__nombre">{{ datos.orden.cliente.nombre }}</p>
         </div>
-        <a [routerLink]="['/taller/ordenes', datos.orden.id, 'presupuesto']">Ver presupuesto</a>
+        <ul class="contacto" role="list">
+          <li class="contacto__fila">
+            <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.telefono" /></svg>
+            <span class="sr-only">Teléfono:</span>
+            <a class="contacto__enlace" [href]="'tel:' + datos.orden.cliente.telefono">
+              {{ datos.orden.cliente.telefono }}
+            </a>
+          </li>
+          <li class="contacto__fila">
+            <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.mensaje" /></svg>
+            <span>
+              Prefiere {{ etiquetasContacto[datos.orden.contactoPreferido].toLowerCase() }}
+            </span>
+          </li>
+          <li class="contacto__fila">
+            <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.calendario" /></svg>
+            <span>
+              <span class="sr-only">Fecha preferida:</span>
+              {{ datos.orden.fechaPreferida | fechaHora: 'corta' }} ·
+              {{ etiquetasFranja[datos.orden.franjaPreferida] }}
+            </span>
+          </li>
+        </ul>
       </section>
-    }
-
-    <div class="acciones acciones--final">
-      @if (cancelable()) {
-        <button
-          type="button"
-          class="btn btn--secundario"
-          [disabled]="procesando()"
-          (click)="confirmandoCancelacion.set(true)"
-        >
-          Cancelar orden
-        </button>
-      }
-      @if (puedeCrearPresupuesto()) {
-        <button
-          type="button"
-          class="btn btn--primario"
-          [disabled]="procesando()"
-          (click)="crearPresupuesto()"
-        >
-          Crear presupuesto
-        </button>
-      }
     </div>
 
-    <section class="tarjeta" aria-labelledby="orden-seguimiento">
-      <h2 class="etiqueta" id="orden-seguimiento">Seguimiento</h2>
-      <app-linea-tiempo [eventos]="datos.seguimiento.eventos" [estado]="datos.orden.estado" />
-    </section>
+    <div class="cuerpo">
+      <div class="cuerpo__principal">
+        <section class="bloque" aria-labelledby="orden-asignacion">
+          <h2 class="bloque__titulo" id="orden-asignacion">
+            <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.llave" /></svg>
+            Asignación
+          </h2>
+          <form
+            class="asignacion"
+            [formGroup]="asignacion"
+            (ngSubmit)="guardarAsignacion()"
+            novalidate
+          >
+            <div class="asignacion__campos">
+              <div
+                class="campo"
+                [class.campo--error]="campoConError(asignacion.controls.mecanicoId)"
+              >
+                <label for="orden-mecanico">Mecánico</label>
+                <select
+                  id="orden-mecanico"
+                  formControlName="mecanicoId"
+                  aria-describedby="orden-mecanico-error"
+                  [attr.aria-invalid]="campoConError(asignacion.controls.mecanicoId)"
+                >
+                  <option value="">Sin asignar</option>
+                  @for (mecanico of opcionesMecanico(); track mecanico.id) {
+                    <option [value]="mecanico.id">{{ mecanico.nombre }}</option>
+                  }
+                </select>
+                <app-errores-campo
+                  id="orden-mecanico-error"
+                  [control]="asignacion.controls.mecanicoId"
+                />
+              </div>
+
+              <div class="campo" [class.campo--error]="campoConError(asignacion.controls.elevador)">
+                <label for="orden-elevador">Elevador</label>
+                <input
+                  id="orden-elevador"
+                  type="text"
+                  autocomplete="off"
+                  placeholder="Ej. E-2"
+                  [attr.maxlength]="maxElevador"
+                  formControlName="elevador"
+                  aria-describedby="orden-elevador-error"
+                  [attr.aria-invalid]="campoConError(asignacion.controls.elevador)"
+                />
+                <app-errores-campo
+                  id="orden-elevador-error"
+                  [control]="asignacion.controls.elevador"
+                />
+              </div>
+
+              <div
+                class="campo"
+                [class.campo--error]="campoConError(asignacion.controls.fechaEstimada)"
+              >
+                <label for="orden-fecha">Fecha estimada</label>
+                <input
+                  id="orden-fecha"
+                  type="datetime-local"
+                  formControlName="fechaEstimada"
+                  aria-describedby="orden-fecha-error"
+                  [attr.aria-invalid]="campoConError(asignacion.controls.fechaEstimada)"
+                />
+                <app-errores-campo
+                  id="orden-fecha-error"
+                  [control]="asignacion.controls.fechaEstimada"
+                />
+              </div>
+            </div>
+
+            <div class="bloque__acciones">
+              <p class="bloque__ayuda">
+                @if (datos.orden.mecanico; as mecanico) {
+                  Asignada a {{ mecanico.nombre }}
+                } @else {
+                  Todavía sin mecánico asignado
+                }
+              </p>
+              <button type="submit" class="btn btn--primario" [disabled]="procesando()">
+                <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.check" /></svg>
+                Guardar asignación
+              </button>
+            </div>
+          </form>
+        </section>
+
+        @if (siguientes().length > 0) {
+          <section class="bloque" aria-labelledby="orden-estado">
+            <h2 class="bloque__titulo" id="orden-estado">
+              <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.estado" /></svg>
+              Cambiar estado
+            </h2>
+            <div class="estado-actual">
+              <span class="estado-actual__texto">Estado actual</span>
+              <span class="estado-orden" [attr.data-tono]="tonosEstado[datos.orden.estado]">
+                {{ etiquetasEstado[datos.orden.estado] }}
+              </span>
+            </div>
+            <div class="campo" [class.campo--error]="campoConError(nota)">
+              <label for="orden-nota">
+                Nota para el cliente <span class="opcional">(opcional)</span>
+              </label>
+              <textarea
+                id="orden-nota"
+                rows="2"
+                placeholder="Se mostrará al cliente en el seguimiento de su orden"
+                [attr.maxlength]="maxNota"
+                [formControl]="nota"
+                aria-describedby="orden-nota-ayuda orden-nota-error"
+                [attr.aria-invalid]="campoConError(nota)"
+              ></textarea>
+              <p class="nota__contador" id="orden-nota-ayuda">
+                {{ nota.value.length }}/{{ maxNota }}
+              </p>
+              <app-errores-campo id="orden-nota-error" [control]="nota" />
+            </div>
+            <div class="transiciones">
+              @for (estado of siguientes(); track estado) {
+                <button
+                  type="button"
+                  class="btn transicion"
+                  [attr.data-tono]="tonosEstado[estado]"
+                  [disabled]="procesando()"
+                  (click)="cambiarEstado(estado)"
+                >
+                  <span class="transicion__punto" aria-hidden="true"></span>
+                  {{ textoAccion(estado) }}
+                  <svg class="ico ico--16 transicion__flecha" viewBox="0 0 24 24">
+                    <path [attr.d]="iconos.flecha" />
+                  </svg>
+                </button>
+              }
+            </div>
+          </section>
+        }
+
+        @if (datos.orden.presupuesto; as presupuesto) {
+          <section class="bloque presupuesto" aria-label="Presupuesto">
+            <div class="presupuesto__datos">
+              <app-pill-estado [estadoPresupuesto]="presupuesto.estado" />
+              <strong class="presupuesto__total">{{ presupuesto.total | euros }}</strong>
+            </div>
+            <a
+              class="btn btn--fantasma"
+              [routerLink]="['/taller/ordenes', datos.orden.id, 'presupuesto']"
+            >
+              Ver presupuesto
+              <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.flecha" /></svg>
+            </a>
+          </section>
+        }
+      </div>
+
+      <section class="bloque seguimiento" aria-labelledby="orden-seguimiento">
+        <h2 class="bloque__titulo" id="orden-seguimiento">
+          <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.reloj" /></svg>
+          Seguimiento
+        </h2>
+        <app-linea-tiempo
+          destacada
+          [eventos]="datos.seguimiento.eventos"
+          [estado]="datos.orden.estado"
+        />
+      </section>
+    </div>
   }
 </main>
 

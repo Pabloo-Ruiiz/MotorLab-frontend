@@ -1,3 +1,5 @@
+<app-logo class="filigrana" />
+
 <main class="piezas">
   <header class="encabezado">
     <div>
@@ -5,13 +7,19 @@
       <p class="encabezado__texto">Referencias, precios y stock disponible</p>
     </div>
     @if (esAdmin()) {
-      <button type="button" class="btn btn--primario" (click)="nuevaPieza()">+ Nueva pieza</button>
+      <button type="button" class="btn btn--primario nueva" (click)="nuevaPieza()">
+        <svg class="ico ico--16" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+        Nueva pieza
+      </button>
     }
   </header>
 
-  <div class="filtros" role="search" aria-label="Filtrar piezas" [formGroup]="form">
-    <div class="campo filtros__busqueda">
+  <div class="barra" role="search" aria-label="Filtrar piezas" [formGroup]="form">
+    <div class="campo barra__busqueda">
       <label class="sr-only" for="piezas-q">Buscar por referencia o nombre</label>
+      <svg class="ico ico--16 barra__lupa" viewBox="0 0 24 24">
+        <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM20 20l-4-4" />
+      </svg>
       <input
         id="piezas-q"
         type="search"
@@ -22,15 +30,22 @@
       />
     </div>
 
-    <label class="casilla">
-      <input type="checkbox" formControlName="stockBajo" />
-      Solo con stock bajo
-    </label>
+    <!-- Casillas reales con aspecto de chip: conservan el teclado y el estado para los lectores -->
+    <div class="filtros-rapidos" role="group" aria-label="Filtros rápidos">
+      <label class="filtro">
+        <input class="filtro__control" type="checkbox" role="switch" formControlName="stockBajo" />
+        <span class="filtro__interruptor" aria-hidden="true"></span>
+        Solo con stock bajo
+      </label>
 
-    <label class="casilla">
-      <input type="checkbox" formControlName="soloActivas" />
-      Solo activas
-    </label>
+      <span class="filtros-rapidos__separador" aria-hidden="true"></span>
+
+      <label class="filtro">
+        <input class="filtro__control" type="checkbox" role="switch" formControlName="soloActivas" />
+        <span class="filtro__interruptor" aria-hidden="true"></span>
+        Solo activas
+      </label>
+    </div>
   </div>
 
   @if (cargando()) {
@@ -44,107 +59,124 @@
     @if (resultado.datos.length === 0) {
       <app-vacio [titulo]="tituloVacio()" />
     } @else {
-      <!-- Sin controles dentro, el teclado necesita poder enfocar la zona para desplazarla -->
-      <div
-        class="tabla-contenedor"
-        role="region"
-        aria-label="Catálogo de piezas"
-        [attr.tabindex]="esAdmin() ? null : 0"
-      >
-        <table class="tabla">
-          <caption class="sr-only">
-            Catálogo de piezas
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">Referencia</th>
-              <th scope="col">Pieza</th>
-              <th scope="col" class="numero">Precio</th>
-              <th scope="col" class="numero">Stock</th>
-              <th scope="col">Estado</th>
-              @if (esAdmin()) {
-                <th scope="col"><span class="sr-only">Acciones</span></th>
-              }
-            </tr>
-          </thead>
-          <tbody>
-            @for (pieza of resultado.datos; track pieza.id) {
-              <tr [class.fila--stock-bajo]="pieza.stockBajo">
-                <td class="referencia">{{ pieza.referencia }}</td>
-                <td>{{ pieza.nombre }}</td>
-                <td class="numero">{{ pieza.precio | euros }}</td>
-                <td class="numero stock" [class.stock--bajo]="pieza.stockBajo">
-                  {{ pieza.stock }}
-                  <!-- La pill de una pieza inactiva no indica el stock bajo: el rojo no basta -->
-                  @if (!pieza.activa && pieza.stockBajo) {
-                    <span class="stock__nota">(bajo)</span>
-                  }
-                </td>
-                <td>
-                  @if (!pieza.activa) {
-                    <span class="pill pill--gris">Inactiva</span>
-                  } @else if (pieza.stockBajo) {
-                    <span class="pill pill--rojo">Stock bajo</span>
-                  } @else {
-                    <span class="pill pill--verde">Correcto</span>
-                  }
-                </td>
+      <div class="panel">
+        <!-- Sin controles dentro, el teclado necesita poder enfocar la zona para desplazarla -->
+        <div
+          class="tabla-contenedor"
+          role="region"
+          aria-label="Catálogo de piezas"
+          [attr.tabindex]="esAdmin() ? null : 0"
+        >
+          <table class="tabla">
+            <caption class="sr-only">
+              Catálogo de piezas
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Referencia</th>
+                <th scope="col">Pieza</th>
+                <th scope="col" class="numero">Precio</th>
+                <th scope="col" class="numero">Stock</th>
+                <th scope="col">Estado</th>
                 @if (esAdmin()) {
-                  <td>
-                    <div class="acciones">
-                      <button
-                        type="button"
-                        class="btn accion"
-                        [class.btn--primario]="pieza.stockBajo"
-                        [class.btn--secundario]="!pieza.stockBajo"
-                        [attr.aria-label]="'Registrar entrada de ' + pieza.referencia"
-                        (click)="piezaStock.set(pieza)"
-                      >
-                        Registrar entrada
-                      </button>
-                      <button
-                        type="button"
-                        class="btn btn--secundario accion"
-                        [attr.aria-label]="'Editar ' + pieza.referencia"
-                        (click)="editarPieza(pieza)"
-                      >
-                        Editar
-                      </button>
-                      @if (pieza.activa) {
-                        <button
-                          type="button"
-                          class="btn btn--secundario accion"
-                          [attr.aria-label]="'Dar de baja ' + pieza.referencia"
-                          [disabled]="bajaEnCurso()"
-                          (click)="piezaBaja.set(pieza)"
-                        >
-                          Dar de baja
-                        </button>
-                      }
-                    </div>
-                  </td>
+                  <th scope="col" class="numero"><span class="sr-only">Acciones</span></th>
                 }
               </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              @for (pieza of resultado.datos; track pieza.id) {
+                <tr [class.fila--stock-bajo]="pieza.activa && pieza.stockBajo" [class.fila--inactiva]="!pieza.activa">
+                  <td>
+                    <span class="referencia">{{ pieza.referencia }}</span>
+                  </td>
+                  <td class="nombre">{{ pieza.nombre }}</td>
+                  <td class="numero">{{ pieza.precio | euros }}</td>
+                  <td class="numero stock" [class.stock--bajo]="pieza.stockBajo">
+                    {{ pieza.stock }}
+                    <!-- La pill de una pieza inactiva no indica el stock bajo: el rojo no basta -->
+                    @if (!pieza.activa && pieza.stockBajo) {
+                      <span class="stock__nota">(bajo)</span>
+                    }
+                  </td>
+                  <td>
+                    @if (!pieza.activa) {
+                      <span class="estado-orden" data-tono="neutro">Inactiva</span>
+                    } @else if (pieza.stockBajo) {
+                      <span class="estado-orden" data-tono="error">Stock bajo</span>
+                    } @else {
+                      <span class="estado-orden" data-tono="exito">Correcto</span>
+                    }
+                  </td>
+                  @if (esAdmin()) {
+                    <td class="acciones-celda">
+                      <div class="acciones" role="group" [attr.aria-label]="'Acciones de ' + pieza.referencia">
+                        <button
+                          type="button"
+                          class="accion accion--entrada"
+                          [class.accion--destacada]="pieza.activa && pieza.stockBajo"
+                          [attr.aria-label]="'Registrar entrada de ' + pieza.referencia"
+                          title="Registrar entrada"
+                          (click)="piezaStock.set(pieza)"
+                        >
+                          <svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+                          <span class="accion__texto">Entrada</span>
+                        </button>
+                        <button
+                          type="button"
+                          class="accion"
+                          [attr.aria-label]="'Editar ' + pieza.referencia"
+                          title="Editar"
+                          (click)="editarPieza(pieza)"
+                        >
+                          <svg class="ico" viewBox="0 0 24 24">
+                            <path d="M4 20h4L19 9l-4-4L4 16v4ZM13 7l4 4" />
+                          </svg>
+                        </button>
+                        @if (pieza.activa) {
+                          <button
+                            type="button"
+                            class="accion accion--peligro"
+                            [attr.aria-label]="'Dar de baja ' + pieza.referencia"
+                            title="Dar de baja"
+                            [disabled]="bajaEnCurso()"
+                            (click)="piezaBaja.set(pieza)"
+                          >
+                            <svg class="ico" viewBox="0 0 24 24">
+                              <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+                            </svg>
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
 
-      <div class="pie">
-        <p class="pie__texto">
+        <div class="panel__pie">
           @if (esAdmin()) {
-            Al registrar una entrada se indica la cantidad (por ejemplo, +4) y un motivo.
-          } @else {
-            Mostrando {{ resultado.datos.length }} de {{ resultado.total }}
-            {{ resultado.total === 1 ? 'pieza' : 'piezas' }}
+            <p class="ayuda">
+              <svg class="ico ico--16" viewBox="0 0 24 24">
+                <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01" />
+              </svg>
+              Al registrar una entrada se indica la cantidad (por ejemplo, +4) y un motivo.
+            </p>
           }
-        </p>
-        <app-paginador
-          [pagina]="resultado.pagina"
-          [totalPaginas]="resultado.totalPaginas"
-          [total]="resultado.total"
-          (cambiarPagina)="cambiarPagina($event)"
-        />
+          <div class="pie">
+            <p class="pie__texto">
+              Mostrando {{ resultado.datos.length }} de {{ resultado.total }}
+              {{ resultado.total === 1 ? 'pieza' : 'piezas' }}
+            </p>
+            <app-paginador
+              [pagina]="resultado.pagina"
+              [totalPaginas]="resultado.totalPaginas"
+              [total]="resultado.total"
+              (cambiarPagina)="cambiarPagina($event)"
+            />
+          </div>
+        </div>
       </div>
     }
   }

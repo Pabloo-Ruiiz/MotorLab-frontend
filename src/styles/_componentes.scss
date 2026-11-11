@@ -519,8 +519,25 @@ button.tarjeta:active:not(:disabled) {
   }
 }
 
+// Formularios del taller: cabecera separada por una línea y pie de acciones sobre crema.
+// Los márgenes negativos llevan ambas franjas hasta el borde del diálogo
+.dialogo {
+  --dialogo-relleno: var(--mo-esp-24);
+
+  padding: var(--dialogo-relleno);
+
+  @media (min-width: 600px) {
+    --dialogo-relleno: var(--mo-esp-32);
+  }
+}
+
 .dialogo__titulo {
-  margin-bottom: var(--mo-esp-24);
+  margin: calc(var(--dialogo-relleno) * -1) calc(var(--dialogo-relleno) * -1) var(--mo-esp-24);
+  padding: var(--mo-esp-20) var(--dialogo-relleno);
+  border-bottom: 1px solid var(--mo-linea);
+  font-size: var(--mo-tipo-18);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-titulo);
 }
 
 .dialogo__acciones {
@@ -528,7 +545,22 @@ button.tarjeta:active:not(:disabled) {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--mo-esp-8);
-  margin-top: var(--mo-esp-8);
+  margin: var(--mo-esp-12) calc(var(--dialogo-relleno) * -1) calc(var(--dialogo-relleno) * -1);
+  padding: var(--mo-esp-16) var(--dialogo-relleno);
+  border-top: 1px solid var(--mo-linea);
+  background-color: var(--mo-crema);
+
+  .btn {
+    min-height: 40px;
+    padding-block: var(--mo-esp-8);
+  }
+}
+
+// El fondo se desenfoca: el diálogo queda como única capa legible
+.dialogo::backdrop,
+.modal::backdrop {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 }
 
 // Tono de una orden o urgencia (data-tono): color de texto y fondo suave que superan el 4,5:1
@@ -612,4 +644,186 @@ button.tarjeta:active:not(:disabled) {
 // La confirmación de «Solicitud enviada» ya tiene su propio título: sin el de la pantalla
 .contenido__ancho:has(app-solicitud-enviada) > .contenido__titulo {
   display: none;
+}
+
+// Icono de trazo: el grosor y el color se heredan del texto
+.ico {
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ico--14 {
+  width: 14px;
+  height: 14px;
+}
+
+.ico--16 {
+  width: 16px;
+  height: 16px;
+}
+
+// Bloques: superficie crema con borde fino; dejan entrever la filigrana
+.bloque {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+  min-width: 0;
+  padding: var(--mo-esp-20);
+  border: 1px solid color-mix(in srgb, var(--mo-linea) 60%, transparent);
+  border-radius: var(--mo-radio-16);
+  background-color: color-mix(in srgb, var(--mo-crema) 88%, transparent);
+
+  @media (min-width: 768px) {
+    padding: var(--mo-esp-24);
+  }
+}
+
+.bloque__titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  color: var(--mo-acero);
+  font-size: 11px;
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: 0.06em;
+  line-height: 16px;
+  text-transform: uppercase;
+}
+
+// Franja inferior del bloque, separada por una línea fina
+.bloque__pie {
+  margin-top: auto;
+  padding-top: var(--mo-esp-16);
+  border-top: 1px solid color-mix(in srgb, var(--mo-linea) 60%, transparent);
+}
+
+.bloque__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+  padding-top: var(--mo-esp-16);
+  border-top: 1px solid color-mix(in srgb, var(--mo-linea) 60%, transparent);
+}
+
+.bloque__ayuda {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+}
+
+// Controles de formulario con borde suave, misma altura y anillo de foco
+.bloque .campo,
+.campos-suaves .campo,
+.dialogo .campo {
+  gap: 6px;
+
+  label {
+    color: var(--mo-pizarra);
+    font-size: var(--mo-tipo-12);
+    font-weight: var(--mo-peso-medio);
+  }
+
+  input,
+  select,
+  textarea {
+    border-color: var(--mo-linea);
+    border-radius: var(--mo-radio-8);
+    font-size: var(--mo-tipo-14);
+    transition:
+      border-color var(--mo-transicion),
+      box-shadow var(--mo-transicion);
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:disabled) {
+        border-color: var(--mo-niebla);
+      }
+    }
+
+    &:focus-visible {
+      border-color: var(--mo-tinta);
+      outline: none;
+      box-shadow: 0 0 0 3px rgb(10 10 10 / 8%);
+    }
+  }
+
+  input,
+  select {
+    height: var(--mo-tactil);
+  }
+
+  select {
+    padding-right: var(--mo-esp-40);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23545454' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right var(--mo-esp-12) center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+}
+
+.bloque .campo--error,
+.campos-suaves .campo--error,
+.dialogo .campo--error {
+  input,
+  select,
+  textarea {
+    border-color: var(--mo-error);
+  }
+}
+
+// Cabecera de las pantallas de detalle: migas, número de documento y estado destacado
+.migas__lista {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-4);
+  margin: 0;
+  padding: 0;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+  }
+
+  [aria-current='page'] {
+    color: var(--mo-tinta);
+    font-weight: var(--mo-peso-medio);
+  }
+}
+
+.migas__enlace {
+  border-radius: var(--mo-radio-6);
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--mo-transicion);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--mo-tinta);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+}
+
+.cabecera__numero {
+  color: var(--mo-acero);
+  font-family: var(--mo-mono);
+  font-weight: var(--mo-peso-normal);
+  letter-spacing: var(--mo-tracking-mono);
+}
+
+.estado-orden--grande {
+  padding: 6px var(--mo-esp-12);
+  font-size: var(--mo-tipo-14);
+  line-height: 20px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tono) 15%, transparent);
 }

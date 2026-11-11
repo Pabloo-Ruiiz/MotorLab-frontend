@@ -1,102 +1,146 @@
 <header class="cabecera">
   <app-logo class="cabecera__fondo" />
-  <p class="cabecera__titulo">Taller MotorLab</p>
-  <p class="cabecera__subtitulo">Área de clientes</p>
+  <div class="cabecera__marca">
+    <app-logo class="cabecera__simbolo" />
+    MotorLab
+  </div>
+  <div class="cabecera__textos">
+    <p class="cabecera__subtitulo">Área de clientes</p>
+    <p class="cabecera__titulo">Taller MotorLab</p>
+    <p class="cabecera__lema">Sigue tus reparaciones, presupuestos y avisos sin llamar al taller.</p>
+  </div>
 </header>
 
 <main class="pagina">
-  <app-logo class="logo" />
   @if (correoPendiente(); as correo) {
+    <app-logo class="logo" />
     <h1 class="titulo">Revisa tu correo</h1>
     <p class="subtitulo">
       Te hemos enviado un enlace a <strong>{{ correo }}</strong> para confirmar que es tuyo. Caduca
       en 24 horas.
     </p>
     <app-reenviar-correo [email]="correo" />
-    <a class="btn btn--primario" routerLink="/login">Ir a iniciar sesión</a>
+    <a class="btn btn--primario enviar" routerLink="/login">
+      Ir a iniciar sesión
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    </a>
   } @else {
+    <nav class="acceso acceso--registro" aria-label="Acceso">
+      <a class="acceso__opcion" routerLink="/login">Iniciar sesión</a>
+      <a class="acceso__opcion" routerLink="/registro" aria-current="page">Crear cuenta</a>
+    </nav>
+
     <h1 class="titulo">Crea tu cuenta</h1>
     <p class="subtitulo">Sigue tus reparaciones sin llamar al taller</p>
-
-    <nav class="segmentado" aria-label="Acceso">
-      <a class="segmentado__opcion pestana" routerLink="/login">Iniciar sesión</a>
-      <a class="segmentado__opcion segmentado__opcion--activa pestana" routerLink="/registro" aria-current="page">
-        Crear cuenta
-      </a>
-    </nav>
 
     @if (errorGeneral(); as error) {
       <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
     }
 
     <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()">
-      <div class="campo" [class.campo--error]="campoConError(form.controls.nombre)">
-        <label for="registro-nombre">Nombre</label>
-        <input
-          id="registro-nombre"
-          type="text"
-          autocomplete="name"
-          formControlName="nombre"
-          [attr.aria-invalid]="campoConError(form.controls.nombre)"
-          aria-describedby="registro-nombre-error"
-        />
-        <app-errores-campo id="registro-nombre-error" [control]="form.controls.nombre" />
+      <div class="fila">
+        <div class="campo" [class.campo--error]="campoConError(form.controls.nombre)">
+          <label for="registro-nombre">Nombre</label>
+          <div class="entrada">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0" />
+            </svg>
+            <input
+              id="registro-nombre"
+              type="text"
+              autocomplete="name"
+              formControlName="nombre"
+              [attr.aria-invalid]="campoConError(form.controls.nombre)"
+              aria-describedby="registro-nombre-error"
+            />
+          </div>
+          <app-errores-campo id="registro-nombre-error" [control]="form.controls.nombre" />
+        </div>
+
+        <div class="campo" [class.campo--error]="campoConError(form.controls.telefono)">
+          <label for="registro-telefono">Teléfono</label>
+          <div class="entrada">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" />
+            </svg>
+            <input
+              id="registro-telefono"
+              type="tel"
+              autocomplete="tel"
+              formControlName="telefono"
+              [attr.aria-invalid]="campoConError(form.controls.telefono)"
+              aria-describedby="registro-telefono-error"
+            />
+          </div>
+          <app-errores-campo id="registro-telefono-error" [control]="form.controls.telefono" />
+        </div>
       </div>
 
       <div class="campo" [class.campo--error]="campoConError(form.controls.email)">
         <label for="registro-email">Correo electrónico</label>
-        <input
-          id="registro-email"
-          type="email"
-          autocomplete="email"
-          formControlName="email"
-          [attr.aria-invalid]="campoConError(form.controls.email)"
-          aria-describedby="registro-email-error"
-        />
+        <div class="entrada">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 6h18v12H3V6ZM3 7l9 6 9-6" />
+          </svg>
+          <input
+            id="registro-email"
+            type="email"
+            autocomplete="email"
+            placeholder="tu@correo.com"
+            formControlName="email"
+            [attr.aria-invalid]="campoConError(form.controls.email)"
+            aria-describedby="registro-email-error"
+          />
+        </div>
         <app-errores-campo id="registro-email-error" [control]="form.controls.email" />
-      </div>
-
-      <div class="campo" [class.campo--error]="campoConError(form.controls.telefono)">
-        <label for="registro-telefono">Teléfono</label>
-        <input
-          id="registro-telefono"
-          type="tel"
-          autocomplete="tel"
-          formControlName="telefono"
-          [attr.aria-invalid]="campoConError(form.controls.telefono)"
-          aria-describedby="registro-telefono-error"
-        />
-        <app-errores-campo id="registro-telefono-error" [control]="form.controls.telefono" />
       </div>
 
       <div class="campo" [class.campo--error]="campoConError(form.controls.password)">
         <label for="registro-password">Contraseña</label>
-        <input
-          id="registro-password"
-          type="password"
-          autocomplete="new-password"
-          formControlName="password"
-          [attr.aria-invalid]="campoConError(form.controls.password)"
-          aria-describedby="registro-password-error"
-        />
+        <div class="entrada">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 11h12v10H6V11ZM8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
+          <input
+            id="registro-password"
+            type="password"
+            autocomplete="new-password"
+            formControlName="password"
+            [attr.aria-invalid]="campoConError(form.controls.password)"
+            aria-describedby="registro-password-error"
+          />
+        </div>
         <app-errores-campo id="registro-password-error" [control]="form.controls.password" />
       </div>
 
-      <div class="campo">
-        <label class="casilla">
+      <div class="campo" [class.campo--error]="campoConError(form.controls.aceptaPrivacidad)">
+        <div class="casilla">
           <input
+            id="registro-privacidad"
             type="checkbox"
             formControlName="aceptaPrivacidad"
             aria-describedby="registro-privacidad-error"
             [attr.aria-invalid]="campoConError(form.controls.aceptaPrivacidad)"
           />
-          <span>Acepto la política de privacidad del taller</span>
-        </label>
+          <!-- Pulsar el enlace abre la política en otra pestaña sin marcar la casilla -->
+          <label class="casilla__texto" for="registro-privacidad">
+            Acepto la
+            <a routerLink="/privacidad" target="_blank" rel="noopener">política de privacidad</a>
+            del taller
+          </label>
+        </div>
         <app-errores-campo id="registro-privacidad-error" [control]="form.controls.aceptaPrivacidad" />
       </div>
 
-      <button type="submit" class="btn btn--primario" [disabled]="enviando()">
+      <button type="submit" class="btn btn--primario enviar" [disabled]="enviando()">
         {{ enviando() ? 'Creando cuenta…' : 'Crear cuenta' }}
+        @if (!enviando()) {
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        }
       </button>
     </form>
   }

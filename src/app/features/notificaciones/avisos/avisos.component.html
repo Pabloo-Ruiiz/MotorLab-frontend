@@ -1,70 +1,195 @@
+<app-logo class="filigrana" />
+
 <main class="avisos">
-  @if (enTaller()) {
-    <h1 class="avisos__titulo">Avisos</h1>
+  <header class="cabecera">
+    @if (enTaller()) {
+      <h1 class="cabecera__titulo">Avisos</h1>
+    }
+    <p class="cabecera__descripcion">
+      @if (enTaller()) {
+        Mantente al día de las novedades y actualizaciones del taller.
+      } @else {
+        Mantente al día de las novedades y actualizaciones de tus vehículos.
+      }
+    </p>
+  </header>
+
+  @if (resumen(); as resumen) {
+    <dl class="resumen" aria-label="Resumen de avisos">
+      <div class="resumen__dato">
+        <dt class="resumen__etiqueta">Total</dt>
+        <dd class="resumen__valor">{{ resumen.total }}</dd>
+      </div>
+      <div class="resumen__dato" [class.resumen__dato--activo]="resumen.noLeidas > 0">
+        <dt class="resumen__etiqueta">
+          <span class="resumen__punto" aria-hidden="true"></span>
+          Sin leer
+        </dt>
+        <dd class="resumen__valor">{{ resumen.noLeidas }}</dd>
+      </div>
+      <div class="resumen__dato">
+        <dt class="resumen__etiqueta">Leídas</dt>
+        <dd class="resumen__valor">{{ resumen.leidas }}</dd>
+      </div>
+    </dl>
   }
 
-  <div class="segmentado" role="group" aria-label="Filtrar avisos">
-    @for (opcion of filtros; track opcion.valor) {
+  <div class="barra">
+    <div
+      class="filtros"
+      role="group"
+      aria-label="Filtrar avisos"
+      [style.--indice]="filtro() === 'sin_leer' ? 1 : 0"
+    >
+      @for (opcion of filtros; track opcion.valor) {
+        <button
+          type="button"
+          class="filtros__opcion"
+          [attr.aria-pressed]="filtro() === opcion.valor"
+          (click)="cambiarFiltro(opcion.valor)"
+        >
+          {{ opcion.texto }}
+          @if (opcion.valor === 'sin_leer' && noLeidas() > 0) {
+            <span class="filtros__contador">
+              {{ noLeidas() }}<span class="sr-only"> sin leer</span>
+            </span>
+          }
+        </button>
+      }
+    </div>
+
+    @if (hayNoLeidas()) {
       <button
         type="button"
-        class="segmentado__opcion"
-        [attr.aria-pressed]="filtro() === opcion.valor"
-        (click)="cambiarFiltro(opcion.valor)"
+        class="marcar"
+        [disabled]="marcandoTodas()"
+        (click)="marcarTodas()"
       >
-        {{ opcion.texto }}
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path [attr.d]="iconos.dobleCheck" />
+        </svg>
+        {{ marcandoTodas() ? 'Marcando…' : 'Marcar todas como leídas' }}
       </button>
     }
   </div>
-
-  <button
-    type="button"
-    class="btn btn--secundario avisos__marcar"
-    [disabled]="marcandoTodas()"
-    (click)="marcarTodas()"
-  >
-    {{ marcandoTodas() ? 'Marcando…' : 'Marcar todas como leídas' }}
-  </button>
 
   @if (cargando()) {
     <app-cargando />
   } @else if (errorCarga(); as error) {
     <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
-    <button type="button" class="btn btn--secundario" (click)="cargar()">Reintentar</button>
+    <button type="button" class="btn btn--secundario reintentar" (click)="cargar()">
+      Reintentar
+    </button>
   } @else if (resultado(); as resultado) {
-    @if (resultado.datos.length === 0) {
-      <app-vacio [titulo]="tituloVacio()" />
+    @if (avisos().length === 0) {
+      <div class="vacio">
+        <span class="vacio__icono" aria-hidden="true">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path [attr.d]="iconos.campana" />
+          </svg>
+        </span>
+        <p class="vacio__titulo">{{ vacio().titulo }}</p>
+        <p class="vacio__texto">{{ vacio().texto }}</p>
+      </div>
     } @else {
       <ul class="lista">
-        @for (notificacion of resultado.datos; track notificacion.id) {
+        @for (item of avisos(); track item.aviso.id) {
           <li>
             <button
               type="button"
-              class="tarjeta item"
-              [id]="'aviso-' + notificacion.id"
-              [class.item--sin-leer]="!notificacion.leida"
-              [class.item--destacado]="destacado() === notificacion.id"
-              [disabled]="notificacion.leida && notificacion.ordenId === null"
-              (click)="abrir(notificacion)"
+              class="item"
+              [id]="'aviso-' + item.aviso.id"
+              [attr.data-tono]="item.tono"
+              [class.item--sin-leer]="!item.aviso.leida"
+              [class.item--destacado]="destacado() === item.aviso.id"
+              [disabled]="item.aviso.leida && item.aviso.ordenId === null"
+              (click)="abrir(item.aviso)"
             >
-              <svg
-                class="item__icono"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path [attr.d]="iconos[notificacion.tipo]" />
-              </svg>
-              <span class="item__texto">
-                <span class="item__mensaje">{{ notificacion.mensaje }}</span>
-                <span class="item__fecha">{{ notificacion.creadaEn | fechaHora: 'completa' }}</span>
+              <span class="item__icono" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path [attr.d]="item.icono" />
+                </svg>
               </span>
-              @if (!notificacion.leida) {
-                <span class="item__punto" aria-hidden="true"></span>
-                <span class="sr-only">Sin leer</span>
+
+              <span class="item__texto">
+                <span class="item__cabecera">
+                  <span class="item__titulo">{{ item.titulo }}</span>
+                  @if (!item.aviso.leida) {
+                    <span class="item__punto" aria-hidden="true"></span>
+                    <span class="sr-only">Sin leer</span>
+                  }
+                </span>
+                @if (item.descripcion) {
+                  <span class="item__descripcion">{{ item.descripcion }}</span>
+                }
+                <span class="item__meta">
+                  <span class="item__fecha">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path [attr.d]="iconos.reloj" />
+                    </svg>
+                    <time [attr.datetime]="item.aviso.creadaEn">
+                      {{ item.aviso.creadaEn | fechaHora: 'completa' }}
+                    </time>
+                  </span>
+                  @if (item.aviso.ordenId !== null) {
+                    <span class="item__orden">Orden #{{ item.aviso.ordenId }}</span>
+                  }
+                </span>
+              </span>
+
+              @if (item.aviso.ordenId !== null) {
+                <svg
+                  class="item__flecha"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path [attr.d]="iconos.flecha" />
+                </svg>
               }
             </button>
           </li>

@@ -1,4 +1,4 @@
-import type { EstadoOrden, Urgencia } from '@core/models';
+import type { EstadoOrden, EstadoPresupuesto, Urgencia } from '@core/models';
 
 // Color con el que se presenta cada situación: se aplica con el atributo data-tono (_componentes.scss)
 export type Tono = 'informativo' | 'exito' | 'aviso' | 'error' | 'neutro';
@@ -22,4 +22,11 @@ export const TONOS_URGENCIA: Record<Urgencia, Tono> = {
   baja: 'exito',
   media: 'aviso',
   alta: 'error'
+};
+
+export const TONOS_ESTADO_PRESUPUESTO: Record<EstadoPresupuesto, Tono> = {
+  borrador: 'neutro',
+  enviado: 'aviso',
+  autorizado: 'exito',
+  rechazado: 'error'
 };

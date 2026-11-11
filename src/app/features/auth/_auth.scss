@@ -1,51 +1,121 @@
 // Estilos comunes de las pantallas de acceso (Figura 3). Móvil primero.
+// Panel de marca oscuro con el logo como marca de agua y formulario sobre fondo crema.
 
 :host {
   display: block;
   min-height: 100vh;
   min-height: 100dvh;
+  background-color: var(--mo-crema);
 }
+
+// ---- Panel de marca
 
 .cabecera {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--mo-esp-8);
-  padding: var(--mo-esp-20) var(--mo-esp-24);
-  border-bottom: 1px solid var(--mo-linea);
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+  padding: var(--mo-esp-24);
+  overflow: hidden;
+  background-color: var(--mo-tinta);
+  // Luz suave en una esquina: da profundidad sin competir con el texto
+  background-image: radial-gradient(
+    120% 90% at 100% 0%,
+    rgb(255 255 255 / 9%) 0%,
+    rgb(255 255 255 / 0%) 60%
+  );
+  color: var(--mo-blanco);
 }
 
-.cabecera__titulo {
+// Logo grande recortado por el borde del panel, apenas más claro que el fondo
+.cabecera__fondo {
+  position: absolute;
+  top: -40%;
+  right: -18%;
+  width: 260px;
+  aspect-ratio: 1;
+  color: var(--mo-blanco);
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.cabecera__marca {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
   font-size: var(--mo-tipo-16);
   font-weight: var(--mo-peso-medio);
   letter-spacing: var(--mo-tracking-titulo);
 }
 
-.cabecera__subtitulo {
-  color: var(--mo-acero);
-  font-size: var(--mo-tipo-14);
+.cabecera__simbolo {
+  flex-shrink: 0;
+  width: var(--mo-esp-32);
+  height: var(--mo-esp-32);
+  color: var(--mo-blanco);
 }
+
+.cabecera__textos {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+}
+
+.cabecera__subtitulo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  color: rgb(255 255 255 / 64%);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  // Único acento de color de la pantalla
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--mo-punto-rojo);
+  }
+}
+
+.cabecera__titulo {
+  font-size: var(--mo-tipo-24);
+  font-weight: var(--mo-peso-normal);
+  letter-spacing: var(--mo-tracking-titulo);
+  line-height: 1.1;
+}
+
+// Solo en escritorio, donde el panel tiene altura para ella
+.cabecera__lema {
+  display: none;
+}
+
+// ---- Formulario
 
 .pagina {
   display: flex;
   flex-direction: column;
   gap: var(--mo-esp-20);
   width: 100%;
-  max-width: 440px;
+  max-width: 480px;
   margin: 0 auto;
-  padding: var(--mo-esp-40) var(--mo-esp-24);
+  padding: var(--mo-esp-32) var(--mo-esp-20) var(--mo-esp-48);
 }
 
 .logo {
-  width: var(--mo-esp-64);
-  height: var(--mo-esp-64);
+  width: var(--mo-esp-48);
+  height: var(--mo-esp-48);
   color: var(--mo-tinta);
 }
 
-// El logo de fondo solo existe en el panel de escritorio
-.cabecera__fondo {
-  display: none;
+.titulo {
+  font-size: var(--mo-tipo-30);
+  line-height: 1.1;
 }
 
 .subtitulo,
@@ -55,14 +125,79 @@
 }
 
 .subtitulo {
-  margin-top: calc(var(--mo-esp-8) * -1);
+  margin-top: calc(var(--mo-esp-12) * -1);
 }
 
-.pestana {
+.nota {
+  text-align: center;
+}
+
+// Selector de acceso: control segmentado con una píldora que se desliza hacia la pantalla elegida
+.acceso {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: var(--mo-esp-4);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-arena);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: var(--mo-esp-4);
+    bottom: var(--mo-esp-4);
+    left: var(--mo-esp-4);
+    width: calc(50% - var(--mo-esp-4));
+    border-radius: var(--mo-radio-pildora);
+    background-color: var(--mo-blanco);
+    box-shadow:
+      0 0 0 1px rgb(10 10 10 / 6%),
+      0 1px 3px rgb(10 10 10 / 10%);
+    transform: translateX(calc(var(--indice) * 100%));
+    transition: transform 280ms var(--mo-curva-salida);
+
+    // Al llegar desde la otra pestaña la píldora parte de donde estaba
+    @starting-style {
+      transform: translateX(calc((1 - var(--indice)) * 100%));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+}
+
+.acceso--login {
+  --indice: 0;
+}
+
+.acceso--registro {
+  --indice: 1;
+}
+
+.acceso__opcion {
+  position: relative; // por encima de la píldora
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 40px;
+  padding: var(--mo-esp-8) var(--mo-esp-16);
+  border-radius: var(--mo-radio-pildora);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
   text-decoration: none;
+  transition: color var(--mo-transicion);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--mo-tinta);
+    }
+  }
+
+  &[aria-current='page'] {
+    color: var(--mo-tinta);
+  }
 }
 
 .formulario {
@@ -71,7 +206,100 @@
   gap: var(--mo-esp-16);
 }
 
-// Escritorio: panel cálido fijo con la marca del taller y formulario a la derecha
+// Dos campos cortos en la misma fila cuando hay anchura
+.fila {
+  display: grid;
+  gap: var(--mo-esp-16);
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+// Campo con icono a la izquierda. «.campo .entrada» gana a los estilos generales de .campo
+.entrada {
+  position: relative;
+
+  svg {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    color: var(--mo-niebla);
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: color var(--mo-transicion);
+  }
+
+  &:focus-within svg {
+    color: var(--mo-tinta);
+  }
+}
+
+.campo .entrada input {
+  min-height: 48px;
+  padding-left: 42px;
+  border-color: var(--mo-linea);
+  border-radius: var(--mo-radio-8);
+  transition:
+    border-color var(--mo-transicion),
+    box-shadow var(--mo-transicion);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-niebla);
+    }
+  }
+
+  // Foco en negro con un halo suave en lugar del contorno general
+  &:focus-visible {
+    border-color: var(--mo-tinta);
+    outline: none;
+    box-shadow:
+      inset 0 0 0 1px var(--mo-tinta),
+      0 0 0 4px rgb(10 10 10 / 8%);
+  }
+}
+
+.campo--error .entrada {
+  input,
+  input:hover,
+  input:focus-visible {
+    border-color: var(--mo-error);
+    box-shadow: inset 0 0 0 1px var(--mo-error);
+  }
+
+  input:focus-visible {
+    box-shadow:
+      inset 0 0 0 1px var(--mo-error),
+      0 0 0 4px var(--mo-error-fondo);
+  }
+
+  svg {
+    color: var(--mo-error);
+  }
+}
+
+// Botón principal a todo el ancho con flecha que avanza al apuntar
+.enviar {
+  width: 100%;
+  min-height: 48px;
+  margin-top: var(--mo-esp-4);
+  box-shadow: 0 8px 20px -12px rgb(10 10 10 / 50%);
+
+  svg {
+    flex-shrink: 0;
+    transition: transform var(--mo-pulsar);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) svg {
+      transform: translateX(calc(3px * var(--mo-movimiento)));
+    }
+  }
+}
+
+// ---- Escritorio: panel de marca fijo a la izquierda y formulario en una ficha a la derecha
+
 @media (min-width: 900px) {
   :host {
     display: grid;
@@ -82,43 +310,49 @@
   .cabecera {
     position: sticky;
     top: 0;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: flex-start;
     align-self: start;
-    justify-content: flex-end;
-    gap: var(--mo-esp-16);
+    justify-content: space-between;
+    gap: var(--mo-esp-32);
     height: 100vh;
     height: 100dvh;
-    padding: var(--mo-esp-64);
-    overflow: hidden;
-    border-bottom: 0;
-    background-color: var(--mo-arena);
+    padding: var(--mo-esp-48) var(--mo-esp-64) var(--mo-esp-64);
   }
 
-  // Marca de agua recortada por el borde del panel, un tono por encima de la arena
   .cabecera__fondo {
-    display: block;
-    position: absolute;
-    top: -12%;
-    left: -30%;
-    width: 130%;
-    aspect-ratio: 1;
-    color: color-mix(in srgb, var(--mo-tinta) 8%, var(--mo-arena));
+    top: auto;
+    right: auto;
+    bottom: -18%;
+    left: -28%;
+    width: 120%;
+    opacity: 0.05;
   }
 
-  .cabecera__titulo,
-  .cabecera__subtitulo {
-    position: relative;
+  .cabecera__textos {
+    gap: var(--mo-esp-16);
   }
 
   .cabecera__titulo {
     font-size: var(--mo-tipo-48);
-    font-weight: var(--mo-peso-normal);
     line-height: 1;
   }
 
+  .cabecera__lema {
+    display: block;
+    max-width: 34ch;
+    color: rgb(255 255 255 / 64%);
+    font-size: var(--mo-tipo-16);
+    line-height: 1.5;
+  }
+
   .pagina {
-    padding-block: var(--mo-esp-64);
+    margin-block: var(--mo-esp-48);
+    padding: var(--mo-esp-40);
+    border-radius: var(--mo-radio-16);
+    background-color: var(--mo-blanco);
+    box-shadow: var(--mo-sombra-elevada);
+  }
+
+  .titulo {
+    font-size: 36px;
   }
 }

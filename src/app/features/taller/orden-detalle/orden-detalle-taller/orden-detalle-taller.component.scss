@@ -1,31 +1,121 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
+}
+
+// Logo de MotorLab como marca de agua: fijo en la esquina, muy tenue y sin recibir clics
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)); // sobre las pestañas
+  z-index: -1;
+  width: clamp(160px, 26vw, 320px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.035;
+  pointer-events: none;
+
+  @media (min-width: 900px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
 }
 
 .detalle {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-32);
+  gap: var(--mo-esp-24);
 }
 
-.migas,
 .texto-suave {
   color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
-.encabezado {
+// Cabecera: migas, título con estado y acciones principales
+.cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.cabecera__fila {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
+  gap: var(--mo-esp-16);
+}
+
+.cabecera__titulo {
+  display: flex;
+  flex-direction: column;
   gap: var(--mo-esp-8);
 }
 
-.rejilla {
+.cabecera__linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-8) var(--mo-esp-12);
+
+  h1 {
+    letter-spacing: var(--mo-tracking-titulo);
+  }
+}
+
+.barra-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-8);
+}
+
+// Acción destructiva discreta: texto gris que pasa a rojo al apuntar
+.barra-acciones__cancelar {
+  border-color: var(--mo-linea);
+  background: none;
+  color: var(--mo-acero);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: var(--mo-error);
+      background-color: var(--mo-error-fondo);
+      color: var(--mo-error);
+    }
+  }
+}
+
+// Resumen superior en tres columnas
+.resumen {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--mo-esp-16);
+
+  @media (min-width: 700px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1150px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.datos-linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  font-variant-numeric: tabular-nums;
+}
+
+.datos-linea__sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: var(--mo-peltre);
 }
 
 .vehiculo {
@@ -36,61 +126,275 @@
 
 .vehiculo__icono {
   flex-shrink: 0;
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
+  padding: var(--mo-esp-8);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-anillo);
   color: var(--mo-tinta);
 }
 
-.sintoma {
+.vehiculo__datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-4);
+  min-width: 0;
+}
+
+.vehiculo__nombre,
+.cliente__nombre,
+.averia__servicio {
+  font-size: var(--mo-tipo-16);
+  font-weight: var(--mo-peso-medio);
   overflow-wrap: anywhere;
 }
 
-.barras {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--mo-esp-8);
-  margin-top: var(--mo-esp-12);
-}
-
-.barra {
-  height: var(--mo-esp-8);
-  border-radius: var(--mo-radio-pildora);
-  background-color: var(--mo-tinta);
-}
-
-.regla {
-  margin-top: var(--mo-esp-8);
-}
-
-.asignacion {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
-  align-items: start;
+.averia {
+  display: flex;
+  flex-direction: column;
   gap: var(--mo-esp-12);
+}
 
-  .btn {
-    align-self: end;
+.averia__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-8);
+}
+
+.averia__sintoma {
+  margin: 0;
+  padding-left: var(--mo-esp-12);
+  border-left: 2px solid var(--mo-linea);
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-14);
+  overflow-wrap: anywhere;
+}
+
+.datos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-4);
+  margin: 0;
+  font-size: var(--mo-tipo-14);
+
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--mo-esp-12);
+  }
+
+  dt {
+    color: var(--mo-acero);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: var(--mo-peso-medio);
+    text-align: right;
   }
 }
 
-.acciones {
+// Medidor de urgencia: tantos tramos llenos como nivel, del color de la urgencia
+.urgencia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+}
+
+.urgencia__medidor {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--mo-esp-4);
+}
+
+.urgencia__tramo {
+  height: 6px;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-linea);
+}
+
+.urgencia__tramo--lleno {
+  background-color: var(--tono);
+}
+
+.urgencia__regla {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+}
+
+.cliente {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+}
+
+.cliente__avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-tinta);
+  color: var(--mo-blanco);
+  font-size: var(--mo-tipo-16);
+  font-weight: var(--mo-peso-medio);
+}
+
+.contacto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contacto__fila {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-14);
+
+  .ico {
+    color: var(--mo-niebla);
+  }
+}
+
+.contacto__enlace {
+  color: var(--mo-tinta);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--mo-peso-medio);
+  text-decoration: none;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+}
+
+// Cuerpo: gestión a la izquierda y seguimiento a la derecha en pantallas anchas
+.cuerpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--mo-esp-16);
+
+  @media (min-width: 1150px) {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+}
+
+.cuerpo__principal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+  min-width: 0;
+}
+
+@media (min-width: 1150px) {
+  .seguimiento {
+    position: sticky;
+    top: var(--mo-esp-24);
+  }
+}
+
+// Asignación: los tres campos en una fila cuando cabe
+.asignacion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+  container-type: inline-size;
+}
+
+.asignacion__campos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--mo-esp-12);
+}
+
+@container (min-width: 560px) {
+  .asignacion__campos {
+    grid-template-columns: 1.3fr 0.7fr 1.2fr;
+  }
+}
+
+// Cambio de estado
+.estado-actual {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+}
+
+.estado-actual__texto {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+}
+
+.opcional {
+  color: var(--mo-acero);
+  font-weight: var(--mo-peso-normal);
+}
+
+.nota__contador {
+  align-self: flex-end;
+  color: var(--mo-acero);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+}
+
+.transiciones {
   display: flex;
   flex-wrap: wrap;
   gap: var(--mo-esp-8);
-  margin-top: var(--mo-esp-12);
 }
 
-.acciones--final {
-  justify-content: flex-end;
-  margin-top: 0;
+// Cada transición lleva el punto del color del estado al que lleva
+.transicion {
+  justify-content: flex-start;
+  border-color: var(--mo-linea);
+  background-color: var(--mo-blanco);
+  color: var(--mo-tinta);
+  text-align: left;
 
-  &:empty {
-    display: none;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: var(--mo-tinta);
+
+      .transicion__flecha {
+        transform: translateX(calc(2px * var(--mo-movimiento)));
+      }
+    }
   }
 }
 
+.transicion__punto {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--tono);
+}
+
+.transicion__flecha {
+  color: var(--mo-acero);
+  transition: transform var(--mo-pulsar);
+}
+
+// Presupuesto
 .presupuesto {
-  display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
@@ -106,4 +410,5 @@
 .presupuesto__total {
   font-size: var(--mo-tipo-24);
   font-weight: var(--mo-peso-normal);
+  font-variant-numeric: tabular-nums;
 }

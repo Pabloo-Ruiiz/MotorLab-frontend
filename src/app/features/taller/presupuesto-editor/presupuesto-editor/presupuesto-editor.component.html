@@ -1,3 +1,5 @@
+<app-logo class="filigrana" />
+
 <main class="editor">
   @if (cargando()) {
     <app-cargando />
@@ -10,144 +12,196 @@
     </button>
   } @else if (datos(); as datos) {
     @if (datos.presupuesto; as presupuesto) {
-      <header class="encabezado">
-        <div>
-          <h1>Presupuesto <span class="sin-salto">P-{{ presupuesto.id }}</span></h1>
-          <p class="texto-suave">
-            {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }} ·
-            {{ matriculaLegible(datos.orden.vehiculo.matricula) }} ·
-            {{ datos.orden.cliente.nombre }}
-          </p>
+      <header class="cabecera">
+        <nav class="migas" aria-label="Ruta de navegación">
+          <ol class="migas__lista">
+            <li><a class="migas__enlace" routerLink="/taller/solicitudes">Solicitudes</a></li>
+            <li aria-hidden="true">
+              <svg class="ico ico--14" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+            </li>
+            <li>
+              <a class="migas__enlace" [routerLink]="['/taller/ordenes', datos.orden.id]">
+                Orden #{{ datos.orden.id }}
+              </a>
+            </li>
+            <li aria-hidden="true">
+              <svg class="ico ico--14" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+            </li>
+            <li><span aria-current="page">Presupuesto</span></li>
+          </ol>
+        </nav>
+
+        <div class="cabecera__linea">
+          <h1>
+            Presupuesto <span class="cabecera__numero">P-{{ presupuesto.id }}</span>
+          </h1>
+          <span
+            class="estado-orden estado-orden--grande"
+            [attr.data-tono]="tonosPresupuesto[presupuesto.estado]"
+          >
+            {{ etiquetasPresupuesto[presupuesto.estado] }}
+          </span>
         </div>
-        <app-pill-estado [estadoPresupuesto]="presupuesto.estado" />
+
+        <ul class="meta" role="list">
+          <li class="meta__dato">
+            <svg class="ico ico--16" viewBox="0 0 24 24">
+              <path
+                d="M5 17h14M5 17v2M19 17v2M4 13l2-6h12l2 6v4H4v-4ZM4 13h16M8 15h.01M16 15h.01"
+              />
+            </svg>
+            {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }}
+          </li>
+          <li class="meta__dato">
+            <span class="sr-only">Matrícula:</span>
+            <span class="placa">
+              <span class="placa__banda" aria-hidden="true">E</span>
+              {{ matriculaLegible(datos.orden.vehiculo.matricula) }}
+            </span>
+          </li>
+          <li class="meta__dato">
+            <svg class="ico ico--16" viewBox="0 0 24 24">
+              <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0" />
+            </svg>
+            <span class="sr-only">Cliente:</span>
+            {{ datos.orden.cliente.nombre }}
+          </li>
+        </ul>
       </header>
 
-      @if (presupuesto.lineas.length === 0) {
-        <app-vacio titulo="El presupuesto todavía no tiene líneas" />
-      } @else {
-        <!-- Sin controles dentro, el teclado necesita poder enfocar la zona para desplazarla -->
-        <div
-          class="tabla-contenedor"
-          role="region"
-          aria-label="Líneas del presupuesto"
-          [attr.tabindex]="editable() ? null : 0"
-        >
-          <table class="tabla">
-            <caption class="sr-only">
-              Líneas del presupuesto
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Concepto</th>
-                <th scope="col">Ref.</th>
-                <th scope="col">Cant.</th>
-                <th scope="col" class="numero">Precio</th>
-                <th scope="col" class="numero">Importe</th>
-                @if (editable()) {
-                  <th scope="col"><span class="sr-only">Acciones</span></th>
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @for (linea of presupuesto.lineas; track linea.id) {
+      <section class="bloque desglose" aria-labelledby="editor-desglose">
+        <div class="desglose__cabecera">
+          <h2 class="bloque__titulo" id="editor-desglose">
+            <svg class="ico ico--16" viewBox="0 0 24 24">
+              <path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" />
+            </svg>
+            Desglose
+          </h2>
+          <span class="desglose__cuenta">
+            {{ presupuesto.lineas.length }}
+            {{ presupuesto.lineas.length === 1 ? 'concepto' : 'conceptos' }}
+          </span>
+        </div>
+
+        @if (presupuesto.lineas.length === 0) {
+          <app-vacio titulo="El presupuesto todavía no tiene líneas" />
+        } @else {
+          <!-- Sin controles dentro, el teclado necesita poder enfocar la zona para desplazarla -->
+          <div
+            class="tabla-contenedor"
+            role="region"
+            aria-label="Líneas del presupuesto"
+            [attr.tabindex]="editable() ? null : 0"
+          >
+            <table class="tabla">
+              <caption class="sr-only">
+                Líneas del presupuesto
+              </caption>
+              <thead>
                 <tr>
-                  <td>
-                    <span class="concepto">
-                      {{ linea.concepto }}
-                      @if (avisoDe(presupuesto, linea); as aviso) {
-                        <span class="pill pill--ambar">
-                          Stock {{ aviso.stock }} de {{ aviso.necesarias | number: '1.0-2' }}
-                        </span>
-                      }
-                    </span>
-                  </td>
-                  <td class="texto-suave">
-                    {{ linea.tipo === 'mano_obra' ? 'MO' : linea.referencia }}
-                  </td>
-                  <td class="sin-salto">
-                    {{ linea.cantidad | number: '1.0-2' }}
-                    @if (linea.tipo === 'mano_obra') {
-                      h
-                    }
-                  </td>
-                  <td class="numero">
-                    {{ linea.precioUnitario | euros }}{{ linea.tipo === 'mano_obra' ? '/h' : '' }}
-                  </td>
-                  <td class="numero importe">{{ linea.importe | euros }}</td>
+                  <th scope="col">Concepto</th>
+                  <th scope="col">Ref.</th>
+                  <th scope="col" class="numero">Cant.</th>
+                  <th scope="col" class="numero">Precio</th>
+                  <th scope="col" class="numero">Importe</th>
                   @if (editable()) {
-                    <td class="acciones-linea">
-                      <button
-                        type="button"
-                        class="accion"
-                        [attr.aria-label]="'Editar ' + linea.concepto"
-                        [disabled]="procesando()"
-                        (click)="editarLinea(linea)"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M4 20h4L19 9l-4-4L4 16v4ZM13 7l4 4" />
-                        </svg>
-                      </button>
-                      <button
-                        type="button"
-                        class="accion"
-                        [attr.aria-label]="'Eliminar ' + linea.concepto"
-                        [disabled]="procesando()"
-                        (click)="eliminarLinea(linea)"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M6 6l12 12M18 6L6 18" />
-                        </svg>
-                      </button>
-                    </td>
+                    <th scope="col"><span class="sr-only">Acciones</span></th>
                   }
                 </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
+              </thead>
+              <tbody>
+                @for (linea of presupuesto.lineas; track linea.id) {
+                  <tr>
+                    <td>
+                      <span class="concepto">
+                        {{ linea.concepto }}
+                        @if (avisoDe(presupuesto, linea); as aviso) {
+                          <span class="estado-orden" data-tono="aviso">
+                            Stock {{ aviso.stock }} de {{ aviso.necesarias | number: '1.0-2' }}
+                          </span>
+                        }
+                      </span>
+                    </td>
+                    <td class="referencia">
+                      {{ linea.tipo === 'mano_obra' ? 'MO' : linea.referencia }}
+                    </td>
+                    <td class="numero">
+                      {{ linea.cantidad | number: '1.0-2' }}
+                      @if (linea.tipo === 'mano_obra') {
+                        h
+                      }
+                    </td>
+                    <td class="numero">
+                      {{ linea.precioUnitario | euros }}{{ linea.tipo === 'mano_obra' ? '/h' : '' }}
+                    </td>
+                    <td class="numero importe">{{ linea.importe | euros }}</td>
+                    @if (editable()) {
+                      <td class="acciones-linea">
+                        <button
+                          type="button"
+                          class="accion"
+                          [attr.aria-label]="'Editar ' + linea.concepto"
+                          [disabled]="procesando()"
+                          (click)="editarLinea(linea)"
+                        >
+                          <svg class="ico" viewBox="0 0 24 24">
+                            <path d="M4 20h4L19 9l-4-4L4 16v4ZM13 7l4 4" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          class="accion accion--peligro"
+                          [attr.aria-label]="'Eliminar ' + linea.concepto"
+                          [disabled]="procesando()"
+                          (click)="eliminarLinea(linea)"
+                        >
+                          <svg class="ico" viewBox="0 0 24 24">
+                            <path d="M6 6l12 12M18 6L6 18" />
+                          </svg>
+                        </button>
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
 
-      @if (editable()) {
-        <div class="anadir">
-          <button
-            type="button"
-            class="btn btn--fantasma"
-            [disabled]="procesando()"
-            (click)="nuevaLinea('pieza')"
-          >
-            + Añadir pieza del catálogo
-          </button>
-          <button
-            type="button"
-            class="btn btn--fantasma"
-            [disabled]="procesando()"
-            (click)="nuevaLinea('mano_obra')"
-          >
-            + Añadir mano de obra
-          </button>
-        </div>
-      }
+        @if (editable()) {
+          <div class="anadir">
+            <button
+              type="button"
+              class="btn btn--fantasma"
+              [disabled]="procesando()"
+              (click)="nuevaLinea('pieza')"
+            >
+              + Añadir pieza del catálogo
+            </button>
+            <button
+              type="button"
+              class="btn btn--fantasma"
+              [disabled]="procesando()"
+              (click)="nuevaLinea('mano_obra')"
+            >
+              + Añadir mano de obra
+            </button>
+          </div>
+        }
+      </section>
 
       <div class="resumen">
-        <div class="resumen__datos">
+        <section class="bloque" aria-labelledby="editor-condiciones">
+          <h2 class="bloque__titulo" id="editor-condiciones">
+            <svg class="ico ico--16" viewBox="0 0 24 24">
+              <path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3ZM9 12l2 2 4-4" />
+            </svg>
+            Condiciones del servicio
+          </h2>
+
           @if (editable()) {
             <form
-              class="condiciones"
+              class="condiciones campos-suaves"
               [formGroup]="resumen"
               (ngSubmit)="guardarResumen()"
               novalidate
@@ -196,59 +250,89 @@
 
               <button
                 type="submit"
-                class="btn btn--secundario"
+                class="btn btn--fantasma"
                 [disabled]="procesando() || resumen.pristine"
               >
                 Guardar
               </button>
             </form>
-          } @else {
-            @if (presupuesto.tiempoEstimadoHoras !== null) {
-              <span class="pill pill--gris">
-                Tiempo estimado · {{ presupuesto.tiempoEstimadoHoras | number: '1.0-1' }} h
-              </span>
+          }
+
+          <ul class="indicadores" role="list">
+            @if (!editable() && presupuesto.tiempoEstimadoHoras !== null) {
+              <li class="indicador">
+                <svg class="ico ico--16" viewBox="0 0 24 24">
+                  <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 6v6l4 2" />
+                </svg>
+                <span class="indicador__texto">Tiempo estimado</span>
+                <strong>{{ presupuesto.tiempoEstimadoHoras | number: '1.0-1' }} h</strong>
+              </li>
             }
-            <span class="pill pill--gris">Garantía · {{ presupuesto.garantiaMeses }} meses</span>
-          }
+            @if (!editable()) {
+              <li class="indicador">
+                <svg class="ico ico--16" viewBox="0 0 24 24">
+                  <path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3Z" />
+                </svg>
+                <span class="indicador__texto">Garantía</span>
+                <strong>{{ presupuesto.garantiaMeses }} meses</strong>
+              </li>
+            }
+            @if (stock(); as stock) {
+              <li
+                class="indicador"
+                [attr.data-tono]="stock.disponibles < stock.total ? 'aviso' : 'exito'"
+              >
+                <svg class="ico ico--16" viewBox="0 0 24 24">
+                  <path
+                    d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3ZM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+                <span class="indicador__texto">Stock</span>
+                <strong>
+                  {{ stock.disponibles }} de {{ stock.total }}
+                  {{ stock.total === 1 ? 'pieza' : 'piezas' }}
+                </strong>
+              </li>
+            }
+          </ul>
+        </section>
 
-          @if (stock(); as stock) {
-            <span
-              class="pill"
-              [class.pill--ambar]="stock.disponibles < stock.total"
-              [class.pill--verde]="stock.disponibles === stock.total"
+        <section class="bloque" aria-labelledby="editor-totales">
+          <h2 class="bloque__titulo" id="editor-totales">
+            <svg class="ico ico--16" viewBox="0 0 24 24">
+              <path d="M4 3h16v18l-3-2-3 2-2-2-2 2-3-2-3 2V3ZM8 8h8M8 12h8M8 16h4" />
+            </svg>
+            Resumen
+          </h2>
+
+          <dl class="totales">
+            <div class="totales__fila">
+              <dt>Subtotal</dt>
+              <dd>{{ presupuesto.subtotal | euros }}</dd>
+            </div>
+            <div class="totales__fila">
+              <dt>IVA {{ presupuesto.ivaPorcentaje | number: '1.0-2' }} %</dt>
+              <dd>{{ presupuesto.iva | euros }}</dd>
+            </div>
+            <div class="totales__fila totales__fila--total">
+              <dt>Total</dt>
+              <dd>{{ presupuesto.total | euros }}</dd>
+            </div>
+          </dl>
+
+          @if (editable()) {
+            <button
+              type="button"
+              class="btn btn--primario enviar"
+              [disabled]="procesando() || presupuesto.lineas.length === 0"
+              (click)="pedirConfirmacionEnvio()"
             >
-              Stock: {{ stock.disponibles }} de {{ stock.total }}
-              {{ stock.total === 1 ? 'pieza' : 'piezas' }}
-            </span>
+              Enviar presupuesto al cliente
+              <svg class="ico ico--16" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </button>
           }
-        </div>
-
-        <dl class="totales">
-          <div class="totales__fila">
-            <dt>Subtotal</dt>
-            <dd>{{ presupuesto.subtotal | euros }}</dd>
-          </div>
-          <div class="totales__fila">
-            <dt>IVA {{ presupuesto.ivaPorcentaje | number: '1.0-2' }} %</dt>
-            <dd>{{ presupuesto.iva | euros }}</dd>
-          </div>
-          <div class="totales__fila totales__fila--total">
-            <dt>Total</dt>
-            <dd>{{ presupuesto.total | euros }}</dd>
-          </div>
-        </dl>
+        </section>
       </div>
-
-      @if (editable()) {
-        <button
-          type="button"
-          class="btn btn--primario enviar"
-          [disabled]="procesando() || presupuesto.lineas.length === 0"
-          (click)="pedirConfirmacionEnvio()"
-        >
-          Enviar presupuesto al cliente
-        </button>
-      }
     } @else {
       <app-vacio titulo="Esta orden todavía no tiene presupuesto">
         <button

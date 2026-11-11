@@ -1,7 +1,49 @@
+<app-logo class="filigrana" />
+
 <main class="mis-ordenes">
-  <header>
+  <header class="cabecera">
     <h1>Mis órdenes</h1>
-    <p class="subtitulo">{{ subtitulo() }}</p>
+
+    <div class="estado-mecanico">
+      @if (usuario(); as usuario) {
+        <div class="estado-mecanico__persona">
+          <app-avatar
+            class="estado-mecanico__avatar"
+            [nombre]="usuario.nombre"
+            [rol]="usuario.rol"
+            [foto]="foto()"
+          />
+          <div>
+            <p class="estado-mecanico__nombre">{{ usuario.nombre }}</p>
+            <p class="estado-mecanico__texto">{{ subtitulo() }}</p>
+          </div>
+        </div>
+      }
+
+      @if (!cargando() && errorCarga() === null) {
+        <ul class="resumen" role="list" aria-label="Resumen de tu trabajo">
+          <li class="resumen__dato">
+            <span class="resumen__valor">{{ activas().length }}</span>
+            {{ activas().length === 1 ? 'activa' : 'activas' }}
+          </li>
+          @if (urgentes() > 0) {
+            <li class="resumen__dato" data-tono="error">
+              <span class="resumen__punto" aria-hidden="true"></span>
+              <span class="resumen__valor">{{ urgentes() }}</span>
+              {{ urgentes() === 1 ? 'urgente' : 'urgentes' }}
+            </li>
+          }
+          @if (elevadorPrincipal(); as elevador) {
+            <li class="resumen__dato">
+              <svg class="resumen__icono" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 21V3M20 21V3M4 15h16M8 15v-4h8v4M7 21h10" />
+              </svg>
+              Elevador <span class="resumen__valor">{{ elevador }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
   </header>
 
   @if (cargando()) {
@@ -12,22 +54,40 @@
       Reintentar
     </button>
   } @else {
-    @if (activas().length > 0) {
-      <app-lista-ordenes-mecanico [ordenes]="activas()" />
-    } @else {
-      <app-vacio
-        [titulo]="
-          finalizadas().length > 0
-            ? 'No tienes órdenes activas'
-            : 'Todavía no tienes órdenes asignadas'
-        "
-      />
-    }
+    <section class="seccion" aria-labelledby="mis-ordenes-activas">
+      <h2 class="seccion__titulo" id="mis-ordenes-activas">
+        En curso <span class="seccion__cuenta">{{ activas().length }}</span>
+      </h2>
+      @if (activas().length > 0) {
+        <app-lista-ordenes-mecanico [ordenes]="activas()" />
+      } @else {
+        <app-vacio
+          [titulo]="
+            finalizadas().length > 0
+              ? 'No tienes órdenes activas'
+              : 'Todavía no tienes órdenes asignadas'
+          "
+        />
+      }
+    </section>
 
     @if (finalizadas().length > 0) {
-      <details class="finalizadas">
-        <summary class="finalizadas__titulo">Finalizadas ({{ finalizadas().length }})</summary>
-        <app-lista-ordenes-mecanico [ordenes]="finalizadas()" />
+      <details class="historial">
+        <summary class="historial__resumen">
+          <span class="historial__titulo">
+            <svg class="historial__icono" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2" />
+            </svg>
+            Finalizadas
+            <span class="seccion__cuenta">{{ finalizadas().length }}</span>
+          </span>
+          <svg class="historial__flecha" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </summary>
+        <div class="historial__cuerpo">
+          <app-lista-ordenes-mecanico finalizadas [ordenes]="finalizadas()" />
+        </div>
       </details>
     }
   }

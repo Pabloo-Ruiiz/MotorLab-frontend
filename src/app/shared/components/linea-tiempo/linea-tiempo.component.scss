@@ -207,3 +207,22 @@ $marca-destacada: 40px;
     transform: scale(1.2);
   }
 }
+
+// Variante del taller: la hora en su propia columna, alineada a la derecha del título
+:host(.linea--destacada.linea--hora-derecha) {
+  .paso {
+    grid-template-columns: $marca-destacada minmax(0, 1fr) auto;
+  }
+
+  .paso__hora {
+    grid-row: 1;
+    grid-column: 3;
+    margin-top: 2px;
+    text-align: right;
+  }
+
+  // Lo pendiente se ve más apagado para que destaque lo ya hecho
+  .paso:not(.paso--hecho):not(.paso--actual) .paso__textos {
+    opacity: 0.6;
+  }
+}

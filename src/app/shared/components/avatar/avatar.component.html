@@ -1,0 +1,7 @@
+@if (foto(); as foto) {
+  <img class="avatar__foto" [src]="foto" alt="" />
+} @else if (rol() === 'admin') {
+  <app-logo class="avatar__logo" />
+} @else {
+  {{ iniciales() }}
+}

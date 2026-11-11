@@ -19,22 +19,33 @@ import {
   type UsuarioCreateRequest
 } from '@core/models';
 import { AuthService } from '@core/services/auth.service';
+import { FotoPerfilService } from '@core/services/foto-perfil.service';
 import { ToastService } from '@core/services/toast.service';
 import { UsuariosService } from '@core/services/usuarios.service';
 import { aApiError, mensajeDeError } from '@core/util/api-error';
 import { FocoTrasCarga } from '@core/util/foco';
+import { AvatarComponent } from '@shared/components/avatar/avatar.component';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
+import {
+  type PersonaVisor,
+  VisorFotoComponent
+} from '@shared/components/visor-foto/visor-foto.component';
 import { UsuarioDialogComponent } from '../usuario-dialog/usuario-dialog.component';
 
 const LIMITE = 20;
 
-const CLASES_ROL: Record<Rol, string> = {
-  cliente: 'pill--gris',
-  mecanico: 'pill--azul',
-  admin: 'pill--naranja'
-};
+interface FilaUsuario {
+  usuario: Usuario;
+  foto: string | null;
+}
+
+// Sin mayúsculas ni tildes: «jose» encuentra a «José»
+function normalizar(texto: string): string {
+  return texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+}
 
 interface FiltrosUrl {
   rol: Rol | '';
@@ -55,11 +66,14 @@ function leerFiltros(params: ParamMap): FiltrosUrl {
 @Component({
   selector: 'app-usuarios-lista',
   imports: [
+    AvatarComponent,
     CargandoComponent,
+    LogoComponent,
     PaginadorComponent,
     ReactiveFormsModule,
     UsuarioDialogComponent,
-    VacioComponent
+    VacioComponent,
+    VisorFotoComponent
   ],
   templateUrl: './usuarios-lista.component.html',
   styleUrl: './usuarios-lista.component.scss',
@@ -71,17 +85,16 @@ export class UsuariosListaComponent {
   private readonly router = inject(Router);
   private readonly ruta = inject(ActivatedRoute);
   private readonly usuarioActual = inject(AuthService).usuario;
+  private readonly fotos = inject(FotoPerfilService);
   private readonly foco = new FocoTrasCarga();
 
   private readonly recargas = new Subject<void>();
   private readonly dialogo = viewChild.required(UsuarioDialogComponent);
 
   protected readonly etiquetasRol = ETIQUETAS_ROL;
-  protected readonly clasesRol = CLASES_ROL;
-  protected readonly opcionesRol = Object.entries(ETIQUETAS_ROL).map(([valor, texto]) => ({
-    valor,
-    texto
-  }));
+  protected readonly opcionesRol = (Object.entries(ETIQUETAS_ROL) as [Rol, string][]).map(
+    ([valor, texto]) => ({ valor, texto })
+  );
 
   protected readonly filtroRol = new FormControl<Rol | ''>('', { nonNullable: true });
 
@@ -91,7 +104,32 @@ export class UsuariosListaComponent {
   protected readonly actualizando = signal<number[]>([]);
   protected readonly dialogoAbierto = signal(false);
   protected readonly guardando = signal(false);
+  protected readonly personaVisor = signal<PersonaVisor | null>(null);
   private readonly filtros = signal<FiltrosUrl>(leerFiltros(this.ruta.snapshot.queryParamMap));
+
+  // La API no busca usuarios por texto: se filtra la página cargada
+  protected readonly busqueda = signal('');
+
+  private readonly todasLasFilas = computed<FilaUsuario[]>(() =>
+    (this.resultado()?.datos ?? []).map((usuario) => ({
+      usuario,
+      // La propia foto se lee del servicio para reflejar al momento un cambio desde Perfil
+      foto: this.esPropio(usuario) ? this.fotos.foto() : this.fotos.fotoDe(usuario.id)
+    }))
+  );
+
+  protected readonly filas = computed(() => {
+    const texto = normalizar(this.busqueda().trim());
+    if (!texto) {
+      return this.todasLasFilas();
+    }
+
+    return this.todasLasFilas().filter(({ usuario }) =>
+      [usuario.nombre, usuario.email, usuario.telefono].some((campo) =>
+        normalizar(campo).includes(texto)
+      )
+    );
+  });
 
   protected readonly tituloVacio = computed(() =>
     this.filtros().rol ? 'No hay usuarios con este rol' : 'Todavía no hay usuarios'

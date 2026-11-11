@@ -1,20 +1,24 @@
 <header class="cabecera">
   <app-logo class="cabecera__fondo" />
-  <p class="cabecera__titulo">Taller MotorLab</p>
-  <p class="cabecera__subtitulo">Área de clientes</p>
+  <div class="cabecera__marca">
+    <app-logo class="cabecera__simbolo" />
+    MotorLab
+  </div>
+  <div class="cabecera__textos">
+    <p class="cabecera__subtitulo">Área de clientes</p>
+    <p class="cabecera__titulo">Taller MotorLab</p>
+    <p class="cabecera__lema">Sigue tus reparaciones, presupuestos y avisos sin llamar al taller.</p>
+  </div>
 </header>
 
 <main class="pagina">
-  <app-logo class="logo" />
+  <nav class="acceso acceso--login" aria-label="Acceso">
+    <a class="acceso__opcion" routerLink="/login" aria-current="page">Iniciar sesión</a>
+    <a class="acceso__opcion" routerLink="/registro">Crear cuenta</a>
+  </nav>
+
   <h1 class="titulo">Bienvenido</h1>
   <p class="subtitulo">Sigue tus reparaciones sin llamar al taller</p>
-
-  <nav class="segmentado" aria-label="Acceso">
-    <a class="segmentado__opcion segmentado__opcion--activa pestana" routerLink="/login" aria-current="page">
-      Iniciar sesión
-    </a>
-    <a class="segmentado__opcion pestana" routerLink="/registro">Crear cuenta</a>
-  </nav>
 
   @if (errorGeneral(); as error) {
     <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
@@ -27,34 +31,54 @@
   <form class="formulario" [formGroup]="form" (ngSubmit)="enviar()">
     <div class="campo" [class.campo--error]="campoConError(form.controls.email)">
       <label for="login-email">Correo electrónico</label>
-      <input
-        id="login-email"
-        type="email"
-        autocomplete="email"
-        formControlName="email"
-        [attr.aria-invalid]="campoConError(form.controls.email)"
-        aria-describedby="login-email-error"
-      />
+      <div class="entrada">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 6h18v12H3V6ZM3 7l9 6 9-6" />
+        </svg>
+        <input
+          id="login-email"
+          type="email"
+          autocomplete="email"
+          placeholder="tu@correo.com"
+          formControlName="email"
+          [attr.aria-invalid]="campoConError(form.controls.email)"
+          aria-describedby="login-email-error"
+        />
+      </div>
       <app-errores-campo id="login-email-error" [control]="form.controls.email" />
     </div>
 
     <div class="campo" [class.campo--error]="campoConError(form.controls.password)">
       <label for="login-password">Contraseña</label>
-      <input
-        id="login-password"
-        type="password"
-        autocomplete="current-password"
-        formControlName="password"
-        [attr.aria-invalid]="campoConError(form.controls.password)"
-        aria-describedby="login-password-error"
-      />
+      <div class="entrada">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 11h12v10H6V11ZM8 11V7a4 4 0 0 1 8 0v4" />
+        </svg>
+        <input
+          id="login-password"
+          type="password"
+          autocomplete="current-password"
+          formControlName="password"
+          [attr.aria-invalid]="campoConError(form.controls.password)"
+          aria-describedby="login-password-error"
+        />
+      </div>
       <app-errores-campo id="login-password-error" [control]="form.controls.password" />
     </div>
 
-    <button type="submit" class="btn btn--primario" [disabled]="enviando()">
+    <button type="submit" class="btn btn--primario enviar" [disabled]="enviando()">
       {{ enviando() ? 'Entrando…' : 'Iniciar sesión' }}
+      @if (!enviando()) {
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      }
     </button>
   </form>
 
-  <p class="nota">Al registrarte aceptas la política de privacidad del taller.</p>
+  <p class="nota">
+    Al registrarte aceptas la
+    <a routerLink="/privacidad" target="_blank" rel="noopener">política de privacidad</a>
+    del taller.
+  </p>
 </main>

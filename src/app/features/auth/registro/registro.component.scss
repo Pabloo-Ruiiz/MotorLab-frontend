@@ -1,15 +1,69 @@
 @use '../auth';
 
+// Casilla alineada con la primera línea del texto, que puede partirse en móvil
 .casilla {
   display: flex;
-  align-items: center;
-  gap: var(--mo-esp-8);
-  min-height: var(--mo-tactil);
-  cursor: pointer;
+  align-items: flex-start;
+  gap: var(--mo-esp-12);
+  padding: var(--mo-esp-12) var(--mo-esp-16);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-crema);
+  transition: border-color var(--mo-transicion);
+
+  &:has(input:checked) {
+    border-color: var(--mo-tinta);
+  }
 
   input {
     flex-shrink: 0;
     width: 20px;
     height: 20px;
+    margin: 0;
+    border: 1px solid var(--mo-niebla);
+    border-radius: var(--mo-radio-6);
+    background-color: var(--mo-blanco);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 14px;
+    cursor: pointer;
+    appearance: none;
+    transition:
+      background-color var(--mo-transicion),
+      border-color var(--mo-transicion);
+
+    &:checked {
+      border-color: var(--mo-tinta);
+      background-color: var(--mo-tinta);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E");
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      &:hover:not(:checked) {
+        border-color: var(--mo-tinta);
+      }
+    }
+  }
+}
+
+.campo--error .casilla {
+  border-color: var(--mo-error);
+  background-color: var(--mo-error-fondo);
+
+  input:not(:checked) {
+    border-color: var(--mo-error);
+  }
+}
+
+.casilla__texto {
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-normal); // las etiquetas de .campo van en negrita
+  line-height: 20px;
+  cursor: pointer;
+
+  a {
+    font-weight: var(--mo-peso-medio);
+    text-decoration-color: var(--mo-niebla);
   }
 }

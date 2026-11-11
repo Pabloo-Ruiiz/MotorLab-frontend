@@ -9,7 +9,7 @@ const PREFIJO_CLAVE = 'motorlab.foto.';
 export class FotoPerfilService {
   private readonly auth = inject(AuthService);
 
-  readonly foto = linkedSignal<string | null>(() => this.leer(this.auth.usuario()?.id ?? null));
+  readonly foto = linkedSignal<string | null>(() => this.fotoDe(this.auth.usuario()?.id ?? null));
 
   guardar(foto: string): void {
     this.foto.set(foto);
@@ -41,7 +41,8 @@ export class FotoPerfilService {
     }
   }
 
-  private leer(id: number | null): string | null {
+  // Foto de cualquier usuario, si la subió desde este mismo navegador (p. ej. el directorio de usuarios)
+  fotoDe(id: number | null): string | null {
     if (id === null) {
       return null;
     }

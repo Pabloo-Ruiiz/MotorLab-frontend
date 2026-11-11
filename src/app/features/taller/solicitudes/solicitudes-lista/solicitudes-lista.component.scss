@@ -1,50 +1,333 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
+}
+
+// Logo de MotorLab como marca de agua: fijo en la esquina, muy tenue y sin recibir clics
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)); // sobre las pestañas
+  z-index: -1;
+  width: clamp(160px, 24vw, 300px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.035;
+  pointer-events: none;
+
+  @media (min-width: 900px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
 }
 
 .solicitudes {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-32);
+  gap: var(--mo-esp-24);
+}
+
+.encabezado {
+  align-items: flex-end;
+
+  h1 {
+    letter-spacing: var(--mo-tracking-titulo);
+  }
+}
+
+.actualizar {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding-block: var(--mo-esp-8);
+}
+
+// Indicadores: 2 columnas en móvil, 4 en escritorio
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--mo-esp-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: 1000px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  li {
+    display: flex;
+  }
+}
+
+.indicador {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--mo-esp-4);
+  padding: var(--mo-esp-16);
+  border: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-blanco);
+  box-shadow: 0 1px 2px rgb(13 13 13 / 4%);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--mo-transicion),
+    box-shadow var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--mo-niebla);
+      box-shadow: 0 8px 24px -16px rgb(13 13 13 / 25%);
+    }
+  }
+
+  &:active {
+    transform: scale(var(--mo-escala-tarjeta));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mo-tinta);
+    outline-offset: 2px;
+  }
+}
+
+// Filtro aplicado: borde negro y una línea inferior que lo ancla a la tabla
+.indicador--activo {
+  border-color: #0d0d0d;
+  box-shadow: inset 0 -3px 0 #0d0d0d;
+}
+
+.indicador__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-8);
+}
+
+.indicador__etiqueta {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.indicador__punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--tono);
+}
+
+.indicador__punto--apagado {
+  background-color: var(--mo-peltre);
+}
+
+.indicador__valor {
+  color: #0d0d0d;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: var(--mo-tracking-titulo);
+  line-height: 1.2;
+}
+
+.indicador__pie {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+}
+
+// Pulso de actividad cuando hay solicitudes nuevas
+.pulso {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--mo-punto-verde);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: inherit;
+    animation: pulso 2s var(--mo-curva-salida) infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+}
+
+@keyframes pulso {
+  from {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+// Panel: filtros, tabla y pie en una sola superficie
+.panel {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  border-radius: var(--mo-radio-16);
+  background-color: color-mix(in srgb, var(--mo-blanco) 88%, transparent);
 }
 
 .filtros {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
   gap: var(--mo-esp-12);
+  padding: var(--mo-esp-16);
+  border-bottom: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
 
-  .campo {
-    flex: 1 1 160px;
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    .filtros__busqueda,
+    .limpiar {
+      grid-column: 1 / -1;
+    }
   }
 
-  .filtros__busqueda {
-    flex: 2 1 260px;
+  @media (min-width: 1100px) {
+    grid-template-columns: minmax(240px, 2fr) repeat(3, minmax(0, 1fr)) auto;
+
+    .filtros__busqueda,
+    .limpiar {
+      grid-column: auto;
+    }
+  }
+
+  .campo {
+    position: relative;
+    gap: 0;
+  }
+
+  .filtros__busqueda input {
+    padding-left: var(--mo-esp-40);
+  }
+}
+
+.filtros__lupa {
+  position: absolute;
+  top: 50%;
+  left: var(--mo-esp-12);
+  color: var(--mo-niebla);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.limpiar {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--mo-tactil);
+  padding: 0 var(--mo-esp-8);
+  border: 0;
+  border-radius: var(--mo-radio-8);
+  background: none;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--mo-transicion),
+    color var(--mo-transicion);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: var(--mo-arena);
+      color: var(--mo-tinta);
+    }
+  }
+}
+
+.limpiar__cuenta {
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: var(--mo-radio-pildora);
+  background-color: #0d0d0d;
+  color: var(--mo-blanco);
+  font-size: 11px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.panel__mensaje {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+  padding: var(--mo-esp-16);
+}
+
+// Tabla
+.tabla {
+  th {
+    padding: var(--mo-esp-12) var(--mo-esp-16);
+    background-color: color-mix(in srgb, var(--mo-crema) 80%, transparent);
+    font-family: var(--mo-familia);
+    font-size: 11px;
+    font-weight: var(--mo-peso-medio);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 12px var(--mo-esp-16);
+    border-bottom-color: color-mix(in srgb, var(--mo-linea) 55%, transparent);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
   }
 }
 
 .fila {
   cursor: pointer;
 
-  &:focus-within {
-    background-color: var(--mo-arena);
-  }
+  &:focus-within,
+  &:hover {
+    background-color: color-mix(in srgb, var(--mo-crema) 70%, transparent);
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      background-color: var(--mo-arena);
+    .fila__abrir {
+      color: var(--mo-tinta);
+      transform: translateX(calc(2px * var(--mo-movimiento)));
     }
   }
 }
 
-.fila--alta {
-  background-color: color-mix(in srgb, var(--mo-arena) 40%, transparent);
+// Urgencia alta: marca roja en el borde izquierdo, sin teñir toda la fila
+.fila--alta td:first-child {
+  box-shadow: inset 3px 0 0 var(--mo-punto-rojo);
+}
+
+// Solicitud sin atender: el número en negrita, como un correo sin leer
+.fila--nueva .fila__numero {
+  color: #0d0d0d;
+  font-weight: 700;
 }
 
 .fila__numero {
-  font-weight: var(--mo-peso-medio);
-  white-space: nowrap;
+  color: var(--mo-acero);
   font-family: var(--mo-mono);
   font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-medio);
+  white-space: nowrap;
 }
 
 .fila__enlace {
@@ -52,3 +335,64 @@
   text-decoration: none;
 }
 
+.cliente {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 180px;
+}
+
+.cliente__avatar {
+  --avatar-tamano: 30px;
+}
+
+.cliente__nombre {
+  font-weight: var(--mo-peso-medio);
+}
+
+.fila__vehiculo {
+  display: block;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.fila__placa {
+  font-size: var(--mo-tipo-12);
+  line-height: 20px;
+}
+
+.fila__secundario {
+  color: var(--mo-pizarra);
+}
+
+.fila__fecha {
+  color: var(--mo-acero);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+  white-space: nowrap;
+}
+
+.fila__abrir {
+  width: 1%;
+  color: var(--mo-peltre);
+  transition:
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
+}
+
+.panel__pie {
+  padding: var(--mo-esp-12) var(--mo-esp-16);
+  border-top: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  background-color: color-mix(in srgb, var(--mo-crema) 80%, transparent);
+
+  strong {
+    color: var(--mo-tinta);
+    font-weight: var(--mo-peso-medio);
+  }
+}
+
+// Dentro del panel, el esqueleto de carga necesita su propio margen
+.panel > app-cargando {
+  display: block;
+  padding: var(--mo-esp-16);
+}

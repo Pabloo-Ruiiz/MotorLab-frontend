@@ -16,6 +16,10 @@ const vehiculoForm = () =>
 const avisos = () =>
   import('@features/notificaciones/avisos/avisos.component').then((m) => m.AvisosComponent);
 
+// También compartida: cada usuario ve su propio perfil
+const perfil = () =>
+  import('@features/perfil/perfil/perfil.component').then((m) => m.PerfilComponent);
+
 const soloAdmin = rolGuard(['admin']);
 const soloMecanico = rolGuard(['mecanico']);
 
@@ -132,8 +136,7 @@ export const routes: Routes = [
       {
         path: 'perfil',
         data: { titulo: 'Perfil', fichaPropia: true },
-        loadComponent: () =>
-          import('@features/perfil/perfil/perfil.component').then((m) => m.PerfilComponent),
+        loadComponent: perfil,
       },
     ],
   },
@@ -177,6 +180,8 @@ export const routes: Routes = [
           ),
       },
       { path: 'avisos', loadComponent: avisos },
+      // La misma pantalla de perfil que la del cliente: foto, datos y cierre de sesión
+      { path: 'perfil', loadComponent: perfil },
       {
         path: 'usuarios',
         canActivate: [soloAdmin],

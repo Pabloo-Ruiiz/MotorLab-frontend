@@ -5,13 +5,22 @@
   gap: var(--mo-esp-8);
 }
 
+// Icono dentro de un círculo crema: el estado vacío se lee como intencionado, no como un fallo
 .icono {
-  width: var(--mo-esp-32);
-  height: var(--mo-esp-32);
+  box-sizing: content-box;
+  width: 24px;
+  height: 24px;
+  margin-bottom: var(--mo-esp-8);
+  padding: var(--mo-esp-16);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-crema);
+  color: var(--mo-acero);
 }
 
 .titulo {
   color: var(--mo-tinta);
   font-size: var(--mo-tipo-16);
   font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-titulo);
 }
