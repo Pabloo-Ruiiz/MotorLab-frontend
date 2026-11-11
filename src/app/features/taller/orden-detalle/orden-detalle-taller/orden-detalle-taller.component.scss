@@ -394,6 +394,7 @@
 
 // Presupuesto
 .presupuesto {
+  display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
@@ -403,6 +404,7 @@
 
 .presupuesto__datos {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--mo-esp-12);
 }
@@ -411,4 +413,28 @@
   font-size: var(--mo-tipo-24);
   font-weight: var(--mo-peso-normal);
   font-variant-numeric: tabular-nums;
+}
+
+// Situación del cobro: verde si ya está pagado; ámbar, o rojo con la orden lista, si falta cobrar
+.cobro {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mo-esp-12);
+  padding: var(--mo-esp-12) var(--mo-esp-16);
+  border: 1px solid color-mix(in srgb, var(--tono) 20%, transparent);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--tono-fondo);
+  color: var(--mo-tinta);
+  font-size: var(--mo-tipo-14);
+
+  strong {
+    color: var(--tono);
+    font-weight: var(--mo-peso-medio);
+  }
+}
+
+.cobro__icono {
+  width: 20px;
+  height: 20px;
+  color: var(--tono);
 }

@@ -8,6 +8,7 @@ import type {
   Presupuesto,
   PresupuestoUpdateRequest,
   RechazoRequest,
+  SesionPago,
   Totales
 } from '@core/models';
 import { environment } from '@env/environment';
@@ -53,5 +54,20 @@ export class PresupuestosService {
   rechazar(id: number, motivo?: string | null): Observable<Presupuesto> {
     const cuerpo: RechazoRequest = { motivo };
     return this.http.post<Presupuesto>(`${this.url}/${id}/rechazar`, cuerpo);
+  }
+
+  // El importe lo calcula el backend: el navegador solo indica qué presupuesto quiere pagar
+  iniciarPago(id: number): Observable<SesionPago> {
+    return this.http.post<SesionPago>(`${this.url}/${id}/pago`, null);
+  }
+
+  // El cliente pagará en el taller al recoger el vehículo
+  elegirEfectivo(id: number): Observable<void> {
+    return this.http.post<void>(`${this.url}/${id}/pago/efectivo`, null);
+  }
+
+  // Solo administración: el taller ha recibido el importe en mano
+  cobrarEfectivo(id: number): Observable<void> {
+    return this.http.post<void>(`${this.url}/${id}/cobro-efectivo`, null);
   }
 }

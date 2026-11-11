@@ -8,12 +8,13 @@ import {
   type OrdenResumen
 } from '@core/models';
 import { matriculaLegible } from '@core/util/matricula';
+import { PillPagoComponent } from '@shared/components/pill-pago/pill-pago.component';
 import { FechaHoraPipe } from '@shared/pipes/fecha-hora.pipe';
 import { TONOS_ESTADO, TONOS_URGENCIA } from '@shared/util/tonos';
 
 @Component({
   selector: 'app-lista-ordenes-mecanico',
-  imports: [FechaHoraPipe, RouterLink],
+  imports: [FechaHoraPipe, PillPagoComponent, RouterLink],
   templateUrl: './lista-ordenes-mecanico.component.html',
   styleUrl: './lista-ordenes-mecanico.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

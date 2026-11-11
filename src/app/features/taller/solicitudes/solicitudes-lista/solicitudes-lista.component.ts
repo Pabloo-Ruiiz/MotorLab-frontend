@@ -36,6 +36,7 @@ import { matriculaLegible } from '@core/util/matricula';
 import { AvatarComponent } from '@shared/components/avatar/avatar.component';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { PaginadorComponent } from '@shared/components/paginador/paginador.component';
+import { PillPagoComponent } from '@shared/components/pill-pago/pill-pago.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
 import { FechaHoraPipe } from '@shared/pipes/fecha-hora.pipe';
@@ -102,6 +103,7 @@ function leerFiltros(params: ParamMap): FiltrosUrl {
     FechaHoraPipe,
     LogoComponent,
     PaginadorComponent,
+    PillPagoComponent,
     ReactiveFormsModule,
     RouterLink,
     VacioComponent

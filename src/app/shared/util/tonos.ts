@@ -1,4 +1,4 @@
-import type { EstadoOrden, EstadoPresupuesto, Urgencia } from '@core/models';
+import type { EstadoOrden, EstadoPago, EstadoPresupuesto, Urgencia } from '@core/models';
 
 // Color con el que se presenta cada situación: se aplica con el atributo data-tono (_componentes.scss)
 export type Tono = 'informativo' | 'exito' | 'aviso' | 'error' | 'neutro';
@@ -29,4 +29,11 @@ export const TONOS_ESTADO_PRESUPUESTO: Record<EstadoPresupuesto, Tono> = {
   enviado: 'aviso',
   autorizado: 'exito',
   rechazado: 'error'
+};
+
+// Pagado (con tarjeta o en efectivo) en verde; pendiente de cobro en el taller en ámbar
+export const TONOS_ESTADO_PAGO: Record<EstadoPago, Tono> = {
+  pendiente_efectivo: 'aviso',
+  pagado_tarjeta: 'exito',
+  pagado_efectivo: 'exito'
 };

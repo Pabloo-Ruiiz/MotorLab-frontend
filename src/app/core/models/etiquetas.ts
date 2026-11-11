@@ -3,6 +3,7 @@ import type {
   ContactoPreferido,
   CuandoOcurre,
   EstadoOrden,
+  EstadoPago,
   EstadoPresupuesto,
   FranjaPreferida,
   Rol,
@@ -70,6 +71,12 @@ export const ETIQUETAS_ESTADO_PRESUPUESTO: Record<EstadoPresupuesto, string> = {
   enviado: 'Enviado',
   autorizado: 'Autorizado',
   rechazado: 'Rechazado'
+};
+
+export const ETIQUETAS_ESTADO_PAGO: Record<EstadoPago, string> = {
+  pendiente_efectivo: 'Pendiente de cobro en efectivo',
+  pagado_tarjeta: 'Pagado online',
+  pagado_efectivo: 'Cobrado en efectivo'
 };
 
 export const ETIQUETAS_ROL: Record<Rol, string> = {

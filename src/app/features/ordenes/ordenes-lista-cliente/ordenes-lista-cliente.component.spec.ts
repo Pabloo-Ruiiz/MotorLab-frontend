@@ -21,6 +21,7 @@ describe('OrdenesListaClienteComponent', () => {
       fechaEstimada: null,
       presupuestoEstado: null,
       presupuestoTotal: null,
+      presupuestoEstadoPago: null,
       ...cambios
     }) as OrdenResumen;
 

@@ -1,11 +1,18 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, linkedSignal, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, forkJoin, Observable, of, startWith, Subject, switchMap } from 'rxjs';
 
 import { ETIQUETAS_TIPO_SERVICIO } from '@core/models';
-import type { EstadoPresupuesto, OrdenDetalle, Presupuesto, TipoLinea } from '@core/models';
+import type {
+  EstadoPresupuesto,
+  MetodoPago,
+  OrdenDetalle,
+  Presupuesto,
+  TipoLinea,
+} from '@core/models';
 import { OrdenesService } from '@core/services/ordenes.service';
 import { PresupuestosService } from '@core/services/presupuestos.service';
 import { ToastService } from '@core/services/toast.service';
@@ -19,9 +26,14 @@ import { LogoComponent } from '@shared/components/logo/logo.component';
 import { EurosPipe } from '@shared/pipes/euros.pipe';
 import { FechaHoraPipe } from '@shared/pipes/fecha-hora.pipe';
 import { IconoCocheComponent } from '@shared/components/icono-coche/icono-coche.component';
+import { TONOS_URGENCIA } from '@shared/util/tonos';
 
 const MAX_MOTIVO = 255;
 const FORMATO_NUMERO = new Intl.NumberFormat('es-ES');
+
+// Al volver de Stripe, el aviso que confirma el cobro puede llegar unos segundos después
+const ESPERA_CONFIRMACION_MS = 3000;
+const MAX_COMPROBACIONES_PAGO = 5;
 
 // Etiqueta y tono (data-tono) del estado del presupuesto en la cabecera del documento
 const ESTADOS_PRESUPUESTO: Record<EstadoPresupuesto, { texto: string; tono: string }> = {
@@ -62,14 +74,20 @@ export class PresupuestoClienteComponent {
   private readonly presupuestos = inject(PresupuestosService);
   private readonly ordenes = inject(OrdenesService);
   private readonly toast = inject(ToastService);
-  private readonly ordenId = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
+  private readonly documento = inject(DOCUMENT);
+  private readonly ruta = inject(ActivatedRoute).snapshot;
+  private readonly ordenId = Number(this.ruta.paramMap.get('id'));
+  // Stripe devuelve al cliente con ?pago=ok o ?pago=cancelado
+  private readonly vueltaDelPago = this.ruta.queryParamMap.get('pago');
 
   private readonly recarga = new Subject<void>();
+  private comprobacionesPago = 0;
 
   protected readonly matriculaLegible = matriculaLegible;
   protected readonly estados = ESTADOS_PRESUPUESTO;
   protected readonly tiposLinea = TIPOS_LINEA;
   protected readonly servicios = ETIQUETAS_TIPO_SERVICIO;
+  protected readonly tonosUrgencia = TONOS_URGENCIA;
   protected readonly motivo = new FormControl('', {
     nonNullable: true,
     validators: [Validators.maxLength(MAX_MOTIVO)],
@@ -81,8 +99,21 @@ export class PresupuestoClienteComponent {
   protected readonly datos = signal<DatosPresupuesto | null>(null);
   protected readonly modal = signal<'autorizar' | 'rechazar' | null>(null);
   protected readonly procesando = signal(false);
+  protected readonly pagando = signal(false);
+  protected readonly confirmandoPago = signal(false);
+
+  // Método elegido en el selector. Si el cliente ya se comprometió a pagar en efectivo, parte de él
+  protected readonly metodo = linkedSignal<DatosPresupuesto | null, MetodoPago>({
+    source: this.datos,
+    computation: (datos) =>
+      datos?.presupuesto.estadoPago === 'pendiente_efectivo' ? 'efectivo' : 'tarjeta',
+  });
 
   constructor() {
+    if (this.vueltaDelPago === 'cancelado') {
+      this.toast.info('Has cancelado el pago. Puedes pagar cuando quieras.');
+    }
+
     // Cada recarga descarta la petición que estuviera en curso
     this.recarga
       .pipe(
@@ -97,8 +128,54 @@ export class PresupuestoClienteComponent {
           this.datos.set(datos);
           this.sinPresupuesto.set(false);
           this.errorCarga.set(null);
+          this.esperarConfirmacionDelPago(datos.presupuesto);
         }
       });
+  }
+
+  protected pagar(): void {
+    const datos = this.datos();
+    if (datos === null) {
+      return;
+    }
+
+    this.pagando.set(true);
+    this.presupuestos.iniciarPago(datos.presupuesto.id).subscribe({
+      // Se sale de la aplicación: el botón sigue deshabilitado mientras carga la página de Stripe
+      next: ({ url }) => this.documento.location.assign(url),
+      error: (error: unknown) => {
+        this.pagando.set(false);
+        this.mostrarErrorRespuesta(error);
+      },
+    });
+  }
+
+  // Sin pasar por Stripe: el taller cobrará el importe al entregar el vehículo
+  protected confirmarEfectivo(): void {
+    const datos = this.datos();
+    if (datos === null) {
+      return;
+    }
+
+    this.procesando.set(true);
+    this.presupuestos.elegirEfectivo(datos.presupuesto.id).subscribe({
+      next: () => {
+        this.toast.exito('Has seleccionado pagar en efectivo al retirar tu vehículo en el taller');
+        this.recarga.next();
+      },
+      error: (error: unknown) => this.mostrarErrorRespuesta(error),
+    });
+  }
+
+  // El pago solo se da por hecho cuando el backend lo confirma, nunca por volver con ?pago=ok
+  private esperarConfirmacionDelPago(presupuesto: Presupuesto): void {
+    const pendiente =
+      this.vueltaDelPago === 'ok' && presupuesto.estado === 'autorizado' && presupuesto.pagadoEn === null;
+    this.confirmandoPago.set(pendiente);
+    if (pendiente && this.comprobacionesPago < MAX_COMPROBACIONES_PAGO) {
+      this.comprobacionesPago++;
+      setTimeout(() => this.recarga.next(), ESPERA_CONFIRMACION_MS);
+    }
   }
 
   protected numero(valor: number): string {

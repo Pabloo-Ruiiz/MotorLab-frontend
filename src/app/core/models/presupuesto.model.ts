@@ -1,4 +1,4 @@
-import type { EstadoPresupuesto, TipoLinea } from './tipos.model';
+import type { EstadoPago, EstadoPresupuesto, MetodoPago, TipoLinea } from './tipos.model';
 
 // OpenAPI: LineaResponse
 export interface Linea {
@@ -43,7 +43,15 @@ export interface Presupuesto {
   motivoRechazo: string | null;
   enviadoEn: string | null; // date-time
   respondidoEn: string | null; // date-time
+  pagadoEn: string | null; // date-time; aviso de Stripe o cobro en el taller
+  metodoPago: MetodoPago | null;
+  estadoPago: EstadoPago | null;
   avisosStock: AvisoStock[]; // solo se rellena para admin y mecánico
+}
+
+// OpenAPI: SesionPagoResponse
+export interface SesionPago {
+  url: string; // página de pago de Stripe
 }
 
 export interface LineaRequest {

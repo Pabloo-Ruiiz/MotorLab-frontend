@@ -22,7 +22,14 @@
             }
           </p>
         </div>
-        <span class="estado-orden" [attr.data-tono]="estados[datos.presupuesto.estado].tono">
+        <span
+          class="estado-orden estado-orden--grande estado"
+          [class.estado--verificado]="datos.presupuesto.estado === 'autorizado'"
+          [attr.data-tono]="estados[datos.presupuesto.estado].tono"
+        >
+          @if (datos.presupuesto.estado === 'autorizado') {
+            <svg class="ico ico--14" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" /></svg>
+          }
           {{ estados[datos.presupuesto.estado].texto }}
         </span>
       </header>
@@ -39,14 +46,35 @@
               <span class="placa__banda" aria-hidden="true">E</span>
               {{ matriculaLegible(datos.orden.vehiculo.matricula) }}
             </span>
-            <span class="vehiculo__dato">{{ numero(datos.orden.vehiculo.kilometros) }} km</span>
-            <span class="vehiculo__dato">{{ servicios[datos.orden.tipoServicio] }}</span>
+            <span class="condicion">
+              <svg class="ico ico--14" viewBox="0 0 24 24">
+                <path d="M12 21a9 9 0 1 1 9-9M12 12l4-4M3 12h2M12 3v2" />
+              </svg>
+              {{ numero(datos.orden.vehiculo.kilometros) }} km
+            </span>
+            <span class="condicion">
+              <svg class="ico ico--14" viewBox="0 0 24 24">
+                <path d="M15 5a4 4 0 0 0-5 5l-6 6 3 3 6-6a4 4 0 0 0 5-5l-3 3-3-3 3-3Z" />
+              </svg>
+              {{ servicios[datos.orden.tipoServicio] }}
+            </span>
           </div>
-          @if (datos.orden.sintoma) {
-            <p class="vehiculo__sintoma">{{ datos.orden.sintoma }}</p>
-          }
         </div>
       </section>
+
+      @if (datos.orden.sintoma) {
+        <div class="diagnostico" [attr.data-tono]="tonosUrgencia[datos.orden.urgencia]">
+          <svg class="ico diagnostico__icono" viewBox="0 0 24 24">
+            <path
+              d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"
+            />
+          </svg>
+          <div>
+            <p class="diagnostico__titulo">Síntoma registrado</p>
+            <p class="diagnostico__texto">{{ datos.orden.sintoma }}</p>
+          </div>
+        </div>
+      }
 
       <table class="tabla">
         <caption class="sr-only">Conceptos del presupuesto</caption>
@@ -196,10 +224,141 @@
             <div class="resultado__textos">
               <p class="resultado__titulo">Has autorizado este presupuesto</p>
               @if (datos.presupuesto.respondidoEn; as respondido) {
-                <p class="resultado__texto">El {{ respondido | fechaHora: 'completa' }}</p>
+                <p class="resultado__texto">Confirmado el {{ respondido | fechaHora: 'completa' }}</p>
               }
+              <p class="resultado__texto">El taller ya puede empezar la reparación.</p>
             </div>
           </div>
+
+          @if (datos.presupuesto.pagadoEn; as pagado) {
+            <div class="resultado" data-tono="exito">
+              <span class="resultado__icono" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3 7h18v10H3zM3 11h18M7 15h3" />
+                </svg>
+              </span>
+              <div class="resultado__textos">
+                <p class="resultado__titulo">
+                  {{
+                    datos.presupuesto.metodoPago === 'efectivo'
+                      ? 'Pagado en efectivo en el taller'
+                      : 'Pagado con tarjeta'
+                  }}
+                </p>
+                <p class="resultado__texto">
+                  {{ datos.presupuesto.total | euros }} el {{ pagado | fechaHora: 'completa' }}
+                </p>
+              </div>
+            </div>
+          } @else if (confirmandoPago()) {
+            <div class="aviso aviso--info" role="status">
+              Estamos confirmando tu pago. Puede tardar unos segundos.
+              <button type="button" class="btn btn--secundario" (click)="reintentar()">
+                Actualizar
+              </button>
+            </div>
+          } @else {
+            <div class="acciones pago">
+              <div class="pago__resumen">
+                <span class="pago__etiqueta">Total a pagar</span>
+                <span class="pago__importe">{{ datos.presupuesto.total | euros }}</span>
+              </div>
+
+              <fieldset class="opciones-radio">
+                <legend class="sr-only">Método de pago</legend>
+                <label class="opcion-radio">
+                  <input
+                    type="radio"
+                    name="metodo-pago"
+                    value="tarjeta"
+                    [checked]="metodo() === 'tarjeta'"
+                    (change)="metodo.set('tarjeta')"
+                  />
+                  <svg class="ico opcion-radio__icono" viewBox="0 0 24 24">
+                    <path d="M3 6h18v12H3zM3 10h18M7 15h3" />
+                  </svg>
+                  <span class="opcion-radio__textos">
+                    <span class="opcion-radio__titulo">Pago con tarjeta</span>
+                    <span class="opcion-radio__texto">Online, al momento con Stripe</span>
+                  </span>
+                </label>
+                <label class="opcion-radio">
+                  <input
+                    type="radio"
+                    name="metodo-pago"
+                    value="efectivo"
+                    [checked]="metodo() === 'efectivo'"
+                    (change)="metodo.set('efectivo')"
+                  />
+                  <svg class="ico opcion-radio__icono" viewBox="0 0 24 24">
+                    <path d="M3 7h18v10H3zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 12h.01M18 12h.01" />
+                  </svg>
+                  <span class="opcion-radio__textos">
+                    <span class="opcion-radio__titulo">Pago en efectivo</span>
+                    <span class="opcion-radio__texto">En el taller, al recoger el vehículo</span>
+                  </span>
+                </label>
+              </fieldset>
+
+              @if (metodo() === 'tarjeta') {
+                <button
+                  type="button"
+                  class="btn btn--primario acciones__pagar"
+                  [disabled]="pagando()"
+                  (click)="pagar()"
+                >
+                  <svg class="ico ico--16" viewBox="0 0 24 24">
+                    <path d="M6 11V8a6 6 0 0 1 12 0v3M5 11h14v10H5V11ZM12 15v2" />
+                  </svg>
+                  {{ pagando() ? 'Abriendo el pago…' : 'Pagar ' + (datos.presupuesto.total | euros) }}
+                </button>
+                <p class="acciones__nota pago__nota">
+                  <svg class="ico ico--14" viewBox="0 0 24 24">
+                    <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3ZM9 12l2 2 4-4" />
+                  </svg>
+                  Pago seguro con Stripe: introducirás la tarjeta en su página, no en la del taller.
+                </p>
+              } @else if (datos.presupuesto.estadoPago === 'pendiente_efectivo') {
+                <div class="resultado" data-tono="exito" role="status">
+                  <span class="resultado__icono" aria-hidden="true">
+                    <svg class="ico ico--16" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" /></svg>
+                  </span>
+                  <div class="resultado__textos">
+                    <p class="resultado__titulo">
+                      Has seleccionado pagar en efectivo al retirar tu vehículo en el taller
+                    </p>
+                    <p class="resultado__texto">
+                      Te cobraremos {{ datos.presupuesto.total | euros }} al entregarte las llaves.
+                      Si lo prefieres, aún puedes pagar con tarjeta.
+                    </p>
+                  </div>
+                </div>
+              } @else {
+                <button
+                  type="button"
+                  class="btn btn--primario acciones__pagar"
+                  [disabled]="procesando()"
+                  (click)="confirmarEfectivo()"
+                >
+                  <svg class="ico ico--16" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" /></svg>
+                  Confirmar pago en efectivo al recoger
+                </button>
+                <p class="acciones__nota">
+                  No se te cobrará nada ahora: pagarás {{ datos.presupuesto.total | euros }} en el
+                  taller.
+                </p>
+              }
+            </div>
+          }
         }
         @case ('rechazado') {
           <div class="resultado" data-tono="error">

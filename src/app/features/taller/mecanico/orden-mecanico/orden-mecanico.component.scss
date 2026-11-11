@@ -141,37 +141,6 @@
   gap: var(--mo-esp-8);
 }
 
-// Diagnóstico: aviso suave con el color de la urgencia
-.diagnostico {
-  display: flex;
-  gap: var(--mo-esp-12);
-  padding: var(--mo-esp-12) var(--mo-esp-16);
-  border: 1px solid color-mix(in srgb, var(--tono) 18%, transparent);
-  border-radius: var(--mo-radio-8);
-  background-color: var(--tono-fondo);
-}
-
-.diagnostico__icono {
-  width: 20px;
-  height: 20px;
-  margin-top: 1px;
-  color: var(--tono);
-}
-
-.diagnostico__titulo {
-  color: var(--tono);
-  font-size: var(--mo-tipo-12);
-  font-weight: var(--mo-peso-medio);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.diagnostico__texto {
-  margin-top: 2px;
-  color: var(--mo-tinta);
-  overflow-wrap: anywhere;
-}
-
 // Piezas: lista compacta con cantidad y stock alineados
 .piezas {
   margin: 0;
