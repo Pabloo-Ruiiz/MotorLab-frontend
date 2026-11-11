@@ -5,80 +5,319 @@
 .presupuesto {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-32);
+  gap: var(--mo-esp-20);
 }
 
-.presupuesto__titulo {
-  font-size: var(--mo-tipo-24);
-}
+// ---- Documento
 
-.presupuesto__orden {
-  color: var(--mo-acero);
-  font-size: var(--mo-tipo-14);
-}
-
-.vehiculo {
+.documento {
+  position: relative;
+  isolation: isolate; // la filigrana queda detrás del contenido pero dentro de la ficha
   display: flex;
-  align-items: center;
-  gap: var(--mo-esp-16);
+  flex-direction: column;
+  gap: var(--mo-esp-24);
+  padding: var(--mo-esp-20);
+  overflow: hidden;
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-elevada);
+
+  @media (min-width: 768px) {
+    gap: var(--mo-esp-32);
+    padding: var(--mo-esp-40);
+  }
 }
 
-.vehiculo__icono {
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+// Logo de MotorLab en la esquina inferior derecha, recortado por el borde de la ficha
+.filigrana {
+  position: absolute;
+  right: -48px;
+  bottom: -48px;
+  z-index: -1;
+  width: clamp(200px, 45%, 320px);
+  aspect-ratio: 1;
   color: var(--mo-tinta);
+  opacity: 0.035;
+  pointer-events: none;
 }
 
-// min-width: 0 permite que el síntoma se recorte en lugar de ensanchar la tarjeta
-.vehiculo__datos {
+.documento__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mo-esp-12) var(--mo-esp-16);
+  padding-bottom: var(--mo-esp-20);
+  border-bottom: 1px solid var(--mo-linea);
+
+  @media (min-width: 768px) {
+    padding-bottom: var(--mo-esp-24);
+  }
+}
+
+.documento__titulos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-4);
   min-width: 0;
 }
 
-.vehiculo__detalle {
-  overflow: hidden;
-  color: var(--mo-acero);
-  font-size: var(--mo-tipo-14);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.documento__titulo {
+  font-size: var(--mo-tipo-24);
+  line-height: 1.15;
+
+  @media (min-width: 768px) {
+    font-size: var(--mo-tipo-30);
+  }
 }
 
-.lineas {
-  display: flex;
-  flex-direction: column;
-  gap: var(--mo-esp-12);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.linea {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--mo-esp-16);
+.documento__numero {
   font-weight: var(--mo-peso-medio);
 }
 
-.linea__concepto {
+.documento__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-8);
+  color: var(--mo-acero);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+  letter-spacing: var(--mo-tracking-mono);
+}
+
+// ---- Vehículo
+
+.vehiculo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mo-esp-16);
+  padding: var(--mo-esp-16);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-crema);
+
+  @media (min-width: 768px) {
+    padding: var(--mo-esp-20);
+  }
+}
+
+.vehiculo__icono {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-blanco);
+  color: var(--mo-tinta);
+
+  app-icono-coche {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.vehiculo__datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+  min-width: 0;
+}
+
+.vehiculo__nombre {
+  font-size: var(--mo-tipo-18);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-titulo);
+  line-height: 24px;
   overflow-wrap: anywhere;
 }
 
-.linea__importe {
+.vehiculo__anio {
+  color: var(--mo-acero);
+  font-weight: var(--mo-peso-normal);
+}
+
+.vehiculo__detalles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-8) var(--mo-esp-12);
+}
+
+.vehiculo__dato {
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-14);
+
+  & + &::before {
+    content: '·';
+    margin-right: var(--mo-esp-12);
+    color: var(--mo-peltre);
+  }
+}
+
+.vehiculo__sintoma {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  overflow-wrap: anywhere;
+}
+
+// ---- Tabla de conceptos
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--mo-tipo-14);
+
+  th {
+    padding: 0 var(--mo-esp-8) var(--mo-esp-12);
+    border-bottom: 1px solid var(--mo-linea);
+    color: var(--mo-acero);
+    font-family: var(--mo-mono);
+    font-size: var(--mo-tipo-12);
+    font-weight: var(--mo-peso-normal);
+    letter-spacing: 0.06em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: var(--mo-esp-12) var(--mo-esp-8);
+    border-bottom: 1px solid var(--mo-arena);
+    vertical-align: top;
+    transition: background-color var(--mo-transicion);
+  }
+
+  th:first-child,
+  td:first-child {
+    padding-left: 0;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 0;
+  }
+
+  // Al apuntar, la fila se resalta con un fondo que sobresale un poco por los lados
+  @media (hover: hover) and (pointer: fine) {
+    tbody tr:hover td {
+      background-color: var(--mo-crema);
+    }
+
+    tbody tr:hover td:first-child {
+      box-shadow: -12px 0 0 var(--mo-crema);
+    }
+
+    tbody tr:hover td:last-child {
+      box-shadow: 12px 0 0 var(--mo-crema);
+    }
+  }
+}
+
+// «.tabla» delante para ganar a la alineación izquierda de las cabeceras
+.tabla .tabla__numero {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
   white-space: nowrap;
+}
+
+.tabla__concepto {
+  display: block;
+  color: var(--mo-tinta);
+  font-weight: var(--mo-peso-medio);
+  overflow-wrap: anywhere;
+}
+
+.tabla__detalle {
+  display: block;
+  margin-top: 2px;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+}
+
+.tabla__importe {
+  color: var(--mo-tinta);
+  font-weight: var(--mo-peso-medio);
+}
+
+// Móvil: la cantidad y el precio pasan a la línea de detalle del concepto
+.tabla__opcional {
+  display: none;
+}
+
+@media (min-width: 600px) {
+  .tabla__opcional {
+    display: table-cell;
+  }
+
+  .tabla__movil {
+    display: none;
+  }
+
+  .tabla__opcional:not(th) {
+    color: var(--mo-pizarra);
+  }
+}
+
+// ---- Resumen: condiciones a la izquierda y totales a la derecha
+
+.resumen {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--mo-esp-24);
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.condiciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-8);
+}
+
+.condicion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px var(--mo-esp-12);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-crema);
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-medio);
+  line-height: 16px;
+  white-space: nowrap;
+
+  svg {
+    flex-shrink: 0;
+    color: var(--mo-tinta);
+  }
 }
 
 .totales {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-4);
+  gap: var(--mo-esp-8);
+  width: 100%;
   margin: 0;
-  padding-top: var(--mo-esp-12);
-  border-top: 1px solid var(--mo-linea);
   color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 
+  @media (min-width: 600px) {
+    width: min(100%, 300px);
+  }
+
   dd {
     margin: 0;
+    color: var(--mo-pizarra);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 }
 
@@ -89,42 +328,132 @@
   gap: var(--mo-esp-16);
 }
 
+// El total es el punto focal del documento
 .totales__fila--total {
+  align-items: center;
   margin-top: var(--mo-esp-8);
+  padding-top: var(--mo-esp-16);
+  border-top: 1px solid var(--mo-tinta);
   color: var(--mo-tinta);
-  font-size: var(--mo-tipo-16);
+  font-size: var(--mo-tipo-14);
   font-weight: var(--mo-peso-medio);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 
   dd {
+    color: var(--mo-tinta);
     font-size: var(--mo-tipo-30);
-    font-weight: var(--mo-peso-normal);
-    white-space: nowrap;
+    font-weight: var(--mo-peso-medio);
+    letter-spacing: var(--mo-tracking-titulo);
+    line-height: 1;
+    text-transform: none;
+
+    @media (min-width: 768px) {
+      font-size: 36px;
+    }
   }
 }
 
-.condiciones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--mo-esp-8);
-}
+// ---- Respuesta
 
-.respuesta {
+// Barra de acciones fija al pie del área de contenido mientras se lee el documento
+.acciones {
+  position: sticky;
+  bottom: var(--mo-esp-16);
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: var(--mo-esp-12);
+  padding: var(--mo-esp-16);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-16);
+  background-color: rgb(255 255 255 / 92%);
+  box-shadow: var(--mo-sombra-elevada);
+  backdrop-filter: blur(8px);
+
+  @media (min-width: 768px) {
+    padding: var(--mo-esp-20);
+  }
 }
 
-.respuesta__nota,
-.respuesta__motivo {
-  color: var(--mo-acero);
-  font-size: var(--mo-tipo-14);
-  overflow-wrap: anywhere;
-}
-
-.respuesta__botones {
+.acciones__botones {
   display: grid;
   grid-template-columns: 2fr 3fr;
   gap: var(--mo-esp-12);
-  width: 100%;
+}
+
+.acciones__autorizar,
+.acciones__rechazar {
+  min-height: 48px;
+}
+
+// Secundario con un rojo de baja intensidad: visible pero sin competir con «Autorizar»
+.acciones__rechazar {
+  border-color: color-mix(in srgb, var(--mo-error) 30%, transparent);
+  background-color: var(--mo-blanco);
+  color: var(--mo-error);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: var(--mo-error);
+      background-color: var(--mo-error-fondo);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.acciones__autorizar svg {
+  flex-shrink: 0;
+}
+
+.acciones__nota {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+  text-align: center;
+  text-wrap: balance;
+}
+
+// Presupuesto ya respondido
+.resultado {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mo-esp-12);
+  padding: var(--mo-esp-16);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--tono-fondo);
+}
+
+.resultado__icono {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--mo-blanco);
+  color: var(--tono);
+}
+
+.resultado__textos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding-top: var(--mo-esp-8);
+}
+
+.resultado__titulo {
+  color: var(--tono);
+  font-weight: var(--mo-peso-medio);
+}
+
+.resultado__texto {
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-14);
+  overflow-wrap: anywhere;
 }

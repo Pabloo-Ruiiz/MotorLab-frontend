@@ -1,0 +1,43 @@
+:host {
+  --avatar-tamano: 40px;
+
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--avatar-tamano);
+  height: var(--avatar-tamano);
+  overflow: hidden;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-arena);
+  box-shadow: inset 0 0 0 1px rgb(10 10 10 / 6%);
+  color: var(--mo-pizarra);
+  font-size: calc(var(--avatar-tamano) * 0.36);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+:host([data-rol='mecanico']) {
+  background-color: #eef1f7;
+  color: #3b4a6b;
+}
+
+// Administrador sin foto: logo de MotorLab en negro sobre crema
+:host([data-rol='admin']) {
+  background-color: var(--mo-crema);
+  box-shadow: inset 0 0 0 1px var(--mo-linea);
+  color: #0d0d0d;
+}
+
+.avatar__foto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar__logo {
+  width: 62%;
+  height: 62%;
+}

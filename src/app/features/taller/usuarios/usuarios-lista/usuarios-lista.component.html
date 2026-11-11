@@ -1,23 +1,55 @@
+<app-logo class="filigrana" />
+
 <main class="usuarios">
   <header class="encabezado">
     <div>
       <h1>Usuarios</h1>
       <p class="encabezado__texto">Clientes y personal del taller</p>
     </div>
-    <button type="button" class="btn btn--primario" (click)="dialogoAbierto.set(true)">
-      + Nuevo usuario
+    <button type="button" class="btn btn--primario nuevo" (click)="dialogoAbierto.set(true)">
+      <svg class="ico ico--16" viewBox="0 0 24 24">
+        <path d="M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM3 21a7 7 0 0 1 11.5-5.4M19 14v6M16 17h6" />
+      </svg>
+      Nuevo usuario
     </button>
   </header>
 
-  <div class="filtros" role="search" aria-label="Filtrar usuarios">
-    <div class="campo">
-      <label class="sr-only" for="usuarios-rol">Rol</label>
-      <select id="usuarios-rol" [formControl]="filtroRol">
-        <option value="">Rol: Todos</option>
-        @for (opcion of opcionesRol; track opcion.valor) {
-          <option [value]="opcion.valor">{{ opcion.texto }}</option>
-        }
-      </select>
+  <div class="barra" role="search" aria-label="Filtrar usuarios">
+    <div class="campo barra__busqueda">
+      <label class="sr-only" for="usuarios-q">Buscar por nombre, correo o teléfono</label>
+      <svg class="ico ico--16 barra__lupa" viewBox="0 0 24 24">
+        <path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM20 20l-4-4" />
+      </svg>
+      <input
+        id="usuarios-q"
+        type="search"
+        placeholder="Buscar por nombre, correo o teléfono…"
+        autocomplete="off"
+        maxlength="80"
+        [value]="busqueda()"
+        (input)="busqueda.set($any($event.target).value)"
+      />
+    </div>
+
+    <div class="roles" role="group" aria-label="Filtrar por rol">
+      <button
+        type="button"
+        class="roles__opcion"
+        [attr.aria-pressed]="filtroRol.value === ''"
+        (click)="filtroRol.setValue('')"
+      >
+        Todos
+      </button>
+      @for (opcion of opcionesRol; track opcion.valor) {
+        <button
+          type="button"
+          class="roles__opcion"
+          [attr.aria-pressed]="filtroRol.value === opcion.valor"
+          (click)="filtroRol.setValue(opcion.valor)"
+        >
+          {{ opcion.texto }}
+        </button>
+      }
     </div>
   </div>
 
@@ -32,79 +64,126 @@
     @if (resultado.datos.length === 0) {
       <app-vacio [titulo]="tituloVacio()" />
     } @else {
-      <div class="tabla-contenedor">
-        <table class="tabla">
-          <caption class="sr-only">
-            Usuarios
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">Nombre</th>
-              <th scope="col">Correo</th>
-              <th scope="col">Teléfono</th>
-              <th scope="col">Rol</th>
-              <th scope="col">Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (usuario of resultado.datos; track usuario.id) {
-              <tr>
-                <td>{{ usuario.nombre }}</td>
-                <td>{{ usuario.email }}</td>
-                <td class="sin-salto">{{ usuario.telefono }}</td>
-                <td>
-                  <span class="pill" [class]="clasesRol[usuario.rol]">
-                    {{ etiquetasRol[usuario.rol] }}
-                  </span>
-                </td>
-                <td>
-                  <div class="estado">
-                    <label class="interruptor">
-                      <input
-                        #casilla
-                        class="interruptor__control"
-                        type="checkbox"
-                        role="switch"
-                        [attr.aria-label]="'Cuenta activa de ' + usuario.nombre"
-                        [attr.aria-describedby]="
-                          esPropio(usuario) ? 'usuarios-propio-' + usuario.id : null
-                        "
-                        [checked]="usuario.activo"
-                        [attr.aria-disabled]="actualizando().includes(usuario.id) ? 'true' : null"
-                        [disabled]="esPropio(usuario)"
-                        (change)="cambiarActivo(usuario, casilla)"
-                      />
-                      <span class="interruptor__pista" aria-hidden="true"></span>
-                    </label>
-                    <span>{{ usuario.activo ? 'Activo' : 'Inactivo' }}</span>
-                  </div>
-                  @if (esPropio(usuario)) {
-                    <p class="nota" [id]="'usuarios-propio-' + usuario.id">
-                      No puedes desactivar tu propia cuenta
-                    </p>
-                  }
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <div class="panel">
+        @if (filas().length === 0) {
+          <p class="sin-coincidencias" role="status">
+            Ningún usuario de esta página coincide con «{{ busqueda().trim() }}»
+          </p>
+        } @else {
+          <div class="tabla-contenedor">
+            <table class="tabla">
+              <caption class="sr-only">
+                Usuarios
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Nombre</th>
+                  <th scope="col">Teléfono</th>
+                  <th scope="col">Rol</th>
+                  <th scope="col">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (fila of filas(); track fila.usuario.id) {
+                  @let usuario = fila.usuario;
+                  <tr [class.fila--inactiva]="!usuario.activo">
+                    <td>
+                      <div class="persona">
+                        <button
+                          type="button"
+                          class="avatar-boton"
+                          [attr.aria-label]="'Ver foto de perfil de ' + usuario.nombre"
+                          (click)="
+                            personaVisor.set({
+                              nombre: usuario.nombre,
+                              rol: usuario.rol,
+                              foto: fila.foto
+                            })
+                          "
+                        >
+                          <app-avatar [nombre]="usuario.nombre" [rol]="usuario.rol" [foto]="fila.foto" />
+                        </button>
+                        <div class="persona__textos">
+                          <p class="persona__nombre">
+                            {{ usuario.nombre }}
+                            @if (esPropio(usuario)) {
+                              <span class="persona__tu">Tú</span>
+                            }
+                          </p>
+                          <p class="persona__correo">{{ usuario.email }}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="telefono">{{ usuario.telefono }}</td>
+                    <td>
+                      <span class="rol" [attr.data-rol]="usuario.rol">
+                        {{ etiquetasRol[usuario.rol] }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="estado">
+                        <label class="interruptor">
+                          <input
+                            #casilla
+                            class="interruptor__control"
+                            type="checkbox"
+                            role="switch"
+                            [attr.aria-label]="'Cuenta activa de ' + usuario.nombre"
+                            [attr.aria-describedby]="
+                              esPropio(usuario) ? 'usuarios-propio-' + usuario.id : null
+                            "
+                            [checked]="usuario.activo"
+                            [attr.aria-disabled]="
+                              actualizando().includes(usuario.id) ? 'true' : null
+                            "
+                            [disabled]="esPropio(usuario)"
+                            (change)="cambiarActivo(usuario, casilla)"
+                          />
+                          <span class="interruptor__pista" aria-hidden="true"></span>
+                        </label>
+                        <span class="estado__texto" [class.estado__texto--activo]="usuario.activo">
+                          {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+                        </span>
+                      </div>
+                      @if (esPropio(usuario)) {
+                        <p class="nota" [id]="'usuarios-propio-' + usuario.id">
+                          <svg class="ico ico--14" viewBox="0 0 24 24">
+                            <path
+                              d="M7 11V7a5 5 0 0 1 10 0v4M5 11h14v10H5V11Z"
+                            />
+                          </svg>
+                          No puedes desactivar tu propia cuenta
+                        </p>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
 
-      <div class="pie">
-        <p class="pie__texto">
-          Mostrando {{ resultado.datos.length }} de {{ resultado.total }}
-          {{ resultado.total === 1 ? 'usuario' : 'usuarios' }}
-        </p>
-        <app-paginador
-          [pagina]="resultado.pagina"
-          [totalPaginas]="resultado.totalPaginas"
-          [total]="resultado.total"
-          (cambiarPagina)="cambiarPagina($event)"
-        />
+        <div class="pie panel__pie">
+          <p class="pie__texto">
+            @if (busqueda().trim()) {
+              {{ filas().length }} coincidencias ·
+            }
+            Mostrando {{ resultado.datos.length }} de {{ resultado.total }}
+            {{ resultado.total === 1 ? 'usuario' : 'usuarios' }}
+          </p>
+          <app-paginador
+            [pagina]="resultado.pagina"
+            [totalPaginas]="resultado.totalPaginas"
+            [total]="resultado.total"
+            (cambiarPagina)="cambiarPagina($event)"
+          />
+        </div>
       </div>
     }
   }
 </main>
+
+<app-visor-foto [persona]="personaVisor()" (cerrar)="personaVisor.set(null)" />
 
 <!-- Fuera de los bloques @if: una recarga no debe destruir el diálogo abierto -->
 <app-usuario-dialog

@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   catchError,
   finalize,
@@ -23,6 +23,7 @@ import {
   throwError
 } from 'rxjs';
 
+import { ETIQUETAS_ESTADO_PRESUPUESTO } from '@core/models';
 import type {
   AvisoStock,
   Linea,
@@ -47,9 +48,10 @@ import { mayorQueCeroValidator } from '@core/util/validadores';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { ErroresCampoComponent } from '@shared/components/errores-campo/errores-campo.component';
 import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacion/modal-confirmacion.component';
-import { PillEstadoComponent } from '@shared/components/pill-estado/pill-estado.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
 import { EurosPipe } from '@shared/pipes/euros.pipe';
+import { TONOS_ESTADO_PRESUPUESTO } from '@shared/util/tonos';
 import { LineaDialogComponent } from '../linea-dialog/linea-dialog.component';
 
 const MAX_HORAS = 99.9;
@@ -68,9 +70,10 @@ interface DatosEditor {
     ErroresCampoComponent,
     EurosPipe,
     LineaDialogComponent,
+    LogoComponent,
     ModalConfirmacionComponent,
-    PillEstadoComponent,
     ReactiveFormsModule,
+    RouterLink,
     VacioComponent
   ],
   templateUrl: './presupuesto-editor.component.html',
@@ -90,6 +93,8 @@ export class PresupuestoEditorComponent {
 
   protected readonly campoConError = campoConError;
   protected readonly matriculaLegible = matriculaLegible;
+  protected readonly etiquetasPresupuesto = ETIQUETAS_ESTADO_PRESUPUESTO;
+  protected readonly tonosPresupuesto = TONOS_ESTADO_PRESUPUESTO;
   protected readonly mensajesHoras = { min: 'Debe ser mayor que cero' };
   protected readonly mensajesGarantia = {
     min: 'No puede ser negativa',

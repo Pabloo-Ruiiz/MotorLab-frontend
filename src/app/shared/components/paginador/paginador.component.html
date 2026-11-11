@@ -2,22 +2,49 @@
   <nav class="paginador" aria-label="Paginación">
     <button
       type="button"
-      class="btn btn--secundario"
+      class="paginador__boton"
       [disabled]="pagina() <= 1"
       (click)="cambiarPagina.emit(pagina() - 1)"
     >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="m15 18-6-6 6-6" />
+      </svg>
       Anterior
     </button>
     <p class="paginador__estado">
-      Página {{ pagina() }} de {{ totalPaginas() }} · {{ total() }} resultados
+      Página <strong>{{ pagina() }}</strong> de <strong>{{ totalPaginas() }}</strong>
+      <span class="paginador__total">· {{ total() }} resultados</span>
     </p>
     <button
       type="button"
-      class="btn btn--secundario"
+      class="paginador__boton"
       [disabled]="pagina() >= totalPaginas()"
       (click)="cambiarPagina.emit(pagina() + 1)"
     >
       Siguiente
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="m9 18 6-6-6-6" />
+      </svg>
     </button>
   </nav>
 }

@@ -1,32 +1,291 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
+}
+
+// Logo de MotorLab como marca de agua: fijo en la esquina, muy tenue y sin recibir clics
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)); // sobre las pestañas
+  z-index: -1;
+  width: clamp(160px, 24vw, 300px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.035;
+  pointer-events: none;
+
+  @media (min-width: 900px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
 }
 
 .usuarios {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-32);
+  gap: var(--mo-esp-24);
 }
 
-.encabezado__texto,
-.pie__texto,
-.nota {
+.encabezado h1 {
+  letter-spacing: var(--mo-tracking-titulo);
+}
+
+.nuevo {
+  flex-shrink: 0;
+  background-color: #0d0d0d;
+}
+
+// Barra de control: búsqueda y filtro de rol en la misma fila
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--mo-esp-12);
+  padding: var(--mo-esp-12);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-crema);
+}
+
+.barra__busqueda {
+  position: relative;
+  flex: 1 1 260px;
+
+  input {
+    height: var(--mo-tactil);
+    padding-left: var(--mo-esp-40);
+    border-color: var(--mo-linea);
+    border-radius: var(--mo-radio-8);
+    font-size: var(--mo-tipo-14);
+    transition:
+      border-color var(--mo-transicion),
+      box-shadow var(--mo-transicion);
+
+    &:focus-visible {
+      border-color: var(--mo-tinta);
+      outline: none;
+      box-shadow: 0 0 0 3px rgb(10 10 10 / 8%);
+    }
+  }
+}
+
+.barra__lupa {
+  position: absolute;
+  top: 50%;
+  left: var(--mo-esp-12);
+  color: var(--mo-niebla);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+// Control segmentado de roles
+.roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-blanco);
+}
+
+.roles__opcion {
+  min-height: 36px;
+  padding: 0 var(--mo-esp-12);
+  border: 0;
+  border-radius: var(--mo-radio-6);
+  background: none;
   color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+  cursor: pointer;
+  transition:
+    background-color var(--mo-transicion),
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--mo-tinta);
+    }
+  }
+
+  &:active {
+    transform: scale(var(--mo-escala-pulsado));
+  }
+
+  &[aria-pressed='true'] {
+    background-color: #0d0d0d;
+    color: var(--mo-blanco);
+  }
 }
 
-.filtros .campo {
-  max-width: 260px;
+// Directorio
+.panel {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  border-radius: var(--mo-radio-16);
+  background-color: color-mix(in srgb, var(--mo-blanco) 85%, transparent);
 }
 
-.sin-salto {
+.tabla {
+  th {
+    padding: var(--mo-esp-12) var(--mo-esp-20);
+    background-color: color-mix(in srgb, var(--mo-crema) 80%, transparent);
+    font-family: var(--mo-familia);
+    font-size: 11px;
+    font-weight: var(--mo-peso-medio);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 14px var(--mo-esp-20);
+    border-bottom-color: color-mix(in srgb, var(--mo-linea) 55%, transparent);
+    vertical-align: middle;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    tbody tr:hover {
+      background-color: color-mix(in srgb, var(--mo-crema) 70%, transparent);
+    }
+  }
+}
+
+.persona {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+  min-width: 220px;
+}
+
+// Avatar pulsable: abre la foto en grande
+.avatar-boton {
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--mo-radio-pildora);
+  background: none;
+  cursor: pointer;
+  transition:
+    box-shadow var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      box-shadow: 0 0 0 3px var(--mo-arena);
+      transform: scale(1.05);
+    }
+  }
+
+  &:active {
+    transform: scale(var(--mo-escala-pulsado));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mo-tinta);
+    outline-offset: 2px;
+  }
+}
+
+.persona__textos {
+  min-width: 0;
+}
+
+.persona__nombre {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  font-weight: var(--mo-peso-medio);
+}
+
+.persona__tu {
+  padding: 0 6px;
+  border-radius: var(--mo-radio-6);
+  background-color: var(--mo-arena);
+  color: var(--mo-acero);
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.persona__correo {
+  overflow: hidden;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+  text-overflow: ellipsis;
+}
+
+.telefono {
+  color: var(--mo-pizarra);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
+  letter-spacing: var(--mo-tracking-mono);
   white-space: nowrap;
+}
+
+// Etiqueta de rol: administrador en negro, mecánico en azul pizarra, cliente en arena
+.rol {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--mo-esp-4) 10px;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-arena);
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-medio);
+  line-height: 16px;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+}
+
+.rol[data-rol='admin'] {
+  background-color: #0d0d0d;
+  color: var(--mo-blanco);
+}
+
+.rol[data-rol='mecanico'] {
+  background-color: #eef1f7;
+  color: #3b4a6b;
+}
+
+// Estado
+.fila--inactiva .persona {
+  opacity: 0.6;
 }
 
 .estado {
   display: flex;
   align-items: center;
-  gap: var(--mo-esp-8);
+  gap: var(--mo-esp-12);
+}
+
+.estado__texto {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+}
+
+.estado__texto--activo {
+  color: #1a6b2f;
+  font-weight: var(--mo-peso-medio);
+}
+
+.nota {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+  white-space: nowrap;
 }
 
 // La casilla real ocupa toda el área y es invisible: conserva el teclado y la accesibilidad
@@ -55,10 +314,10 @@
 .interruptor__pista {
   position: relative;
   display: block;
-  width: 44px;
-  height: 24px;
+  width: 40px;
+  height: 22px;
   border-radius: var(--mo-radio-pildora);
-  background-color: var(--mo-niebla);
+  background-color: var(--mo-linea);
   transition: background-color var(--mo-transicion);
 
   &::after {
@@ -66,19 +325,20 @@
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background-color: var(--mo-blanco);
+    box-shadow: 0 1px 2px rgb(10 10 10 / 20%);
     transition: transform var(--mo-pulsar);
   }
 }
 
 .interruptor__control:checked + .interruptor__pista {
-  background-color: var(--mo-tinta);
+  background-color: #0d0d0d;
 
   &::after {
-    transform: translateX(20px);
+    transform: translateX(18px);
   }
 }
 
@@ -89,6 +349,18 @@
 
 .interruptor__control:disabled + .interruptor__pista,
 .interruptor__control[aria-disabled='true'] + .interruptor__pista {
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
+.sin-coincidencias {
+  padding: var(--mo-esp-32) var(--mo-esp-16);
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  text-align: center;
+}
+
+.panel__pie {
+  padding: var(--mo-esp-12) var(--mo-esp-20);
+  border-top: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  background-color: color-mix(in srgb, var(--mo-crema) 80%, transparent);
+}

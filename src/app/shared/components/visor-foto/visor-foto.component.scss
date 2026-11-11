@@ -1,0 +1,126 @@
+// Sin relleno: así cualquier clic fuera del marco cae sobre el propio <dialog> y lo cierra
+.visor {
+  width: min(560px, calc(100% - var(--mo-esp-32)));
+  max-width: none;
+  max-height: calc(100dvh - var(--mo-esp-32));
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: none;
+  color: var(--mo-tinta);
+  opacity: 0;
+  transform: scale(var(--mo-escala-entrada));
+  transition:
+    opacity var(--mo-duracion-salida) var(--mo-curva-salida),
+    transform var(--mo-duracion-salida) var(--mo-curva-salida),
+    display var(--mo-duracion-salida) allow-discrete,
+    overlay var(--mo-duracion-salida) allow-discrete;
+
+  &[open] {
+    opacity: 1;
+    transform: none;
+    transition-duration: var(--mo-duracion-entrada);
+
+    @starting-style {
+      opacity: 0;
+      transform: scale(var(--mo-escala-entrada));
+    }
+  }
+
+  &::backdrop {
+    background-color: rgb(13 13 13 / 60%);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transition:
+      opacity var(--mo-duracion-salida) ease,
+      display var(--mo-duracion-salida) allow-discrete,
+      overlay var(--mo-duracion-salida) allow-discrete;
+  }
+
+  &[open]::backdrop {
+    opacity: 1;
+    transition-duration: var(--mo-duracion-entrada);
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+}
+
+.visor__marco {
+  overflow: hidden;
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-blanco);
+  box-shadow: var(--mo-sombra-elevada);
+}
+
+.visor__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-16);
+  padding: var(--mo-esp-16) var(--mo-esp-16) var(--mo-esp-16) var(--mo-esp-24);
+  border-bottom: 1px solid var(--mo-linea);
+}
+
+.visor__titulo {
+  font-size: var(--mo-tipo-18);
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: var(--mo-tracking-titulo);
+  overflow-wrap: anywhere;
+}
+
+.visor__rol {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+}
+
+.visor__cerrar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--mo-tactil);
+  height: var(--mo-tactil);
+  border: 0;
+  border-radius: var(--mo-radio-pildora);
+  background: none;
+  color: var(--mo-acero);
+  cursor: pointer;
+  transition:
+    background-color var(--mo-transicion),
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: var(--mo-arena);
+      color: var(--mo-tinta);
+    }
+  }
+
+  &:active {
+    transform: scale(var(--mo-escala-pulsado));
+  }
+}
+
+.visor__imagen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--mo-crema);
+
+  img {
+    display: block;
+    width: 100%;
+    max-height: calc(100dvh - 160px);
+    object-fit: contain;
+  }
+}
+
+// Sin foto: el logo o las iniciales en grande
+.visor__avatar {
+  --avatar-tamano: min(280px, 60vw);
+
+  margin: var(--mo-esp-48) 0;
+}

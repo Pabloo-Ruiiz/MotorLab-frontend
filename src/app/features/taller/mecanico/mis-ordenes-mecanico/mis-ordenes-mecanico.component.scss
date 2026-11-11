@@ -1,5 +1,25 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
+}
+
+// Logo de MotorLab como marca de agua: fijo en la esquina, muy tenue y sin recibir clics
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)); // sobre las pestañas
+  z-index: -1;
+  width: clamp(160px, 24vw, 300px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.035;
+  pointer-events: none;
+
+  @media (min-width: 900px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
 }
 
 .mis-ordenes {
@@ -8,16 +28,208 @@
   gap: var(--mo-esp-32);
 }
 
-.subtitulo {
+.cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+
+  h1 {
+    letter-spacing: var(--mo-tracking-titulo);
+  }
+}
+
+// Barra de estado: quién es y cómo va su carga de trabajo
+.estado-mecanico {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12) var(--mo-esp-24);
+  padding: var(--mo-esp-12) var(--mo-esp-16);
+  border: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-crema);
+}
+
+.estado-mecanico__persona {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-12);
+  min-width: 0;
+}
+
+.estado-mecanico__avatar {
+  --avatar-tamano: 40px;
+}
+
+.estado-mecanico__nombre {
+  font-weight: var(--mo-peso-medio);
+}
+
+.estado-mecanico__texto {
   color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
 }
 
-.finalizadas__titulo {
-  min-height: var(--mo-tactil);
-  padding: var(--mo-esp-8) 0;
+.resumen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resumen__dato {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px var(--mo-esp-12);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-blanco);
   color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
+  white-space: nowrap;
+}
+
+.resumen__dato[data-tono] {
+  border-color: color-mix(in srgb, var(--tono) 25%, transparent);
+  background-color: var(--tono-fondo);
+  color: var(--tono);
+
+  .resumen__valor {
+    color: inherit;
+  }
+}
+
+.resumen__valor {
+  color: #0d0d0d;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.resumen__punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.resumen__icono,
+.historial__icono,
+.historial__flecha {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.resumen__icono {
+  width: 15px;
+  height: 15px;
+}
+
+// Secciones
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-16);
+}
+
+.seccion__titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  color: var(--mo-acero);
+  font-size: 11px;
   font-weight: var(--mo-peso-medio);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.seccion__cuenta {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-arena);
+  color: var(--mo-tinta);
+  font-size: 11px;
+  font-weight: var(--mo-peso-medio);
+  letter-spacing: 0;
+  line-height: 20px;
+  text-align: center;
+}
+
+// Historial de finalizadas: acordeón con borde suave y flecha que gira al abrirse
+.historial {
+  border: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  border-radius: var(--mo-radio-16);
+  background-color: color-mix(in srgb, var(--mo-blanco) 85%, transparent);
+}
+
+.historial__resumen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+  min-height: 56px;
+  padding: var(--mo-esp-8) var(--mo-esp-20);
+  border-radius: inherit;
+  color: var(--mo-pizarra);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+  list-style: none;
   cursor: pointer;
+  transition: background-color var(--mo-transicion);
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: var(--mo-crema);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mo-tinta);
+    outline-offset: 2px;
+  }
+}
+
+.historial__titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+}
+
+.historial__icono {
+  width: 18px;
+  height: 18px;
+  color: var(--mo-acero);
+}
+
+.historial__flecha {
+  width: 20px;
+  height: 20px;
+  color: var(--mo-acero);
+  transition: transform var(--mo-duracion-entrada) var(--mo-curva-salida);
+}
+
+.historial[open] {
+  .historial__resumen {
+    border-bottom: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+    border-radius: var(--mo-radio-16) var(--mo-radio-16) 0 0;
+  }
+
+  .historial__flecha {
+    transform: rotate(180deg);
+  }
+}
+
+.historial__cuerpo {
+  padding: var(--mo-esp-16);
 }

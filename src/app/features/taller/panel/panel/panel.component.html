@@ -1,7 +1,17 @@
+<app-logo class="filigrana" />
+
 <main class="panel">
-  <header>
-    <h1>Panel del taller</h1>
-    <p class="subtitulo">Resumen del mes de {{ mes }}</p>
+  <header class="encabezado">
+    <div>
+      <h1>Panel del taller</h1>
+      <p class="encabezado__texto">Resumen del mes de {{ mes }}</p>
+    </div>
+    <span class="periodo">
+      <svg class="ico ico--16" viewBox="0 0 24 24">
+        <path [attr.d]="iconos.calendario" />
+      </svg>
+      <span class="periodo__texto">{{ periodo }}</span>
+    </span>
   </header>
 
   @if (cargando()) {
@@ -12,57 +22,98 @@
       Reintentar
     </button>
   } @else if (metricas(); as metricas) {
-    <dl class="indicadores">
-      <div class="tarjeta indicador">
-        <dt class="etiqueta">Órdenes activas</dt>
-        <dd class="indicador__valor">{{ metricas.ordenesActivas }}</dd>
+    <dl class="kpis">
+      <div class="kpi">
+        <dt class="kpi__cabecera">
+          <span class="kpi__etiqueta">Órdenes activas</span>
+          <span class="kpi__icono" aria-hidden="true">
+            <svg class="ico" viewBox="0 0 24 24"><path [attr.d]="iconos.ordenes" /></svg>
+          </span>
+        </dt>
+        <dd class="kpi__valor">{{ metricas.ordenesActivas }}</dd>
+        <dd class="kpi__pie">En curso en el taller</dd>
       </div>
 
-      <div class="tarjeta indicador">
-        <dt class="etiqueta">Presupuestos sin respuesta</dt>
-        <dd class="indicador__valor indicador__valor--naranja">
-          {{ metricas.presupuestosSinRespuesta }}
+      <div class="kpi" [attr.data-tono]="metricas.presupuestosSinRespuesta > 0 ? 'aviso' : null">
+        <dt class="kpi__cabecera">
+          <span class="kpi__etiqueta">Presupuestos sin respuesta</span>
+          <span class="kpi__icono" aria-hidden="true">
+            <svg class="ico" viewBox="0 0 24 24"><path [attr.d]="iconos.presupuestos" /></svg>
+          </span>
+        </dt>
+        <dd class="kpi__valor">{{ metricas.presupuestosSinRespuesta }}</dd>
+        <dd class="kpi__pie">
+          @if (metricas.presupuestosSinRespuesta > 0) {
+            <span class="kpi__punto" aria-hidden="true"></span>
+          }
+          Esperando al cliente
         </dd>
       </div>
 
-      <div class="tarjeta indicador">
-        <dt class="etiqueta">Ingresos del mes</dt>
-        <dd class="indicador__valor">{{ metricas.ingresosMes | euros }}</dd>
+      <div class="kpi">
+        <dt class="kpi__cabecera">
+          <span class="kpi__etiqueta">Ingresos del mes</span>
+          <span class="kpi__icono" aria-hidden="true">
+            <svg class="ico" viewBox="0 0 24 24"><path [attr.d]="iconos.euro" /></svg>
+          </span>
+        </dt>
+        <dd class="kpi__valor">{{ metricas.ingresosMes | euros }}</dd>
+        <dd class="kpi__pie">Facturado en {{ mes }}</dd>
       </div>
 
-      <div class="tarjeta indicador">
-        <dt class="etiqueta">Piezas con stock bajo</dt>
-        <dd class="indicador__valor indicador__valor--rojo">{{ metricas.piezasStockBajo }}</dd>
-        <dd class="indicador__enlace">
+      <div class="kpi" [attr.data-tono]="metricas.piezasStockBajo > 0 ? 'error' : null">
+        <dt class="kpi__cabecera">
+          <span class="kpi__etiqueta">Piezas con stock bajo</span>
+          <span class="kpi__icono" aria-hidden="true">
+            <svg class="ico" viewBox="0 0 24 24"><path [attr.d]="iconos.piezas" /></svg>
+          </span>
+        </dt>
+        <dd class="kpi__valor">{{ metricas.piezasStockBajo }}</dd>
+        <dd class="kpi__pie">
           <a
+            class="kpi__accion"
             routerLink="/taller/piezas"
             [queryParams]="{ stockBajo: true }"
             aria-label="Ver piezas con stock bajo"
           >
             Ver piezas
+            <svg class="ico ico--14" viewBox="0 0 24 24"><path [attr.d]="iconos.flecha" /></svg>
           </a>
         </dd>
       </div>
     </dl>
 
-    <section class="tarjeta" aria-labelledby="panel-estados">
-      <h2 class="etiqueta" id="panel-estados">Órdenes por estado</h2>
+    <section class="bloque estados" aria-labelledby="panel-estados">
+      <div class="estados__cabecera">
+        <h2 class="bloque__titulo" id="panel-estados">
+          <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.barras" /></svg>
+          Órdenes por estado
+        </h2>
+        @if (totalOrdenes() > 0) {
+          <p class="estados__total">
+            <strong>{{ totalOrdenes() }}</strong>
+            {{ totalOrdenes() === 1 ? 'orden' : 'órdenes' }}
+          </p>
+        }
+      </div>
 
       @if (barras().length === 0) {
         <app-vacio titulo="Todavía no hay órdenes" />
       } @else {
         <ul class="barras">
           @for (barra of barras(); track barra.estado) {
-            <li class="barra">
-              <span class="barra__etiqueta">{{ barra.etiqueta }}</span>
-              <span class="barra__pista" aria-hidden="true">
-                <span
-                  class="barra__relleno"
-                  [style.width.%]="barra.ancho"
-                  [style.background-color]="barra.color"
-                ></span>
+            <li class="barra" [attr.data-tono]="barra.tono">
+              <span class="barra__etiqueta">
+                <span class="barra__punto" aria-hidden="true"></span>
+                {{ barra.etiqueta }}
               </span>
-              <span class="barra__total">{{ barra.total }}</span>
+              <span class="barra__pista" aria-hidden="true">
+                <span class="barra__relleno" [style.--proporcion]="barra.proporcion"></span>
+              </span>
+              <span class="barra__cifras">
+                <strong class="barra__total">{{ barra.total }}</strong>
+                <span class="barra__porcentaje">{{ barra.porcentaje }} %</span>
+              </span>
             </li>
           }
         </ul>

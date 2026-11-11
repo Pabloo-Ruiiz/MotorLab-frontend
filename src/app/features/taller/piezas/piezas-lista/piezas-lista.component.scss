@@ -1,51 +1,251 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
+}
+
+// Logo de MotorLab como marca de agua: fijo en la esquina, muy tenue y sin recibir clics
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)); // sobre las pestañas
+  z-index: -1;
+  width: clamp(160px, 24vw, 300px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.035;
+  pointer-events: none;
+
+  @media (min-width: 900px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
 }
 
 .piezas {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-32);
+  gap: var(--mo-esp-24);
 }
 
-.filtros {
+.encabezado h1 {
+  letter-spacing: var(--mo-tracking-titulo);
+}
+
+.nueva {
+  flex-shrink: 0;
+  background-color: #0d0d0d;
+}
+
+// Barra de control: búsqueda y filtros rápidos en la misma fila
+.barra {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--mo-esp-12) var(--mo-esp-16);
+  gap: var(--mo-esp-12);
+  padding: var(--mo-esp-12);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-crema);
 }
 
-.filtros__busqueda {
+.barra__busqueda {
+  position: relative;
   flex: 1 1 260px;
+
+  input {
+    height: var(--mo-tactil);
+    padding-left: var(--mo-esp-40);
+    border-color: var(--mo-linea);
+    border-radius: var(--mo-radio-8);
+    font-size: var(--mo-tipo-14);
+    transition:
+      border-color var(--mo-transicion),
+      box-shadow var(--mo-transicion);
+
+    &:focus-visible {
+      border-color: var(--mo-tinta);
+      outline: none;
+      box-shadow: 0 0 0 3px rgb(10 10 10 / 8%);
+    }
+  }
 }
 
-.casilla {
+.barra__lupa {
+  position: absolute;
+  top: 50%;
+  left: var(--mo-esp-12);
+  color: var(--mo-niebla);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+// Filtros rápidos: un único control con interruptores pequeños, misma altura que la búsqueda
+.filtros-rapidos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: var(--mo-tactil);
+  padding: 0 var(--mo-esp-4);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-blanco);
+}
+
+.filtros-rapidos__separador {
+  width: 1px;
+  height: 20px;
+  background-color: var(--mo-linea);
+}
+
+// La casilla real, invisible, cubre toda la opción: conserva el teclado y el estado accesible
+.filtro {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--mo-esp-8);
-  min-height: var(--mo-tactil);
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 var(--mo-esp-12);
+  border-radius: var(--mo-radio-6);
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
+  white-space: nowrap;
   cursor: pointer;
+  transition: color var(--mo-transicion);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: var(--mo-tinta);
+    }
+  }
+
+  &:has(:focus-visible) {
+    outline: 2px solid var(--mo-tinta);
+    outline-offset: -2px;
+  }
+
+  &:has(:checked) {
+    color: var(--mo-tinta);
+    font-weight: var(--mo-peso-medio);
+  }
 }
 
-.fila--stock-bajo {
-  background-color: color-mix(in srgb, var(--mo-arena) 40%, transparent);
+.filtro__control {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.filtro__interruptor {
+  position: relative;
+  flex-shrink: 0;
+  width: 28px;
+  height: 16px;
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-linea);
+  transition: background-color var(--mo-transicion);
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--mo-blanco);
+    box-shadow: 0 1px 2px rgb(10 10 10 / 20%);
+    transition: transform var(--mo-pulsar);
+  }
+}
+
+.filtro:has(:checked) .filtro__interruptor {
+  background-color: #0d0d0d;
+
+  &::after {
+    transform: translateX(12px);
+  }
+}
+
+// Inventario
+.panel {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  border-radius: var(--mo-radio-16);
+  background-color: color-mix(in srgb, var(--mo-blanco) 85%, transparent);
+}
+
+.tabla {
+  th {
+    padding: var(--mo-esp-12) var(--mo-esp-20);
+    background-color: color-mix(in srgb, var(--mo-crema) 80%, transparent);
+    font-family: var(--mo-familia);
+    font-size: 11px;
+    font-weight: var(--mo-peso-medio);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 12px var(--mo-esp-20);
+    border-bottom-color: color-mix(in srgb, var(--mo-linea) 55%, transparent);
+    vertical-align: middle;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    tbody tr:hover {
+      background-color: color-mix(in srgb, var(--mo-crema) 70%, transparent);
+    }
+  }
+}
+
+// Stock bajo: marca roja en el borde izquierdo, sin teñir toda la fila
+.fila--stock-bajo td:first-child {
+  box-shadow: inset 3px 0 0 var(--mo-punto-rojo);
+}
+
+.fila--inactiva .nombre,
+.fila--inactiva .referencia {
+  opacity: 0.6;
 }
 
 .referencia {
-  color: var(--mo-acero);
-  white-space: nowrap;
+  display: inline-block;
+  padding: 2px var(--mo-esp-8);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-6);
+  background-color: var(--mo-crema);
+  color: var(--mo-pizarra);
   font-family: var(--mo-mono);
   font-size: var(--mo-tipo-12);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.nombre {
+  font-weight: var(--mo-peso-medio);
 }
 
 .numero {
+  font-family: var(--mo-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--mo-tracking-mono);
   text-align: right;
   white-space: nowrap;
 }
 
+// Más específico que .tabla th, que alinea a la izquierda
+.tabla th.numero {
+  font-family: var(--mo-familia);
+  text-align: right;
+}
+
 .stock {
-  font-weight: var(--mo-peso-medio);
+  color: #0d0d0d;
+  font-weight: 600;
 }
 
 .stock--bajo {
@@ -53,17 +253,122 @@
 }
 
 .stock__nota {
-  font-size: var(--mo-tipo-14);
+  font-family: var(--mo-familia);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-normal);
+}
+
+// Acciones rápidas: grupo compacto de botones con icono
+.acciones-celda {
+  width: 1%;
 }
 
 .acciones {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--mo-esp-8);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-blanco);
 }
 
 .accion {
-  font-size: var(--mo-tipo-14);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 var(--mo-esp-8);
+  border: 0;
+  border-radius: var(--mo-radio-6);
+  background: none;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-medio);
   white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--mo-transicion),
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  .ico {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background-color: var(--mo-arena);
+      color: var(--mo-tinta);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(var(--mo-escala-pulsado));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mo-tinta);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
+.accion--entrada {
+  color: var(--mo-tinta);
+}
+
+// Con stock bajo, registrar la entrada es lo urgente: botón negro
+.accion--destacada {
+  background-color: #0d0d0d;
+  color: var(--mo-blanco);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background-color: var(--mo-pizarra);
+      color: var(--mo-blanco);
+    }
+  }
+}
+
+.accion--peligro {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      background-color: var(--mo-error-fondo);
+      color: var(--mo-error);
+    }
+  }
+}
+
+// Pie: nota de ayuda y paginación
+.panel__pie {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-12);
+  padding: var(--mo-esp-12) var(--mo-esp-20);
+  border-top: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  background-color: color-mix(in srgb, var(--mo-crema) 80%, transparent);
+}
+
+.ayuda {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mo-esp-8);
+  padding: var(--mo-esp-8) var(--mo-esp-12);
+  border-radius: var(--mo-radio-8);
+  background-color: #eef1f7;
+  color: #3b4a6b;
+  font-size: var(--mo-tipo-12);
+  line-height: 18px;
+
+  .ico {
+    margin-top: 1px;
+  }
+}

@@ -4,7 +4,8 @@ import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, forkJoin, Observable, of, startWith, Subject, switchMap } from 'rxjs';
 
-import type { OrdenDetalle, Presupuesto } from '@core/models';
+import { ETIQUETAS_TIPO_SERVICIO } from '@core/models';
+import type { EstadoPresupuesto, OrdenDetalle, Presupuesto, TipoLinea } from '@core/models';
 import { OrdenesService } from '@core/services/ordenes.service';
 import { PresupuestosService } from '@core/services/presupuestos.service';
 import { ToastService } from '@core/services/toast.service';
@@ -13,13 +14,27 @@ import { matriculaLegible } from '@core/util/matricula';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { ErroresCampoComponent } from '@shared/components/errores-campo/errores-campo.component';
 import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacion/modal-confirmacion.component';
-import { PillEstadoComponent } from '@shared/components/pill-estado/pill-estado.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 import { EurosPipe } from '@shared/pipes/euros.pipe';
+import { FechaHoraPipe } from '@shared/pipes/fecha-hora.pipe';
 import { IconoCocheComponent } from '@shared/components/icono-coche/icono-coche.component';
 
 const MAX_MOTIVO = 255;
 const FORMATO_NUMERO = new Intl.NumberFormat('es-ES');
+
+// Etiqueta y tono (data-tono) del estado del presupuesto en la cabecera del documento
+const ESTADOS_PRESUPUESTO: Record<EstadoPresupuesto, { texto: string; tono: string }> = {
+  borrador: { texto: 'Borrador', tono: 'neutro' },
+  enviado: { texto: 'Pendiente de aprobación', tono: 'aviso' },
+  autorizado: { texto: 'Autorizado', tono: 'exito' },
+  rechazado: { texto: 'Rechazado', tono: 'error' },
+};
+
+const TIPOS_LINEA: Record<TipoLinea, string> = {
+  pieza: 'Pieza',
+  mano_obra: 'Mano de obra',
+};
 
 interface DatosPresupuesto {
   presupuesto: Presupuesto;
@@ -32,9 +47,10 @@ interface DatosPresupuesto {
     CargandoComponent,
     ErroresCampoComponent,
     EurosPipe,
+    FechaHoraPipe,
     IconoCocheComponent,
+    LogoComponent,
     ModalConfirmacionComponent,
-    PillEstadoComponent,
     ReactiveFormsModule,
     VacioComponent
   ],
@@ -51,6 +67,9 @@ export class PresupuestoClienteComponent {
   private readonly recarga = new Subject<void>();
 
   protected readonly matriculaLegible = matriculaLegible;
+  protected readonly estados = ESTADOS_PRESUPUESTO;
+  protected readonly tiposLinea = TIPOS_LINEA;
+  protected readonly servicios = ETIQUETAS_TIPO_SERVICIO;
   protected readonly motivo = new FormControl('', {
     nonNullable: true,
     validators: [Validators.maxLength(MAX_MOTIVO)],

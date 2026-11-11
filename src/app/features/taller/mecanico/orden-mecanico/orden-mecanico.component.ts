@@ -14,11 +14,14 @@ import {
   throwError
 } from 'rxjs';
 
-import type {
-  EstadoOrden,
-  OrdenDetalle,
-  Presupuesto,
-  Seguimiento
+import {
+  ETIQUETAS_ESTADO,
+  ETIQUETAS_TIPO_SERVICIO,
+  ETIQUETAS_URGENCIA,
+  type EstadoOrden,
+  type OrdenDetalle,
+  type Presupuesto,
+  type Seguimiento
 } from '@core/models';
 import { OrdenesService } from '@core/services/ordenes.service';
 import { PiezasService } from '@core/services/piezas.service';
@@ -34,12 +37,13 @@ import {
 import { fechaLocalDeHoy } from '@core/util/validadores';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { ErroresCampoComponent } from '@shared/components/errores-campo/errores-campo.component';
+import { IconoCocheComponent } from '@shared/components/icono-coche/icono-coche.component';
 import { LineaTiempoComponent } from '@shared/components/linea-tiempo/linea-tiempo.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 import { MatriculaComponent } from '@shared/components/matricula/matricula.component';
-import { PillEstadoComponent } from '@shared/components/pill-estado/pill-estado.component';
-import { PillUrgenciaComponent } from '@shared/components/pill-urgencia/pill-urgencia.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
 import { FechaHoraPipe } from '@shared/pipes/fecha-hora.pipe';
+import { TONOS_ESTADO, TONOS_URGENCIA } from '@shared/util/tonos';
 
 const MAX_NOTA = 200;
 
@@ -68,10 +72,10 @@ interface ErrorEstado {
     CargandoComponent,
     ErroresCampoComponent,
     FechaHoraPipe,
+    IconoCocheComponent,
     LineaTiempoComponent,
+    LogoComponent,
     MatriculaComponent,
-    PillEstadoComponent,
-    PillUrgenciaComponent,
     ReactiveFormsModule,
     RouterLink,
     VacioComponent
@@ -92,6 +96,11 @@ export class OrdenMecanicoComponent {
 
   protected readonly campoConError = campoConError;
   protected readonly maxNota = MAX_NOTA;
+  protected readonly etiquetasEstado = ETIQUETAS_ESTADO;
+  protected readonly etiquetasUrgencia = ETIQUETAS_URGENCIA;
+  protected readonly etiquetasServicio = ETIQUETAS_TIPO_SERVICIO;
+  protected readonly tonosEstado = TONOS_ESTADO;
+  protected readonly tonosUrgencia = TONOS_URGENCIA;
 
   // El control se llama como el campo de la API para que le lleguen sus errores de validación
   protected readonly form = inject(NonNullableFormBuilder).group({

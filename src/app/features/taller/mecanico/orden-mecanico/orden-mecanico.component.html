@@ -1,3 +1,5 @@
+<app-logo class="filigrana" />
+
 <main class="detalle">
   @if (cargando()) {
     <app-cargando />
@@ -9,147 +11,230 @@
       Reintentar
     </button>
   } @else if (datos(); as datos) {
-    <header>
-      <nav class="migas" aria-label="Ruta de navegación">
-        <a routerLink="/taller/mis-ordenes">Mis órdenes</a> › Orden #{{ datos.orden.id }}
+    <header class="cabecera">
+      <nav aria-label="Ruta de navegación">
+        <ol class="migas__lista">
+          <li><a class="migas__enlace" routerLink="/taller/mis-ordenes">Mis órdenes</a></li>
+          <li aria-hidden="true">
+            <svg class="ico ico--14" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+          </li>
+          <li><span aria-current="page">Orden #{{ datos.orden.id }}</span></li>
+        </ol>
       </nav>
-      <div class="encabezado">
-        <h1>Orden #{{ datos.orden.id }}</h1>
-        <div class="encabezado__pills">
-          <app-pill-estado [estado]="datos.orden.estado" />
-          @if (entrada(); as entrada) {
-            <span class="pill pill--gris">
-              @if (entrada.esHoy) {
-                Entrada hoy {{ entrada.fechaHora | fechaHora: 'hora' }}
-              } @else {
-                Entrada {{ entrada.fechaHora | fechaHora: 'corta' }}
-              }
-            </span>
-          }
-        </div>
+
+      <div class="cabecera__linea">
+        <h1>Orden <span class="cabecera__numero">#{{ datos.orden.id }}</span></h1>
+        <span
+          class="estado-orden estado-orden--grande"
+          [attr.data-tono]="tonosEstado[datos.orden.estado]"
+        >
+          {{ etiquetasEstado[datos.orden.estado] }}
+        </span>
+        @if (entrada(); as entrada) {
+          <span class="entrada">
+            <svg class="ico ico--14" viewBox="0 0 24 24">
+              <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 6v6l4 2" />
+            </svg>
+            @if (entrada.esHoy) {
+              Entrada hoy {{ entrada.fechaHora | fechaHora: 'hora' }}
+            } @else {
+              Entrada {{ entrada.fechaHora | fechaHora: 'corta' }}
+            }
+          </span>
+        }
       </div>
     </header>
 
-    <section class="tarjeta" aria-label="Datos de la orden">
-      <dl class="datos">
-        <div>
-          <dt class="etiqueta">Vehículo</dt>
-          <dd>
-            {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }}
-            {{ datos.orden.vehiculo.version }}
-          </dd>
-        </div>
-        <div>
-          <dt class="etiqueta">Matrícula</dt>
-          <dd><app-matricula [matricula]="datos.orden.vehiculo.matricula" /></dd>
-        </div>
-        <div>
-          <dt class="etiqueta">Urgencia</dt>
-          <dd><app-pill-urgencia [urgencia]="datos.orden.urgencia" /></dd>
-        </div>
-        <div class="datos__ancho">
-          <dt class="etiqueta">Síntoma</dt>
-          <dd class="sintoma">{{ datos.orden.sintoma }}</dd>
-        </div>
-      </dl>
-    </section>
-
-    <form class="tarjeta panel" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
-      <div>
-        <h2 class="etiqueta" id="orden-cambiar-estado">Cambiar estado</h2>
-        <div class="chips" role="group" aria-labelledby="orden-cambiar-estado">
-          @for (opcion of opciones(); track opcion.estado) {
-            <button
-              type="button"
-              class="chip"
-              [class.opcion--actual]="opcion.actual"
-              [class.opcion--hecha]="opcion.hecha"
-              [attr.aria-current]="opcion.actual ? 'true' : null"
-              [attr.aria-pressed]="opcion.permitida ? seleccionado() === opcion.estado : null"
-              [disabled]="!opcion.permitida || procesando()"
-              (click)="elegir(opcion.estado)"
-            >
-              <!-- Marcas visibles: el estado no se indica solo con el color -->
-              @if (opcion.hecha) {
-                <svg class="icono-linea" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M5 12l5 5 9-10" />
-                </svg>
-              } @else if (opcion.actual) {
-                <svg class="icono-linea" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <circle cx="12" cy="12" r="4" />
-                </svg>
-              }
-              {{ opcion.texto }}
-            </button>
-          }
-        </div>
-      </div>
-
-      @if (hayOpciones()) {
-        <div class="campo" [class.campo--error]="campoConError(form.controls.descripcion)">
-          <label class="etiqueta" for="orden-nota">Nota visible para el cliente</label>
-          <textarea
-            id="orden-nota"
-            rows="3"
-            [attr.maxlength]="maxNota"
-            formControlName="descripcion"
-            aria-describedby="orden-nota-error"
-            [attr.aria-invalid]="campoConError(form.controls.descripcion)"
-          ></textarea>
-          <app-errores-campo id="orden-nota-error" [control]="form.controls.descripcion" />
-        </div>
-      }
-
-      @if (lineasPieza().length > 0) {
-        <section aria-labelledby="orden-piezas">
-          <h2 class="etiqueta" id="orden-piezas">Piezas del presupuesto</h2>
-          <ul class="piezas">
-            @for (linea of lineasPieza(); track linea.id) {
-              <li class="pieza">
-                <span>{{ linea.concepto }} × {{ linea.cantidad }}</span>
-                <span class="pill" [class.pill--rojo]="linea.falta" [class.pill--verde]="!linea.falta">
-                  {{ linea.textoStock }}
+    <div class="cuerpo">
+      <div class="cuerpo__principal">
+        <!-- Vehículo y avería -->
+        <section class="bloque" aria-labelledby="orden-vehiculo">
+          <h2 class="bloque__titulo" id="orden-vehiculo">
+            <svg class="ico ico--16" viewBox="0 0 24 24">
+              <path
+                d="M5 17h14M5 17v2M19 17v2M4 13l2-6h12l2 6v4H4v-4ZM4 13h16M8 15h.01M16 15h.01"
+              />
+            </svg>
+            Vehículo
+          </h2>
+          <div class="vehiculo">
+            <app-icono-coche class="vehiculo__icono" />
+            <div class="vehiculo__datos">
+              <p class="vehiculo__nombre">
+                {{ datos.orden.vehiculo.marca }} {{ datos.orden.vehiculo.modelo }}
+                {{ datos.orden.vehiculo.version }}
+              </p>
+              <div class="vehiculo__etiquetas">
+                <span class="sr-only">Matrícula:</span>
+                <app-matricula
+                  class="vehiculo__matricula"
+                  [matricula]="datos.orden.vehiculo.matricula"
+                />
+                <span class="sr-only">Urgencia:</span>
+                <span class="estado-orden" [attr.data-tono]="tonosUrgencia[datos.orden.urgencia]">
+                  {{ etiquetasUrgencia[datos.orden.urgencia] }}
                 </span>
-              </li>
-            }
-          </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="diagnostico" [attr.data-tono]="tonosUrgencia[datos.orden.urgencia]">
+            <svg class="ico diagnostico__icono" viewBox="0 0 24 24">
+              <path
+                d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"
+              />
+            </svg>
+            <div>
+              <p class="diagnostico__titulo">
+                Síntoma · {{ etiquetasServicio[datos.orden.tipoServicio] }}
+              </p>
+              <p class="diagnostico__texto">{{ datos.orden.sintoma }}</p>
+            </div>
+          </div>
         </section>
-      }
 
-      @if (referenciasSinStock(); as referencias) {
-        <div class="aviso aviso--ambar">
-          Para pasar a Arreglando debe haber stock de todas las piezas. Pide a recepción que registre
-          la entrada de {{ referencias }}.
-        </div>
-      }
-
-      @if (errorEstado(); as error) {
-        <div class="aviso aviso--rojo" role="alert">
-          <p>{{ error.mensaje }}</p>
-          @if (error.detalles.length > 0) {
-            <ul class="error__detalles">
-              @for (detalle of error.detalles; track detalle.campo) {
-                <li>{{ detalle.campo }}: {{ detalle.mensaje }}</li>
+        @if (lineasPieza().length > 0) {
+          <section class="bloque" aria-labelledby="orden-piezas">
+            <div class="bloque__cabecera">
+              <h2 class="bloque__titulo" id="orden-piezas">
+                <svg class="ico ico--16" viewBox="0 0 24 24">
+                  <path
+                    d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3ZM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+                Piezas del presupuesto
+              </h2>
+              <span class="bloque__cuenta">{{ lineasPieza().length }}</span>
+            </div>
+            <ul class="piezas" role="list">
+              @for (linea of lineasPieza(); track linea.id) {
+                <li class="pieza">
+                  <span class="pieza__concepto">{{ linea.concepto }}</span>
+                  <span class="pieza__cantidad">× {{ linea.cantidad }}</span>
+                  <span class="estado-orden" [attr.data-tono]="linea.falta ? 'error' : 'exito'">
+                    {{ linea.textoStock }}
+                  </span>
+                </li>
               }
             </ul>
-          }
-        </div>
-      }
+          </section>
+        }
 
-      @if (hayOpciones()) {
-        <button
-          type="submit"
-          class="btn btn--primario guardar"
-          [disabled]="seleccionado() === null || procesando()"
+        <form
+          class="bloque campos-suaves"
+          [formGroup]="form"
+          (ngSubmit)="guardar()"
+          novalidate
+          aria-labelledby="orden-cambiar-estado"
         >
-          Guardar cambio
-        </button>
-      }
-    </form>
+          <h2 class="bloque__titulo" id="orden-cambiar-estado">
+            <svg class="ico ico--16" viewBox="0 0 24 24">
+              <path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5" />
+            </svg>
+            Cambiar estado
+          </h2>
 
-    <section class="tarjeta" aria-labelledby="orden-seguimiento">
-      <h2 class="etiqueta" id="orden-seguimiento">Seguimiento</h2>
-      <app-linea-tiempo [eventos]="datos.seguimiento.eventos" [estado]="datos.orden.estado" />
-    </section>
+          <div class="segmentos" role="group" aria-labelledby="orden-cambiar-estado">
+            @for (opcion of opciones(); track opcion.estado) {
+              <button
+                type="button"
+                class="segmento"
+                [class.segmento--actual]="opcion.actual"
+                [class.segmento--hecho]="opcion.hecha"
+                [class.segmento--elegido]="seleccionado() === opcion.estado"
+                [attr.aria-current]="opcion.actual ? 'true' : null"
+                [attr.aria-pressed]="opcion.permitida ? seleccionado() === opcion.estado : null"
+                [disabled]="!opcion.permitida || procesando()"
+                (click)="elegir(opcion.estado)"
+              >
+                <!-- Marcas visibles: el estado no se indica solo con el color -->
+                <span class="segmento__marca" aria-hidden="true">
+                  @if (opcion.hecha) {
+                    <svg class="ico" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" /></svg>
+                  }
+                </span>
+                {{ opcion.texto }}
+              </button>
+            }
+          </div>
+          <p class="leyenda" aria-hidden="true">
+            <span><span class="leyenda__muestra leyenda__muestra--actual"></span>Actual</span>
+            <span><span class="leyenda__muestra leyenda__muestra--elegido"></span>Seleccionado</span>
+            <span><span class="leyenda__muestra leyenda__muestra--hecho"></span>Completado</span>
+          </p>
+
+          @if (hayOpciones()) {
+            <div class="campo" [class.campo--error]="campoConError(form.controls.descripcion)">
+              <label for="orden-nota">Nota visible para el cliente</label>
+              <textarea
+                id="orden-nota"
+                rows="3"
+                placeholder="Por ejemplo: pastillas cambiadas, pendiente de prueba en carretera"
+                [attr.maxlength]="maxNota"
+                formControlName="descripcion"
+                aria-describedby="orden-nota-error"
+                [attr.aria-invalid]="campoConError(form.controls.descripcion)"
+              ></textarea>
+              <app-errores-campo id="orden-nota-error" [control]="form.controls.descripcion" />
+            </div>
+          }
+
+          @if (referenciasSinStock(); as referencias) {
+            <div class="aviso aviso--ambar">
+              Para pasar a Arreglando debe haber stock de todas las piezas. Pide a recepción que
+              registre la entrada de {{ referencias }}.
+            </div>
+          }
+
+          @if (errorEstado(); as error) {
+            <div class="aviso aviso--rojo" role="alert">
+              <p>{{ error.mensaje }}</p>
+              @if (error.detalles.length > 0) {
+                <ul class="error__detalles">
+                  @for (detalle of error.detalles; track detalle.campo) {
+                    <li>{{ detalle.campo }}: {{ detalle.mensaje }}</li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+
+          @if (hayOpciones()) {
+            <div class="bloque__acciones">
+              <p class="bloque__ayuda">
+                @if (seleccionado(); as estado) {
+                  Pasará a <strong>{{ etiquetasEstado[estado] }}</strong>
+                } @else {
+                  Elige el nuevo estado de la orden
+                }
+              </p>
+              <button
+                type="submit"
+                class="btn btn--primario"
+                [disabled]="seleccionado() === null || procesando()"
+              >
+                <svg class="ico ico--16" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" /></svg>
+                Guardar cambio
+              </button>
+            </div>
+          }
+        </form>
+      </div>
+
+      <section class="bloque seguimiento" aria-labelledby="orden-seguimiento">
+        <h2 class="bloque__titulo" id="orden-seguimiento">
+          <svg class="ico ico--16" viewBox="0 0 24 24">
+            <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 6v6l4 2" />
+          </svg>
+          Seguimiento
+        </h2>
+        <app-linea-tiempo
+          destacada
+          class="linea--hora-derecha"
+          [eventos]="datos.seguimiento.eventos"
+          [estado]="datos.orden.estado"
+        />
+      </section>
+    </div>
   }
 </main>

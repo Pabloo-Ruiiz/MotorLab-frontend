@@ -1,82 +1,303 @@
+// isolation deja la filigrana (z-index negativo) por encima del fondo blanco del layout
 :host {
   display: block;
+  isolation: isolate;
+}
+
+// Logo de MotorLab como marca de agua: fijo en la esquina, muy tenue y sin recibir clics
+.filigrana {
+  position: fixed;
+  right: var(--mo-esp-16);
+  bottom: calc(var(--mo-alto-barra) + var(--mo-esp-24) + env(safe-area-inset-bottom)); // sobre las pestañas
+  z-index: -1;
+  width: clamp(160px, 26vw, 320px);
+  aspect-ratio: 1;
+  color: var(--mo-tinta);
+  opacity: 0.035;
+  pointer-events: none;
+
+  @media (min-width: 900px) {
+    right: var(--mo-esp-40);
+    bottom: var(--mo-esp-40);
+  }
 }
 
 .panel {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-32);
+  gap: var(--mo-esp-24);
 }
 
-.subtitulo {
-  color: var(--mo-acero);
+// Encabezado con el periodo de las métricas
+.encabezado {
+  flex-wrap: wrap;
+  align-items: flex-end;
+
+  h1 {
+    letter-spacing: var(--mo-tracking-titulo);
+  }
+}
+
+.periodo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  padding: var(--mo-esp-8) var(--mo-esp-12);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-pildora);
+  background-color: var(--mo-crema);
+  color: var(--mo-pizarra);
   font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+
+  .ico {
+    color: var(--mo-acero);
+  }
 }
 
-.indicadores {
+.periodo__texto::first-letter {
+  text-transform: uppercase;
+}
+
+// Indicadores clave: 1, 2 o 4 columnas según el ancho
+.kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--mo-esp-16);
   margin: 0;
+
+  @media (min-width: 560px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1150px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
-.indicador dd {
-  margin: 0;
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mo-esp-8);
+  padding: var(--mo-esp-20);
+  border: 1px solid color-mix(in srgb, var(--mo-linea) 70%, transparent);
+  border-radius: var(--mo-radio-16);
+  background-color: var(--mo-blanco);
+  box-shadow: 0 1px 2px rgb(13 13 13 / 4%), 0 8px 24px -16px rgb(13 13 13 / 12%);
+
+  dd {
+    margin: 0;
+  }
 }
 
-.indicador__valor {
-  font-size: var(--mo-tipo-30);
-  font-variant-numeric: tabular-nums;
-  font-weight: var(--mo-peso-normal);
+.kpi__cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
 }
 
-.indicador__valor--naranja {
-  color: var(--mo-tinta);
-}
-
-.indicador__valor--rojo {
-  color: var(--mo-error);
-}
-
-.indicador__enlace {
+.kpi__etiqueta {
+  padding-top: 6px;
+  color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+}
+
+.kpi__icono {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-crema);
+  color: var(--mo-pizarra);
+
+  .ico {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.kpi__valor {
+  color: #0d0d0d;
+  font-size: 36px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: var(--mo-tracking-titulo);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.kpi__pie {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-12);
+}
+
+.kpi__punto {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--tono);
+}
+
+// Con algo pendiente, el icono toma el color del aviso
+.kpi[data-tono] .kpi__icono {
+  background-color: var(--tono-fondo);
+  color: var(--tono);
+}
+
+// Acción directa dentro de la tarjeta de stock bajo
+.kpi__accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 var(--mo-esp-12);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-pildora);
+  color: var(--mo-tinta);
+  font-size: var(--mo-tipo-12);
+  font-weight: var(--mo-peso-medio);
+  text-decoration: none;
+  transition:
+    background-color var(--mo-transicion),
+    border-color var(--mo-transicion),
+    color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: #0d0d0d;
+      background-color: #0d0d0d;
+      color: var(--mo-blanco);
+    }
+  }
+
+  &:active {
+    transform: scale(var(--mo-escala-pulsado));
+  }
+}
+
+// Órdenes por estado
+.estados {
+  background-color: color-mix(in srgb, var(--mo-blanco) 85%, transparent);
+}
+
+.estados__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mo-esp-12);
+}
+
+.estados__total {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+
+  strong {
+    color: var(--mo-tinta);
+    font-weight: var(--mo-peso-medio);
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 .barras {
   display: flex;
   flex-direction: column;
-  gap: var(--mo-esp-12);
+  gap: var(--mo-esp-16);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-// Primera y última columna iguales en todas las filas: las barras empiezan y acaban a la vez.
-// El 40 % evita que, en pantallas estrechas, las etiquetas dejen la barra sin espacio
+// Móvil: etiqueta y cifras arriba, barra debajo. Escritorio: todo en una fila con columnas fijas
+// para que las barras empiecen y acaben a la vez
 .barra {
   display: grid;
-  grid-template-columns: minmax(0, min(220px, 40%)) 1fr 4ch;
+  grid-template-areas:
+    'etiqueta cifras'
+    'pista pista';
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--mo-esp-12);
+  gap: 6px var(--mo-esp-16);
   font-size: var(--mo-tipo-14);
+
+  @media (min-width: 700px) {
+    grid-template-areas: 'etiqueta pista cifras';
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr) 96px;
+  }
+}
+
+.barra__etiqueta {
+  display: flex;
+  grid-area: etiqueta;
+  align-items: center;
+  gap: var(--mo-esp-8);
+  min-width: 0;
+  color: var(--mo-pizarra);
+}
+
+.barra__punto {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--tono);
 }
 
 .barra__pista {
   display: block;
-  height: var(--mo-esp-8);
+  grid-area: pista;
+  height: 10px;
   overflow: hidden;
   border-radius: var(--mo-radio-pildora);
-  background-color: var(--mo-linea);
+  background-color: var(--tono-fondo);
 }
 
+// Crece desde la izquierda al cargar; con movimiento reducido aparece ya completa
 .barra__relleno {
   display: block;
   height: 100%;
   border-radius: inherit;
+  background-color: var(--tono);
+  transform: scaleX(var(--proporcion));
+  transform-origin: left;
+  transition: transform 700ms var(--mo-curva-salida);
+
+  @starting-style {
+    transform: scaleX(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.barra__cifras {
+  display: flex;
+  grid-area: cifras;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: var(--mo-esp-8);
+  font-variant-numeric: tabular-nums;
 }
 
 .barra__total {
-  font-variant-numeric: tabular-nums;
-  font-weight: var(--mo-peso-medio);
+  color: #0d0d0d;
+  font-weight: 600;
+}
+
+.barra__porcentaje {
+  min-width: 4ch;
+  color: var(--mo-acero);
+  font-family: var(--mo-mono);
+  font-size: var(--mo-tipo-12);
   text-align: right;
 }

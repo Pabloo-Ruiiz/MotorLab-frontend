@@ -1,7 +1,14 @@
 <header class="cabecera">
   <app-logo class="cabecera__fondo" />
-  <p class="cabecera__titulo">Taller MotorLab</p>
-  <p class="cabecera__subtitulo">Área de clientes</p>
+  <div class="cabecera__marca">
+    <app-logo class="cabecera__simbolo" />
+    MotorLab
+  </div>
+  <div class="cabecera__textos">
+    <p class="cabecera__subtitulo">Área de clientes</p>
+    <p class="cabecera__titulo">Taller MotorLab</p>
+    <p class="cabecera__lema">Sigue tus reparaciones, presupuestos y avisos sin llamar al taller.</p>
+  </div>
 </header>
 
 <main class="pagina" aria-live="polite">
@@ -14,12 +21,12 @@
     @case ('confirmado') {
       <h1 class="titulo">Correo confirmado</h1>
       <p class="subtitulo">Tu cuenta ya está activa. Ya puedes iniciar sesión.</p>
-      <a class="btn btn--primario" routerLink="/login">Iniciar sesión</a>
+      <a class="btn btn--primario enviar" routerLink="/login">Iniciar sesión</a>
     }
     @case ('error') {
       <h1 class="titulo">No hemos podido confirmarlo</h1>
       <p class="subtitulo">{{ error() }}</p>
-      <a class="btn btn--primario" routerLink="/login">Ir a iniciar sesión</a>
+      <a class="btn btn--primario enviar" routerLink="/login">Ir a iniciar sesión</a>
     }
   }
 </main>

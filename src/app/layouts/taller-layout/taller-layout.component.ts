@@ -1,10 +1,16 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
-import { ETIQUETAS_ROL } from '@core/models';
+import { ETIQUETAS_ROL, type Rol } from '@core/models';
 import { AuthService } from '@core/services/auth.service';
+import { FotoPerfilService } from '@core/services/foto-perfil.service';
 import { enfocarPrincipal } from '@core/util/foco';
+import { AvatarComponent } from '@shared/components/avatar/avatar.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
+import {
+  type PersonaVisor,
+  VisorFotoComponent
+} from '@shared/components/visor-foto/visor-foto.component';
 
 interface Opcion {
   ruta: string;
@@ -48,12 +54,24 @@ const OPCIONES_MECANICO: readonly Opcion[] = [
     icono: 'M9 3h6v4H9zM9 5H5v16h14V5h-4M9 12h6M9 16h6'
   },
   PIEZAS,
-  AVISOS
+  AVISOS,
+  {
+    ruta: '/taller/perfil',
+    texto: 'Perfil',
+    icono: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0'
+  }
 ];
 
 @Component({
   selector: 'app-taller-layout',
-  imports: [LogoComponent, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [
+    AvatarComponent,
+    LogoComponent,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    VisorFotoComponent
+  ],
   templateUrl: './taller-layout.component.html',
   styleUrl: './taller-layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -62,7 +80,8 @@ export class TallerLayoutComponent {
   protected readonly auth = inject(AuthService);
 
   protected readonly etiquetasRol = ETIQUETAS_ROL;
-  protected readonly menuAbierto = signal(false);
+  protected readonly foto = inject(FotoPerfilService).foto;
+  protected readonly personaVisor = signal<PersonaVisor | null>(null);
 
   protected readonly opciones = computed<readonly Opcion[]>(() => {
     switch (this.auth.rol()) {
@@ -75,17 +94,11 @@ export class TallerLayoutComponent {
     }
   });
 
-  protected irAlContenido(): void {
-    enfocarPrincipal();
+  protected verFoto(nombre: string, rol: Rol): void {
+    this.personaVisor.set({ nombre, rol, foto: this.foto() });
   }
 
-  // Sin esto, el menú abierto taparía los controles a los que se llega con Tab.
-  // relatedTarget es null si se pulsa fuera de un control: entonces el menú sigue como estaba
-  protected cerrarMenuSiSaleElFoco(evento: FocusEvent, lateral: HTMLElement): void {
-    const destino = evento.relatedTarget;
-
-    if (destino instanceof Node && !lateral.contains(destino)) {
-      this.menuAbierto.set(false);
-    }
+  protected irAlContenido(): void {
+    enfocarPrincipal();
   }
 }

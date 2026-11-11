@@ -17,6 +17,7 @@ import {
   ETIQUETAS_ESTADO,
   ETIQUETAS_FRANJA,
   ETIQUETAS_TIPO_SERVICIO,
+  ETIQUETAS_URGENCIA,
   type EstadoOrden,
   type OrdenDetalle,
   type Seguimiento
@@ -39,11 +40,12 @@ import { LineaTiempoComponent } from '@shared/components/linea-tiempo/linea-tiem
 import { MatriculaComponent } from '@shared/components/matricula/matricula.component';
 import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacion/modal-confirmacion.component';
 import { PillEstadoComponent } from '@shared/components/pill-estado/pill-estado.component';
-import { PillUrgenciaComponent } from '@shared/components/pill-urgencia/pill-urgencia.component';
+import { LogoComponent } from '@shared/components/logo/logo.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
 import { EurosPipe } from '@shared/pipes/euros.pipe';
 import { FechaHoraPipe } from '@shared/pipes/fecha-hora.pipe';
 import { IconoCocheComponent } from '@shared/components/icono-coche/icono-coche.component';
+import { TONOS_ESTADO, TONOS_URGENCIA } from '@shared/util/tonos';
 
 const MAX_ELEVADOR = 20;
 const MAX_NOTA = 200;
@@ -57,6 +59,28 @@ const ACCIONES_MARCAR: Partial<Record<EstadoOrden, string>> = {
   recibido: 'Marcar como recibido',
   entregado: 'Marcar como entregado'
 };
+
+// Iconos de trazo (atributo «d» sobre una cuadrícula de 24x24); el trazo lo pone .ico
+const ICONOS = {
+  chevron: 'm9 18 6-6-6-6',
+  flecha: 'M5 12h14M13 6l6 6-6 6',
+  cerrar: 'M18 6 6 18M6 6l12 12',
+  check: 'M5 12l5 5 9-10',
+  presupuesto: 'M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6ZM14 3v6h6M12 12v6M9 15h6',
+  coche: 'M5 17h14M5 17v2M19 17v2M4 13l2-6h12l2 6v4H4v-4ZM4 13h16M8 15h.01M16 15h.01',
+  aviso: 'M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z',
+  rayo: 'M13 2 4 14h7l-1 8 9-12h-7l1-8Z',
+  usuario: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0',
+  telefono:
+    'M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z',
+  mensaje: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z',
+  calendario: 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z',
+  llave: 'M15 5a4 4 0 0 0-5 5l-6 6 3 3 6-6a4 4 0 0 0 5-5l-3 3-3-3 3-3Z',
+  estado: 'M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5',
+  reloj: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 6v6l4 2'
+} as const;
+
+const NIVEL_URGENCIA = { baja: 1, media: 2, alta: 3 } as const;
 
 interface DatosOrden {
   orden: OrdenDetalle;
@@ -75,8 +99,8 @@ interface DatosOrden {
     LineaTiempoComponent,
     MatriculaComponent,
     ModalConfirmacionComponent,
+    LogoComponent,
     PillEstadoComponent,
-    PillUrgenciaComponent,
     ReactiveFormsModule,
     RouterLink,
     VacioComponent
@@ -100,6 +124,11 @@ export class OrdenDetalleTallerComponent {
   protected readonly etiquetasConduccion = ETIQUETAS_CONDUCCION_SEGURA;
   protected readonly etiquetasContacto = ETIQUETAS_CONTACTO;
   protected readonly etiquetasFranja = ETIQUETAS_FRANJA;
+  protected readonly etiquetasEstado = ETIQUETAS_ESTADO;
+  protected readonly etiquetasUrgencia = ETIQUETAS_URGENCIA;
+  protected readonly tonosEstado = TONOS_ESTADO;
+  protected readonly tonosUrgencia = TONOS_URGENCIA;
+  protected readonly iconos = ICONOS;
   protected readonly maxElevador = MAX_ELEVADOR;
   protected readonly maxNota = MAX_NOTA;
   protected readonly campoConError = campoConError;
@@ -165,9 +194,18 @@ export class OrdenDetalleTallerComponent {
     );
   });
 
+  // Motivo por el que la urgencia se fijó sola, o null si la eligió el cliente
   protected readonly reglaAutomatica = computed(() => {
     const orden = this.datos()?.orden;
-    return orden?.tipoServicio === 'frenos' || orden?.conduccionSegura === 'no';
+    if (orden?.tipoServicio === 'frenos') {
+      return 'frenos';
+    }
+    return orden?.conduccionSegura === 'no' ? 'no se puede conducir con seguridad' : null;
+  });
+
+  protected readonly nivelUrgencia = computed(() => {
+    const urgencia = this.datos()?.orden.urgencia;
+    return urgencia ? NIVEL_URGENCIA[urgencia] : 0;
   });
 
   constructor() {

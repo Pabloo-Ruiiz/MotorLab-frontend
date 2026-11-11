@@ -1,91 +1,92 @@
-<aside
-  #lateral
-  class="lateral"
-  (keydown.escape)="menuAbierto.set(false); hamburguesa.focus()"
-  (focusout)="cerrarMenuSiSaleElFoco($event, lateral)"
->
-  <button type="button" class="btn btn--primario saltar" (click)="irAlContenido()">
-    Saltar al contenido
-  </button>
+<button type="button" class="btn btn--primario saltar" (click)="irAlContenido()">
+  Saltar al contenido
+</button>
 
-  <div class="lateral__barra">
-    <div class="marca">
-      <app-logo class="marca__simbolo" />
-      MotorLab
-    </div>
+<header class="cabecera">
+  <div class="marca">
+    <app-logo class="marca__simbolo" />
+    MotorLab
+  </div>
 
-    <button
-      #hamburguesa
-      type="button"
-      class="hamburguesa"
-      aria-label="Menú de navegación"
-      aria-controls="taller-menu"
-      [attr.aria-expanded]="menuAbierto()"
-      (click)="menuAbierto.set(!menuAbierto())"
+  <!-- Solo en móvil: en escritorio se cierra sesión desde la columna lateral -->
+  <button
+    type="button"
+    class="cabecera__salir"
+    aria-label="Cerrar sesión"
+    title="Cerrar sesión"
+    (click)="auth.cerrarSesion()"
+  >
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
     >
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        aria-hidden="true"
+      <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H3" />
+    </svg>
+  </button>
+</header>
+
+<!-- En móvil se coloca abajo por CSS; va antes del contenido para que el orden de Tab coincida en escritorio -->
+<nav class="pestanas" aria-label="Navegación del taller">
+  <ul class="pestanas__lista" [style.--columnas]="opciones().length">
+    @for (opcion of opciones(); track opcion.ruta) {
+      <li>
+        <a
+          class="pestana"
+          [routerLink]="opcion.ruta"
+          routerLinkActive="pestana--activa"
+          ariaCurrentWhenActive="page"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path [attr.d]="opcion.icono" />
+          </svg>
+          {{ opcion.texto }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+
+<!-- Solo en escritorio -->
+@if (auth.usuario(); as usuario) {
+  <div class="usuario">
+    <div class="usuario__datos">
+      <button
+        type="button"
+        class="usuario__avatar"
+        aria-label="Ver tu foto de perfil"
+        (click)="verFoto(usuario.nombre, usuario.rol)"
       >
-        <path d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
+        <app-avatar [nombre]="usuario.nombre" [rol]="usuario.rol" [foto]="foto()" />
+      </button>
+      <div class="usuario__texto">
+        <p class="usuario__nombre">{{ usuario.nombre }}</p>
+        <p class="usuario__rol">{{ etiquetasRol[usuario.rol] }}</p>
+      </div>
+    </div>
+    <button type="button" class="btn usuario__salir" (click)="auth.cerrarSesion()">
+      Cerrar sesión
     </button>
   </div>
+}
 
-  <div id="taller-menu" class="menu" [class.menu--abierto]="menuAbierto()">
-    <nav aria-label="Navegación del taller">
-      <ul class="menu__lista">
-        @for (opcion of opciones(); track opcion.ruta) {
-          <li>
-            <a
-              class="opcion"
-              [routerLink]="opcion.ruta"
-              routerLinkActive="opcion--activa"
-              ariaCurrentWhenActive="page"
-              (click)="menuAbierto.set(false)"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path [attr.d]="opcion.icono" />
-              </svg>
-              {{ opcion.texto }}
-            </a>
-          </li>
-        }
-      </ul>
-    </nav>
-
-    @if (auth.usuario(); as usuario) {
-      <div class="usuario">
-        <div class="usuario__datos">
-          <span class="usuario__avatar" aria-hidden="true">{{ usuario.nombre.charAt(0) }}</span>
-          <div class="usuario__texto">
-            <p class="usuario__nombre">{{ usuario.nombre }}</p>
-            <p class="usuario__rol">{{ etiquetasRol[usuario.rol] }}</p>
-          </div>
-        </div>
-        <button type="button" class="btn usuario__salir" (click)="auth.cerrarSesion()">
-          Cerrar sesión
-        </button>
-      </div>
-    }
-  </div>
-</aside>
+<app-visor-foto [persona]="personaVisor()" (cerrar)="personaVisor.set(null)" />
 
 <!-- Cada pantalla aporta su propio <main>; al cambiar de pantalla el scroll vuelve arriba -->
 <div #contenido class="contenido">

@@ -2,11 +2,57 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--mo-esp-8);
+  gap: var(--mo-esp-12);
+}
+
+.paginador__boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 var(--mo-esp-12);
+  border: 1px solid var(--mo-linea);
+  border-radius: var(--mo-radio-8);
+  background-color: var(--mo-blanco);
+  color: var(--mo-tinta);
+  font-size: var(--mo-tipo-14);
+  font-weight: var(--mo-peso-medio);
+  cursor: pointer;
+  transition:
+    border-color var(--mo-transicion),
+    transform var(--mo-pulsar);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover:not(:disabled) {
+      border-color: var(--mo-tinta);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(var(--mo-escala-pulsado));
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
 }
 
 .paginador__estado {
   color: var(--mo-acero);
   font-size: var(--mo-tipo-14);
+  font-variant-numeric: tabular-nums;
   text-align: center;
+
+  strong {
+    color: var(--mo-tinta);
+    font-weight: var(--mo-peso-medio);
+  }
+}
+
+// En pantallas estrechas sobra el total: ya lo dice el texto «Mostrando X de Y»
+@media (max-width: 599px) {
+  .paginador__total {
+    display: none;
+  }
 }
