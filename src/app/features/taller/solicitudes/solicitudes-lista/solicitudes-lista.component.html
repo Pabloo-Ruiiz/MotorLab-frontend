@@ -216,9 +216,15 @@
                     </span>
                   </td>
                   <td>
-                    <span class="estado-orden" [attr.data-tono]="tonosEstado[orden.estado]">
-                      {{ etiquetasEstado[orden.estado] }}
-                    </span>
+                    <div class="fila__estados">
+                      <span class="estado-orden" [attr.data-tono]="tonosEstado[orden.estado]">
+                        {{ etiquetasEstado[orden.estado] }}
+                      </span>
+                      <!-- Con el presupuesto autorizado: si hay que cobrar antes de entregar -->
+                      @if (orden.presupuestoEstado === 'autorizado') {
+                        <app-pill-pago [estado]="orden.presupuestoEstadoPago" />
+                      }
+                    </div>
                   </td>
                   <td class="fila__fecha">{{ orden.fechaEntrada | fechaHora: 'corta' }}</td>
                   <td class="fila__abrir" aria-hidden="true">

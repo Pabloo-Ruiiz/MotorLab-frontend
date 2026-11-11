@@ -60,23 +60,90 @@ src/app
 │   ├── services         Un servicio por dominio de la API
 │   └── util             Validadores, formularios, estados, foco y errores
 ├── shared               Piezas reutilizables, sin lógica de negocio
-│   ├── components       Paginador, modal, pills, toasts, línea de tiempo…
-│   └── pipes            Importes en euros y fechas
+│   ├── components       Paginador, modal, avatar, visor de fotos, línea de tiempo…
+│   ├── pipes            Importes en euros y fechas
+│   └── util             Tonos de color por estado y urgencia
 ├── layouts              Estructura de cada zona
-│   ├── cliente-layout   Móvil primero, con pestañas inferiores
-│   └── taller-layout    Escritorio, con barra lateral
+│   ├── cliente-layout   Pestañas inferiores en móvil, barra lateral en escritorio
+│   └── taller-layout    Pestañas inferiores en móvil, barra lateral en escritorio
 └── features             Pantallas, agrupadas por dominio
     ├── auth             Inicio de sesión y registro
     ├── vehiculos
     ├── ordenes
     ├── presupuestos
     ├── notificaciones
-    ├── perfil
+    ├── perfil           Compartido por clientes y personal del taller
     └── taller           Solicitudes, detalle de orden, presupuesto, piezas,
                          vista del mecánico, usuarios y panel
 ```
 
 Los estilos globales y los tokens de diseño están en `src/styles`. Hay alias para importar sin rutas relativas largas: `@core/*`, `@shared/*`, `@layouts/*`, `@features/*` y `@env/*`.
+
+## Pantallas
+
+### Cliente (`/cliente`)
+
+| Ruta | Pantalla |
+|---|---|
+| `/cliente/ordenes` | Mis órdenes y su seguimiento |
+| `/cliente/ordenes/:id/presupuesto` | Presupuesto para autorizar o rechazar |
+| `/cliente/solicitud/nueva` | Nueva solicitud de reparación |
+| `/cliente/vehiculos` | Mis vehículos y su historial |
+| `/cliente/avisos` | Avisos |
+| `/cliente/perfil` | Perfil, foto y cierre de sesión |
+
+### Administración (`/taller`)
+
+| Ruta | Pantalla |
+|---|---|
+| `/taller/solicitudes` | Indicadores (nuevas, urgencia alta, pendientes de presupuesto, total) que filtran la tabla, búsqueda y filtros por estado, urgencia y mecánico |
+| `/taller/ordenes/:id` | Resumen del vehículo, avería y cliente; asignación, cambio de estado, acciones y seguimiento |
+| `/taller/ordenes/:id/presupuesto` | Desglose de líneas, condiciones del servicio, totales y envío al cliente |
+| `/taller/piezas` | Inventario con búsqueda, filtros rápidos y acciones por pieza (entrada, editar, dar de baja) |
+| `/taller/usuarios` | Directorio con avatar, rol y activación de cuentas |
+| `/taller/panel` | Métricas del mes en curso y órdenes por estado |
+| `/taller/avisos` | Avisos |
+
+### Mecánico (`/taller`)
+
+| Ruta | Pantalla |
+|---|---|
+| `/taller/mis-ordenes` | Órdenes asignadas en curso e historial de finalizadas |
+| `/taller/mis-ordenes/:id` | Vehículo, diagnóstico, piezas con su stock, cambio de estado y seguimiento |
+| `/taller/piezas` | Catálogo de piezas (solo consulta) |
+| `/taller/avisos` | Avisos |
+| `/taller/perfil` | Perfil, foto y cierre de sesión |
+
+`/taller/perfil` está abierta a todo el personal del taller, pero solo aparece en el menú del mecánico.
+
+## Diseño
+
+La guía de diseño está en [docs/DESIGN.md](docs/DESIGN.md) y sus tokens, como variables CSS `--mo-*`, en [src/styles/_tokens.scss](src/styles/_tokens.scss). La paleta se basa en el crema `#F9F8F6`, el negro `#0D0D0D` y grises, con rojo, ámbar y verde solo para estados.
+
+Clases reutilizables de [src/styles/_componentes.scss](src/styles/_componentes.scss) que comparten las pantallas:
+
+| Clase | Uso |
+|---|---|
+| `.estado-orden` + `data-tono` | Etiqueta de estado o urgencia con punto. El tono (`informativo`, `exito`, `aviso`, `error`, `neutro`) sale de [tonos.ts](src/app/shared/util/tonos.ts) |
+| `.bloque`, `.bloque__titulo`, `.bloque__acciones` | Tarjeta de sección con título en versalitas y pie de acciones |
+| `.campos-suaves` | Campos de formulario con borde suave, misma altura y anillo de foco. Se aplica también dentro de `.bloque` y `.dialogo` |
+| `.migas__lista`, `.migas__enlace` | Ruta de navegación de las pantallas de detalle |
+| `.estado-orden--grande`, `.cabecera__numero` | Estado destacado y número de documento junto al título |
+| `.ico`, `.ico--14`, `.ico--16` | Iconos SVG de trazo que toman el color del texto |
+| `.dialogo`, `.dialogo__titulo`, `.dialogo__acciones` | Diálogos con cabecera separada, pie sobre crema y fondo desenfocado |
+
+Cada pantalla muestra el logo de MotorLab como marca de agua fija en la esquina inferior derecha (`<app-logo class="filigrana" />`, con opacidad 0,035).
+
+Componentes compartidos añadidos para el rediseño:
+
+- **`app-avatar`**: foto de perfil circular. Sin foto, el administrador muestra el logo del taller y el resto, sus iniciales. El tamaño se ajusta con `--avatar-tamano`.
+- **`app-visor-foto`**: muestra una foto de perfil en grande. Se cierra con la X, con Escape o pulsando fuera.
+
+## Limitaciones conocidas
+
+- **Fotos de perfil.** La API no las admite: [FotoPerfilService](src/app/core/services/foto-perfil.service.ts) las guarda en el `localStorage` del navegador. En el directorio de usuarios solo se ve la foto de quien la subió desde ese mismo navegador.
+- **Búsqueda de usuarios.** `GET /usuarios` no filtra por texto, así que el buscador de `/taller/usuarios` filtra solo la página cargada.
+- **Periodo del panel.** `GET /panel/metricas` devuelve siempre el mes en curso, así que el panel no permite elegir otro mes.
 
 ## Convenciones
 

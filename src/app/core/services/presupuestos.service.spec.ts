@@ -19,6 +19,9 @@ const PRESUPUESTO: Presupuesto = {
   motivoRechazo: null,
   enviadoEn: '2026-11-09T10:00:00Z',
   respondidoEn: null,
+  pagadoEn: null,
+  metodoPago: null,
+  estadoPago: null,
   avisosStock: []
 };
 
@@ -164,6 +167,37 @@ describe('PresupuestosService', () => {
     peticion.flush(TOTALES);
 
     expect(emitido).toEqual(TOTALES);
+  });
+
+  it('iniciarPago hace POST /presupuestos/1/pago sin importe y emite la URL de Stripe', () => {
+    let url: string | undefined;
+
+    servicio.iniciarPago(1).subscribe((sesion) => (url = sesion.url));
+
+    const peticion = httpSimulado.expectOne('/api/v1/presupuestos/1/pago');
+    expect(peticion.request.method).toBe('POST');
+    expect(peticion.request.body).toBeNull();
+    peticion.flush({ url: 'https://checkout.stripe.com/c/pay/cs_test_1' });
+
+    expect(url).toBe('https://checkout.stripe.com/c/pay/cs_test_1');
+  });
+
+  it('elegirEfectivo hace POST /presupuestos/1/pago/efectivo sin cuerpo', () => {
+    servicio.elegirEfectivo(1).subscribe();
+
+    const peticion = httpSimulado.expectOne('/api/v1/presupuestos/1/pago/efectivo');
+    expect(peticion.request.method).toBe('POST');
+    expect(peticion.request.body).toBeNull();
+    peticion.flush(null, { status: 204, statusText: 'No Content' });
+  });
+
+  it('cobrarEfectivo hace POST /presupuestos/1/cobro-efectivo sin cuerpo', () => {
+    servicio.cobrarEfectivo(1).subscribe();
+
+    const peticion = httpSimulado.expectOne('/api/v1/presupuestos/1/cobro-efectivo');
+    expect(peticion.request.method).toBe('POST');
+    expect(peticion.request.body).toBeNull();
+    peticion.flush(null, { status: 204, statusText: 'No Content' });
   });
 
   it('enviar hace POST /presupuestos/1/enviar sin cuerpo', () => {

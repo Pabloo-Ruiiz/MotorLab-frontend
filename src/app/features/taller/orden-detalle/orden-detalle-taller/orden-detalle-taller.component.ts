@@ -40,6 +40,7 @@ import { LineaTiempoComponent } from '@shared/components/linea-tiempo/linea-tiem
 import { MatriculaComponent } from '@shared/components/matricula/matricula.component';
 import { ModalConfirmacionComponent } from '@shared/components/modal-confirmacion/modal-confirmacion.component';
 import { PillEstadoComponent } from '@shared/components/pill-estado/pill-estado.component';
+import { PillPagoComponent } from '@shared/components/pill-pago/pill-pago.component';
 import { LogoComponent } from '@shared/components/logo/logo.component';
 import { VacioComponent } from '@shared/components/vacio/vacio.component';
 import { EurosPipe } from '@shared/pipes/euros.pipe';
@@ -80,6 +81,8 @@ const ICONOS = {
   reloj: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20ZM12 6v6l4 2'
 } as const;
 
+const FORMATO_EUROS = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
+
 const NIVEL_URGENCIA = { baja: 1, media: 2, alta: 3 } as const;
 
 interface DatosOrden {
@@ -101,6 +104,7 @@ interface DatosOrden {
     ModalConfirmacionComponent,
     LogoComponent,
     PillEstadoComponent,
+    PillPagoComponent,
     ReactiveFormsModule,
     RouterLink,
     VacioComponent
@@ -148,6 +152,7 @@ export class OrdenDetalleTallerComponent {
   protected readonly errorCarga = signal<string | null>(null);
   protected readonly datos = signal<DatosOrden | null>(null);
   protected readonly confirmandoCancelacion = signal(false);
+  protected readonly confirmandoCobro = signal(false);
   protected readonly procesando = signal(false);
 
   private readonly mecanicos = toSignal(
@@ -178,6 +183,24 @@ export class OrdenDetalleTallerComponent {
   protected readonly siguientes = computed(() => {
     const datos = this.datos();
     return datos === null ? [] : siguientesEstados(datos.orden.estado, 'admin');
+  });
+
+  // Solo hay pago que seguir cuando el cliente ha autorizado el presupuesto
+  protected readonly pago = computed(() => {
+    const presupuesto = this.datos()?.orden.presupuesto;
+    if (!presupuesto || presupuesto.estado !== 'autorizado') {
+      return null;
+    }
+    const estado = presupuesto.estadoPago;
+    return {
+      estado,
+      pagado: estado === 'pagado_tarjeta' || estado === 'pagado_efectivo'
+    };
+  });
+
+  protected readonly mensajeCobro = computed(() => {
+    const total = this.datos()?.orden.presupuesto?.total ?? 0;
+    return `Confirma que has recibido ${FORMATO_EUROS.format(total)} en efectivo. El cliente recibirá un aviso.`;
   });
 
   protected readonly cancelable = computed(() => {
@@ -269,6 +292,14 @@ export class OrdenDetalleTallerComponent {
       'Estado actualizado',
       () => this.nota.reset()
     );
+  }
+
+  protected confirmarCobro(): void {
+    const presupuesto = this.datos()?.orden.presupuesto;
+    this.confirmandoCobro.set(false);
+    if (presupuesto) {
+      this.ejecutar(this.presupuestos.cobrarEfectivo(presupuesto.id), 'Cobro en efectivo registrado');
+    }
   }
 
   protected confirmarCancelacion(): void {

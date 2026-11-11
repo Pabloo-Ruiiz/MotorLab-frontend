@@ -3,6 +3,7 @@ import type {
   ContactoPreferido,
   CuandoOcurre,
   EstadoOrden,
+  EstadoPago,
   EstadoPresupuesto,
   FranjaPreferida,
   TipoServicio,
@@ -48,6 +49,7 @@ export interface OrdenResumen {
   fechaEstimada: string | null; // date-time
   presupuestoEstado: EstadoPresupuesto | null;
   presupuestoTotal: number | null;
+  presupuestoEstadoPago: EstadoPago | null;
 }
 
 // OpenAPI: PresupuestoResumenResponse
@@ -55,6 +57,7 @@ export interface PresupuestoResumen {
   id: number;
   estado: EstadoPresupuesto;
   total: number;
+  estadoPago: EstadoPago | null;
 }
 
 // OpenAPI: OrdenDetalleResponse

@@ -41,6 +41,9 @@
           >
             {{ etiquetasPresupuesto[presupuesto.estado] }}
           </span>
+          @if (presupuesto.pagadoEn) {
+            <span class="estado-orden estado-orden--grande" data-tono="exito">Pagado</span>
+          }
         </div>
 
         <ul class="meta" role="list">

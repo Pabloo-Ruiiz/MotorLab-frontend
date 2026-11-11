@@ -69,8 +69,13 @@
         </div>
 
         <footer class="orden__pie">
-          <span class="estado-orden" [attr.data-tono]="tonosEstado[orden.estado]">
-            {{ etiquetasEstado[orden.estado] }}
+          <span class="orden__estados">
+            <span class="estado-orden" [attr.data-tono]="tonosEstado[orden.estado]">
+              {{ etiquetasEstado[orden.estado] }}
+            </span>
+            @if (orden.presupuestoEstado === 'autorizado') {
+              <app-pill-pago [estado]="orden.presupuestoEstadoPago" />
+            }
           </span>
           <span class="orden__ver" aria-hidden="true">
             Ver detalle

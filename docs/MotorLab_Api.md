@@ -76,7 +76,10 @@ interface ApiErrorBody {
 | 409 | `PRESUPUESTO_NO_EDITABLE` | El presupuesto ya no está en borrador |
 | 409 | `PRESUPUESTO_YA_EXISTE` | La orden ya tiene presupuesto |
 | 409 | `CONFLICTO` | Otro conflicto (vehículo con órdenes abiertas, referencia de pieza repetida, pieza usada en presupuestos) |
+| 409 | `CONFLICTO` | También: presupuesto que ya está pagado |
+| 400 | `FIRMA_NO_VALIDA` | Aviso de Stripe sin firma válida (solo lo recibe Stripe, no el frontend) |
 | 429 | `DEMASIADOS_INTENTOS` | Solo si se activa el límite de intentos de login |
+| 503 | `PAGOS_NO_DISPONIBLES` | El pago en línea no está configurado o Stripe no responde |
 | 500 | código genérico | Error del servidor («Error interno del servidor») |
 
 > **Comprobación recomendada (paso F02):** el cuerpo de error no sale en el JSON. Provoca uno (login con contraseña mala) y mira si llega `error.codigo`. Si el backend devolviera otro formato, ajusta `ApiErrorBody`.
@@ -164,8 +167,10 @@ interface Presupuesto {                                                         
   subtotal: number; ivaPorcentaje: number; iva: number; total: number;
   tiempoEstimadoHoras: number | null; garantiaMeses: number; motivoRechazo: string | null;
   enviadoEn: string | null; respondidoEn: string | null;
+  pagadoEn: string | null; // lo fija el aviso de Stripe al confirmar el cobro
   avisosStock: AvisoStock[]; // solo se rellena para admin y mecánico
 }
+interface SesionPago { url: string; }                                                                          // OpenAPI: SesionPagoResponse
 interface LineaRequest { tipo: TipoLinea; piezaId?: number; concepto?: string; cantidad: number; precioUnitario?: number; }
 interface LineaCreada { linea: Linea; totales: Totales; avisoStock: AvisoStock | null; }                      // OpenAPI: LineaCreadaResponse
 interface PresupuestoUpdateRequest { tiempoEstimadoHoras?: number | null; garantiaMeses?: number | null; }
@@ -239,6 +244,12 @@ Leyenda de roles: **C** = cliente, **M** = mecánico, **A** = administrador. Tod
 | `POST /presupuestos/{id}/enviar` | A | — | `Presupuesto` |
 | `POST /presupuestos/{id}/autorizar` | C (propietario) | — | `Presupuesto` |
 | `POST /presupuestos/{id}/rechazar` | C (propietario) | `RechazoRequest` | `Presupuesto` |
+| `POST /presupuestos/{id}/pago` | C (propietario) | — | `SesionPago` (409 si no está `autorizado` o ya está pagado; 503 si no hay pagos) |
+| `POST /presupuestos/{id}/pago/efectivo` | C (propietario) | — | 204: pagará en efectivo al recoger (`estadoPago = pendiente_efectivo`); 409 si no está `autorizado` o ya está pagado |
+| `POST /presupuestos/{id}/cobro-efectivo` | A | — | 204: cobrado en efectivo (`estadoPago = pagado_efectivo`); 409 igual que el anterior |
+| `POST /pagos/stripe/webhook` | público, firmado por Stripe | evento de Stripe | 200 sin cuerpo (no lo llama el frontend) |
+
+**Pago con Stripe.** El frontend redirige a `SesionPago.url` y Stripe devuelve al cliente a `/cliente/ordenes/{ordenId}/presupuesto?pago=ok` (o `?pago=cancelado`). Volver con `?pago=ok` no prueba nada: el presupuesto solo cuenta como pagado cuando `pagadoEn` deja de ser `null`, porque lo fija el webhook tras verificar la firma de Stripe. El importe lo calcula siempre el backend.
 
 ### Piezas
 

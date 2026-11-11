@@ -37,6 +37,11 @@ export type EstadoOrden =
 
 export type EstadoPresupuesto = 'borrador' | 'enviado' | 'autorizado' | 'rechazado';
 
+export type MetodoPago = 'tarjeta' | 'efectivo';
+
+// null mientras el cliente no ha elegido cómo pagar
+export type EstadoPago = 'pendiente_efectivo' | 'pagado_tarjeta' | 'pagado_efectivo';
+
 export type TipoLinea = 'pieza' | 'mano_obra';
 
 export type TipoNotificacion =

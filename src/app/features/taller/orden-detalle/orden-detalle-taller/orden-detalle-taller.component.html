@@ -32,6 +32,9 @@
             >
               {{ etiquetasEstado[datos.orden.estado] }}
             </span>
+            @if (pago(); as pago) {
+              <app-pill-pago [estado]="pago.estado" />
+            }
           </div>
           @if (creada(); as creada) {
             <p class="texto-suave">
@@ -320,18 +323,75 @@
         }
 
         @if (datos.orden.presupuesto; as presupuesto) {
-          <section class="bloque presupuesto" aria-label="Presupuesto">
-            <div class="presupuesto__datos">
-              <app-pill-estado [estadoPresupuesto]="presupuesto.estado" />
+          <section class="bloque" aria-labelledby="orden-presupuesto">
+            <h2 class="bloque__titulo" id="orden-presupuesto">
+              <svg class="ico ico--16" viewBox="0 0 24 24">
+                <path [attr.d]="iconos.presupuesto" />
+              </svg>
+              Presupuesto y pago
+            </h2>
+
+            <div class="presupuesto">
+              <div class="presupuesto__datos">
+                <app-pill-estado [estadoPresupuesto]="presupuesto.estado" />
+                @if (pago(); as pago) {
+                  <app-pill-pago [estado]="pago.estado" />
+                }
+              </div>
               <strong class="presupuesto__total">{{ presupuesto.total | euros }}</strong>
             </div>
-            <a
-              class="btn btn--fantasma"
-              [routerLink]="['/taller/ordenes', datos.orden.id, 'presupuesto']"
-            >
-              Ver presupuesto
-              <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.flecha" /></svg>
-            </a>
+
+            @if (pago(); as pago) {
+              @if (pago.pagado) {
+                <div class="cobro" data-tono="exito">
+                  <svg class="ico cobro__icono" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" /></svg>
+                  <p>
+                    @if (pago.estado === 'pagado_tarjeta') {
+                      <strong>Pagado online.</strong> Se puede entregar el vehículo sin cobrar nada.
+                    } @else {
+                      <strong>Cobrado en efectivo.</strong> No queda nada pendiente de pago.
+                    }
+                  </p>
+                </div>
+              } @else {
+                <div class="cobro" [attr.data-tono]="datos.orden.estado === 'listo' ? 'error' : 'aviso'">
+                  <svg class="ico cobro__icono" viewBox="0 0 24 24">
+                    <path d="M3 7h18v10H3zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM6 12h.01M18 12h.01" />
+                  </svg>
+                  <p>
+                    @if (pago.estado === 'pendiente_efectivo') {
+                      <strong>El cliente pagará en efectivo.</strong>
+                    } @else {
+                      <strong>Todavía no ha pagado.</strong>
+                    }
+                    Cobra {{ presupuesto.total | euros }} antes de entregarle las llaves.
+                  </p>
+                </div>
+              }
+            }
+
+            <div class="bloque__acciones">
+              <a
+                class="btn btn--fantasma"
+                [routerLink]="['/taller/ordenes', datos.orden.id, 'presupuesto']"
+              >
+                Ver presupuesto
+                <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.flecha" /></svg>
+              </a>
+              @if (pago(); as pago) {
+                @if (!pago.pagado) {
+                  <button
+                    type="button"
+                    class="btn btn--primario"
+                    [disabled]="procesando()"
+                    (click)="confirmandoCobro.set(true)"
+                  >
+                    <svg class="ico ico--16" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" /></svg>
+                    Marcar como cobrado en efectivo
+                  </button>
+                }
+              }
+            </div>
           </section>
         }
       </div>
@@ -350,6 +410,16 @@
     </div>
   }
 </main>
+
+<app-modal-confirmacion
+  [abierto]="confirmandoCobro()"
+  titulo="Marcar como cobrado"
+  [mensaje]="mensajeCobro()"
+  textoConfirmar="Marcar como cobrado"
+  textoCancelar="Volver"
+  (confirmar)="confirmarCobro()"
+  (cancelar)="confirmandoCobro.set(false)"
+/>
 
 <app-modal-confirmacion
   [abierto]="confirmandoCancelacion()"
