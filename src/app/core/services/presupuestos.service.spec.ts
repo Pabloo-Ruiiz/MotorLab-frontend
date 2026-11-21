@@ -208,4 +208,38 @@ describe('PresupuestosService', () => {
     expect(peticion.request.body).toBeNull();
     peticion.flush(PRESUPUESTO);
   });
+
+  it('obtenerDefinitivo hace GET /ordenes/9/presupuesto-definitivo', () => {
+    servicio.obtenerDefinitivo(9).subscribe();
+
+    const peticion = httpSimulado.expectOne('/api/v1/ordenes/9/presupuesto-definitivo');
+    expect(peticion.request.method).toBe('GET');
+    peticion.flush({});
+  });
+
+  it('descargarDefinitivo pide el PDF y lo guarda con el nombre que da el servidor', () => {
+    const crearUrl = vi.fn(() => 'blob:presupuesto');
+    Object.assign(URL, { createObjectURL: crearUrl, revokeObjectURL: vi.fn() });
+    const pulsar = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => undefined);
+    let guardado = false;
+
+    servicio.descargarDefinitivo(9).subscribe(() => (guardado = true));
+
+    const peticion = httpSimulado.expectOne('/api/v1/ordenes/9/presupuesto-definitivo/pdf');
+    expect(peticion.request.method).toBe('GET');
+    expect(peticion.request.responseType).toBe('blob');
+    peticion.flush(new Blob(['%PDF'], { type: 'application/pdf' }), {
+      headers: { 'Content-Disposition': 'attachment; filename="presupuesto-PD-2026-00012.pdf"' }
+    });
+
+    expect(guardado).toBe(true);
+    expect(crearUrl).toHaveBeenCalled();
+    expect(pulsar).toHaveBeenCalledTimes(1);
+    expect((pulsar.mock.contexts[0] as HTMLAnchorElement).download).toBe(
+      'presupuesto-PD-2026-00012.pdf'
+    );
+    pulsar.mockRestore();
+  });
 });

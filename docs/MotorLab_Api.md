@@ -171,6 +171,15 @@ interface Presupuesto {                                                         
   avisosStock: AvisoStock[]; // solo se rellena para admin y mecánico
 }
 interface SesionPago { url: string; }                                                                          // OpenAPI: SesionPagoResponse
+interface PresupuestoDefinitivo {                                                                              // OpenAPI: PresupuestoDefinitivoResponse
+  id: number; numero: string; ordenId: number; presupuestoId: number; emitidoEn: string; tipoServicio: TipoServicio;
+  cliente: { nombre: string; email: string; telefono: string };
+  vehiculo: { matricula: string; marca: string; modelo: string; version: string | null; anio: number; kilometros: number };
+  taller: { nombre: string; direccion: string | null; telefono: string | null; email: string | null; cif: string | null };
+  lineas: LineaDefinitiva[];
+  subtotalManoObra: number; subtotalPiezas: number; subtotal: number; ivaPorcentaje: number; iva: number; total: number;
+}
+interface LineaDefinitiva { posicion: number; tipo: TipoLinea; referencia: string | null; concepto: string; cantidad: number; precioUnitario: number; importe: number; }
 interface LineaRequest { tipo: TipoLinea; piezaId?: number; concepto?: string; cantidad: number; precioUnitario?: number; }
 interface LineaCreada { linea: Linea; totales: Totales; avisoStock: AvisoStock | null; }                      // OpenAPI: LineaCreadaResponse
 interface PresupuestoUpdateRequest { tiempoEstimadoHoras?: number | null; garantiaMeses?: number | null; }
@@ -244,10 +253,14 @@ Leyenda de roles: **C** = cliente, **M** = mecánico, **A** = administrador. Tod
 | `POST /presupuestos/{id}/enviar` | A | — | `Presupuesto` |
 | `POST /presupuestos/{id}/autorizar` | C (propietario) | — | `Presupuesto` |
 | `POST /presupuestos/{id}/rechazar` | C (propietario) | `RechazoRequest` | `Presupuesto` |
-| `POST /presupuestos/{id}/pago` | C (propietario) | — | `SesionPago` (409 si no está `autorizado` o ya está pagado; 503 si no hay pagos) |
-| `POST /presupuestos/{id}/pago/efectivo` | C (propietario) | — | 204: pagará en efectivo al recoger (`estadoPago = pendiente_efectivo`); 409 si no está `autorizado` o ya está pagado |
+| `POST /presupuestos/{id}/pago` | C (propietario) | — | `SesionPago` (409 si no está `autorizado`, la orden no está en `listo`/`entregado` o ya está pagado; 503 si no hay pagos) |
+| `POST /presupuestos/{id}/pago/efectivo` | C (propietario) | — | 204: pagará en efectivo al recoger (`estadoPago = pendiente_efectivo`); 409 si no está `autorizado`, la orden no está en `listo`/`entregado` o ya está pagado |
 | `POST /presupuestos/{id}/cobro-efectivo` | A | — | 204: cobrado en efectivo (`estadoPago = pagado_efectivo`); 409 igual que el anterior |
 | `POST /pagos/stripe/webhook` | público, firmado por Stripe | evento de Stripe | 200 sin cuerpo (no lo llama el frontend) |
+| `GET /ordenes/{ordenId}/presupuesto-definitivo` | A, M (asignada), C (suya) | — | `PresupuestoDefinitivo` (404 hasta que la orden está en `listo` o `entregado`) |
+| `GET /ordenes/{ordenId}/presupuesto-definitivo/pdf` | A, M (asignada), C (suya) | — | PDF (`Content-Disposition: attachment; filename="presupuesto-PD-AAAA-NNNNN.pdf"`); 404 igual que el anterior |
+
+**Presupuesto previo y presupuesto definitivo.** El `Presupuesto` se prepara antes de reparar y el cliente lo autoriza; sus importes son una estimación. Cuando el mecánico pasa la orden a `listo`, el backend emite el `PresupuestoDefinitivo`: una copia de los trabajos, las piezas y los importes de la reparación que ya no cambia aunque varíen los precios del catálogo. Solo hay uno por orden.
 
 **Pago con Stripe.** El frontend redirige a `SesionPago.url` y Stripe devuelve al cliente a `/cliente/ordenes/{ordenId}/presupuesto?pago=ok` (o `?pago=cancelado`). Volver con `?pago=ok` no prueba nada: el presupuesto solo cuenta como pagado cuando `pagadoEn` deja de ser `null`, porque lo fija el webhook tras verificar la firma de Stripe. El importe lo calcula siempre el backend.
 

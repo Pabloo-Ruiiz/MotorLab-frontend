@@ -8,7 +8,7 @@ import {
   Validators
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, forkJoin, Observable, of, startWith, Subject, switchMap } from 'rxjs';
+import { catchError, finalize, forkJoin, Observable, of, startWith, Subject, switchMap } from 'rxjs';
 
 import {
   ETIQUETAS_CONDUCCION_SEGURA,
@@ -26,7 +26,7 @@ import { OrdenesService } from '@core/services/ordenes.service';
 import { PresupuestosService } from '@core/services/presupuestos.service';
 import { ToastService } from '@core/services/toast.service';
 import { aApiError, type ApiError, type DetalleError } from '@core/util/api-error';
-import { siguientesEstados, TRANSICIONES } from '@core/util/estados';
+import { esReparacionFinalizada, siguientesEstados, TRANSICIONES } from '@core/util/estados';
 import {
   aplicarErroresServidor,
   campoConError,
@@ -154,6 +154,22 @@ export class OrdenDetalleTallerComponent {
   protected readonly confirmandoCancelacion = signal(false);
   protected readonly confirmandoCobro = signal(false);
   protected readonly procesando = signal(false);
+  protected readonly descargandoDefinitivo = signal(false);
+
+  protected readonly reparacionFinalizada = computed(() => {
+    const datos = this.datos();
+    return datos !== null && esReparacionFinalizada(datos.orden.estado);
+  });
+
+  protected descargarDefinitivo(): void {
+    this.descargandoDefinitivo.set(true);
+    this.presupuestos
+      .descargarDefinitivo(this.id)
+      .pipe(finalize(() => this.descargandoDefinitivo.set(false)))
+      .subscribe({
+        error: () => this.toast.error('No se ha podido descargar el presupuesto definitivo')
+      });
+  }
 
   private readonly mecanicos = toSignal(
     this.usuarios.listarMecanicos().pipe(catchError(() => of([]))),
@@ -185,10 +201,10 @@ export class OrdenDetalleTallerComponent {
     return datos === null ? [] : siguientesEstados(datos.orden.estado, 'admin');
   });
 
-  // Solo hay pago que seguir cuando el cliente ha autorizado el presupuesto
+  // Solo hay pago que seguir con el presupuesto autorizado y el vehículo listo para recoger
   protected readonly pago = computed(() => {
     const presupuesto = this.datos()?.orden.presupuesto;
-    if (!presupuesto || presupuesto.estado !== 'autorizado') {
+    if (!presupuesto || presupuesto.estado !== 'autorizado' || !this.reparacionFinalizada()) {
       return null;
     }
     const estado = presupuesto.estadoPago;

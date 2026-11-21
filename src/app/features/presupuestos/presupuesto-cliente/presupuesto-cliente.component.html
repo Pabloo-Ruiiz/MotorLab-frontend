@@ -16,7 +16,7 @@
             Presupuesto <span class="documento__numero">P-{{ datos.presupuesto.id }}</span>
           </h2>
           <p class="documento__meta">
-            Orden #{{ datos.orden.id }}
+            Orden #{{ datos.orden.id }} <span aria-hidden="true">·</span> Presupuesto previo a la reparación
             @if (datos.presupuesto.enviadoEn; as enviado) {
               <span aria-hidden="true">·</span> Emitido el {{ enviado | fechaHora: 'corta' }}
             }
@@ -265,6 +265,11 @@
               <button type="button" class="btn btn--secundario" (click)="reintentar()">
                 Actualizar
               </button>
+            </div>
+          } @else if (!pagoDisponible()) {
+            <div class="aviso aviso--info" role="status">
+              Podrás pagar {{ datos.presupuesto.total | euros }} cuando tu vehículo esté listo para
+              recoger: con tarjeta desde la aplicación o en efectivo en el taller.
             </div>
           } @else {
             <div class="acciones pago">

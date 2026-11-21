@@ -1,0 +1,19 @@
+// El resto del documento usa los estilos de presupuesto-cliente.component.scss
+.definitivo__grupo th {
+  padding-block: var(--mo-esp-8);
+  background-color: var(--mo-arena);
+  color: var(--mo-tinta);
+  text-align: left;
+}
+
+.definitivo__subtotal td {
+  color: var(--mo-acero);
+  text-align: right;
+}
+
+.definitivo__cliente,
+.definitivo__taller {
+  color: var(--mo-acero);
+  font-size: var(--mo-tipo-14);
+  overflow-wrap: anywhere;
+}
