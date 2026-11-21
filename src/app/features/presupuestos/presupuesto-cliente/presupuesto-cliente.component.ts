@@ -1,5 +1,12 @@
 import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, linkedSignal, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  linkedSignal,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -17,6 +24,7 @@ import { OrdenesService } from '@core/services/ordenes.service';
 import { PresupuestosService } from '@core/services/presupuestos.service';
 import { ToastService } from '@core/services/toast.service';
 import { aApiError } from '@core/util/api-error';
+import { esReparacionFinalizada } from '@core/util/estados';
 import { matriculaLegible } from '@core/util/matricula';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { ErroresCampoComponent } from '@shared/components/errores-campo/errores-campo.component';
@@ -101,6 +109,12 @@ export class PresupuestoClienteComponent {
   protected readonly procesando = signal(false);
   protected readonly pagando = signal(false);
   protected readonly confirmandoPago = signal(false);
+
+  // Se paga al recoger el vehículo: hasta que la reparación termina no se ofrece el pago
+  protected readonly pagoDisponible = computed(() => {
+    const datos = this.datos();
+    return datos !== null && esReparacionFinalizada(datos.orden.estado);
+  });
 
   // Método elegido en el selector. Si el cliente ya se comprometió a pagar en efectivo, parte de él
   protected readonly metodo = linkedSignal<DatosPresupuesto | null, MetodoPago>({

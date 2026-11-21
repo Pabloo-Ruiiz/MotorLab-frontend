@@ -378,6 +378,16 @@
                 Ver presupuesto
                 <svg class="ico ico--16" viewBox="0 0 24 24"><path [attr.d]="iconos.flecha" /></svg>
               </a>
+              @if (reparacionFinalizada()) {
+                <button
+                  type="button"
+                  class="btn btn--fantasma"
+                  [disabled]="descargandoDefinitivo()"
+                  (click)="descargarDefinitivo()"
+                >
+                  {{ descargandoDefinitivo() ? 'Preparando…' : 'Presupuesto definitivo (PDF)' }}
+                </button>
+              }
               @if (pago(); as pago) {
                 @if (!pago.pagado) {
                   <button

@@ -108,6 +108,17 @@
   font-weight: var(--mo-peso-normal);
 }
 
+.presupuesto__titulo {
+  font-size: var(--mo-tipo-16);
+  font-weight: var(--mo-peso-medio);
+}
+
+.presupuesto__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mo-esp-8);
+}
+
 .presupuesto-autorizado {
   align-self: flex-start;
   font-size: var(--mo-tipo-14);

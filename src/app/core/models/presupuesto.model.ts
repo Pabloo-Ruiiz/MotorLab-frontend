@@ -1,4 +1,10 @@
-import type { EstadoPago, EstadoPresupuesto, MetodoPago, TipoLinea } from './tipos.model';
+import type {
+  EstadoPago,
+  EstadoPresupuesto,
+  MetodoPago,
+  TipoLinea,
+  TipoServicio
+} from './tipos.model';
 
 // OpenAPI: LineaResponse
 export interface Linea {
@@ -76,4 +82,48 @@ export interface PresupuestoUpdateRequest {
 
 export interface RechazoRequest {
   motivo?: string | null;
+}
+
+// OpenAPI: PresupuestoDefinitivoResponse. Se emite al finalizar la reparación y sus importes no cambian
+export interface PresupuestoDefinitivo {
+  id: number;
+  numero: string; // PD-2026-00012
+  ordenId: number;
+  presupuestoId: number;
+  emitidoEn: string; // date-time
+  tipoServicio: TipoServicio;
+  cliente: { nombre: string; email: string; telefono: string };
+  vehiculo: {
+    matricula: string;
+    marca: string;
+    modelo: string;
+    version: string | null;
+    anio: number;
+    kilometros: number;
+  };
+  // Los datos del taller sin configurar llegan como null
+  taller: {
+    nombre: string;
+    direccion: string | null;
+    telefono: string | null;
+    email: string | null;
+    cif: string | null;
+  };
+  lineas: LineaDefinitiva[];
+  subtotalManoObra: number;
+  subtotalPiezas: number;
+  subtotal: number;
+  ivaPorcentaje: number;
+  iva: number;
+  total: number;
+}
+
+export interface LineaDefinitiva {
+  posicion: number;
+  tipo: TipoLinea;
+  referencia: string | null;
+  concepto: string;
+  cantidad: number;
+  precioUnitario: number;
+  importe: number;
 }

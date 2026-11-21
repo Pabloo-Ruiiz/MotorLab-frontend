@@ -37,11 +37,64 @@
       </span>
     </div>
 
+    <!-- El definitivo solo existe cuando la reparación ha finalizado; antes, el importe es una estimación -->
+    @if (reparacionFinalizada()) {
+      <section class="panel presupuesto" aria-label="Presupuesto definitivo">
+        <div>
+          <p class="presupuesto__texto">Presupuesto definitivo de la reparación</p>
+          <strong class="presupuesto__titulo">Trabajos, piezas e importes finales</strong>
+        </div>
+        <div class="presupuesto__acciones">
+          <a
+            class="btn btn--secundario"
+            [routerLink]="['/cliente/ordenes', datos.orden.id, 'presupuesto-definitivo']"
+          >
+            Ver presupuesto
+          </a>
+          <button
+            type="button"
+            class="btn btn--primario"
+            [disabled]="descargando()"
+            (click)="descargarDefinitivo()"
+          >
+            {{ descargando() ? 'Preparando…' : 'Descargar PDF' }}
+          </button>
+        </div>
+      </section>
+
+      @if (datos.orden.presupuesto; as presupuesto) {
+        @if (
+          presupuesto.estado === 'autorizado' &&
+          presupuesto.estadoPago !== 'pagado_tarjeta' &&
+          presupuesto.estadoPago !== 'pagado_efectivo'
+        ) {
+          <section class="panel presupuesto" aria-label="Pago de la reparación">
+            <div>
+              <p class="presupuesto__texto">
+                {{
+                  presupuesto.estadoPago === 'pendiente_efectivo'
+                    ? 'Pagarás en efectivo al recoger el vehículo'
+                    : 'Pendiente de pago · tarjeta o efectivo al recoger'
+                }}
+              </p>
+              <strong class="presupuesto__total">{{ presupuesto.total | euros }}</strong>
+            </div>
+            <a
+              class="btn btn--primario"
+              [routerLink]="['/cliente/ordenes', datos.orden.id, 'presupuesto']"
+            >
+              {{ presupuesto.estadoPago === 'pendiente_efectivo' ? 'Ver pago' : 'Pagar' }}
+            </a>
+          </section>
+        }
+      }
+    }
+
     @if (datos.orden.presupuesto; as presupuesto) {
       @if (presupuesto.estado === 'enviado') {
         <section class="panel presupuesto" aria-label="Presupuesto pendiente de respuesta">
           <div>
-            <p class="presupuesto__texto">Tu presupuesto está listo</p>
+            <p class="presupuesto__texto">Presupuesto previo listo · importe estimado</p>
             <strong class="presupuesto__total">{{ presupuesto.total | euros }}</strong>
           </div>
           <a
@@ -56,7 +109,7 @@
           class="presupuesto-autorizado"
           [routerLink]="['/cliente/ordenes', datos.orden.id, 'presupuesto']"
         >
-          Ver presupuesto autorizado
+          Ver presupuesto previo autorizado
         </a>
       }
     }

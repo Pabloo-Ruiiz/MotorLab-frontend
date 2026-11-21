@@ -132,6 +132,14 @@ export const routes: Routes = [
             (m) => m.PresupuestoClienteComponent,
           ),
       },
+      {
+        path: 'ordenes/:id/presupuesto-definitivo',
+        data: { titulo: 'Presupuesto definitivo' },
+        loadComponent: () =>
+          import('@features/presupuestos/presupuesto-definitivo/presupuesto-definitivo.component').then(
+            (m) => m.PresupuestoDefinitivoComponent,
+          ),
+      },
       { path: 'avisos', data: { titulo: 'Avisos' }, loadComponent: avisos },
       {
         path: 'perfil',

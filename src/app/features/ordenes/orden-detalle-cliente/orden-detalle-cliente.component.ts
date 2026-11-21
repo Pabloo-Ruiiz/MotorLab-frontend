@@ -25,9 +25,10 @@ import {
   type Seguimiento
 } from '@core/models';
 import { OrdenesService } from '@core/services/ordenes.service';
+import { PresupuestosService } from '@core/services/presupuestos.service';
 import { ToastService } from '@core/services/toast.service';
 import { aApiError } from '@core/util/api-error';
-import { esEstadoFinal } from '@core/util/estados';
+import { esEstadoFinal, esReparacionFinalizada } from '@core/util/estados';
 import { matriculaLegible } from '@core/util/matricula';
 import { CargandoComponent } from '@shared/components/cargando/cargando.component';
 import { IconoCocheComponent } from '@shared/components/icono-coche/icono-coche.component';
@@ -85,6 +86,7 @@ interface DatosOrden {
 })
 export class OrdenDetalleClienteComponent {
   private readonly ordenes = inject(OrdenesService);
+  private readonly presupuestos = inject(PresupuestosService);
   private readonly toast = inject(ToastService);
   private readonly id = Number(inject(ActivatedRoute).snapshot.paramMap.get('id'));
 
@@ -105,6 +107,22 @@ export class OrdenDetalleClienteComponent {
   protected readonly datos = signal<DatosOrden | null>(null);
   protected readonly confirmandoCancelacion = signal(false);
   protected readonly cancelando = signal(false);
+  protected readonly descargando = signal(false);
+
+  protected readonly reparacionFinalizada = computed(() => {
+    const datos = this.datos();
+    return datos !== null && esReparacionFinalizada(datos.orden.estado);
+  });
+
+  protected descargarDefinitivo(): void {
+    this.descargando.set(true);
+    this.presupuestos
+      .descargarDefinitivo(this.id)
+      .pipe(finalize(() => this.descargando.set(false)))
+      .subscribe({
+        error: () => this.toast.error('No se ha podido descargar el presupuesto. Inténtalo de nuevo')
+      });
+  }
 
   protected readonly cancelable = computed(() => {
     const datos = this.datos();

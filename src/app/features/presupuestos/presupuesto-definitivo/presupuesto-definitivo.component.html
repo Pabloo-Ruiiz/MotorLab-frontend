@@ -1,0 +1,139 @@
+<main class="presupuesto">
+  @if (cargando()) {
+    <app-cargando />
+  } @else if (noDisponible()) {
+    <app-vacio
+      titulo="El presupuesto definitivo todavía no está disponible"
+      texto="Se emite cuando el taller finaliza la reparación de tu vehículo."
+    />
+  } @else if (errorCarga(); as error) {
+    <div class="aviso aviso--rojo" role="alert">{{ error }}</div>
+    <button type="button" class="btn btn--secundario" (click)="reintentar()">Reintentar</button>
+  } @else if (definitivo(); as definitivo) {
+    <article class="documento" aria-labelledby="definitivo-titulo">
+      <app-logo class="filigrana" />
+
+      <header class="documento__cabecera">
+        <div class="documento__titulos">
+          <h2 id="definitivo-titulo" class="documento__titulo">
+            Presupuesto de reparación <span class="documento__numero">{{ definitivo.numero }}</span>
+          </h2>
+          <p class="documento__meta">
+            Orden #{{ definitivo.ordenId }} <span aria-hidden="true">·</span> Emitido el
+            {{ definitivo.emitidoEn | fechaHora: 'corta' }}
+          </p>
+        </div>
+        <span class="estado-orden" data-tono="exito">Reparación finalizada</span>
+      </header>
+
+      <section class="vehiculo" aria-label="Vehículo y cliente">
+        <span class="vehiculo__icono"><app-icono-coche /></span>
+        <div class="vehiculo__datos">
+          <p class="vehiculo__nombre">
+            {{ definitivo.vehiculo.marca }} {{ definitivo.vehiculo.modelo }}
+            {{ definitivo.vehiculo.version }}
+            <span class="vehiculo__anio">· {{ definitivo.vehiculo.anio }}</span>
+          </p>
+          <div class="vehiculo__detalles">
+            <span class="placa">
+              <span class="placa__banda" aria-hidden="true">E</span>
+              {{ matriculaLegible(definitivo.vehiculo.matricula) }}
+            </span>
+            <span class="vehiculo__dato">{{ numero(definitivo.vehiculo.kilometros) }} km</span>
+            <span class="vehiculo__dato">{{ servicios[definitivo.tipoServicio] }}</span>
+          </div>
+          <p class="definitivo__cliente">
+            {{ definitivo.cliente.nombre }} · {{ definitivo.cliente.email }} · {{ definitivo.cliente.telefono }}
+          </p>
+        </div>
+      </section>
+
+      <table class="tabla">
+        <caption class="sr-only">Trabajos realizados y piezas utilizadas</caption>
+        <thead>
+          <tr>
+            <th scope="col">Concepto</th>
+            <th scope="col" class="tabla__numero tabla__opcional">Cant.</th>
+            <th scope="col" class="tabla__numero tabla__opcional">Precio</th>
+            <th scope="col" class="tabla__numero">Importe</th>
+          </tr>
+        </thead>
+        @for (grupo of grupos(); track grupo.tipo) {
+          <tbody>
+            <tr class="definitivo__grupo">
+              <th scope="rowgroup" colspan="4">{{ grupo.titulo }}</th>
+            </tr>
+            @for (linea of grupo.lineas; track linea.posicion) {
+              <tr>
+                <td>
+                  <span class="tabla__concepto">{{ linea.concepto }}</span>
+                  <span class="tabla__detalle">
+                    @if (linea.referencia; as referencia) {
+                      Ref. {{ referencia }}
+                    }
+                    <span class="tabla__movil">
+                      · {{ numero(linea.cantidad) }}{{ linea.tipo === 'mano_obra' ? ' h' : '' }} ×
+                      {{ linea.precioUnitario | euros }}
+                    </span>
+                  </span>
+                </td>
+                <td class="tabla__numero tabla__opcional">
+                  {{ numero(linea.cantidad) }}{{ linea.tipo === 'mano_obra' ? ' h' : '' }}
+                </td>
+                <td class="tabla__numero tabla__opcional">{{ linea.precioUnitario | euros }}</td>
+                <td class="tabla__numero tabla__importe">{{ linea.importe | euros }}</td>
+              </tr>
+            }
+            <tr class="definitivo__subtotal">
+              <td colspan="3">Subtotal {{ grupo.titulo.toLowerCase() }}</td>
+              <td class="tabla__numero">{{ grupo.subtotal | euros }}</td>
+            </tr>
+          </tbody>
+        }
+      </table>
+
+      <div class="resumen">
+        <p class="definitivo__taller">
+          {{ definitivo.taller.nombre }}
+          @for (dato of [definitivo.taller.direccion, definitivo.taller.telefono, definitivo.taller.email]; track $index) {
+            @if (dato) {
+              · {{ dato }}
+            }
+          }
+          @if (definitivo.taller.cif; as cif) {
+            · CIF {{ cif }}
+          }
+        </p>
+
+        <dl class="totales">
+          <div class="totales__fila">
+            <dt>Base imponible</dt>
+            <dd>{{ definitivo.subtotal | euros }}</dd>
+          </div>
+          <div class="totales__fila">
+            <dt>IVA {{ numero(definitivo.ivaPorcentaje) }} %</dt>
+            <dd>{{ definitivo.iva | euros }}</dd>
+          </div>
+          <div class="totales__fila totales__fila--total">
+            <dt>Total</dt>
+            <dd>{{ definitivo.total | euros }}</dd>
+          </div>
+        </dl>
+      </div>
+    </article>
+
+    <div class="acciones">
+      <button
+        type="button"
+        class="btn btn--primario acciones__pagar"
+        [disabled]="descargando()"
+        (click)="descargar()"
+      >
+        {{ descargando() ? 'Preparando el PDF…' : 'Descargar PDF' }}
+      </button>
+      <p class="acciones__nota">
+        Importes de la reparación realizada: no cambian aunque varíen después los precios del taller.
+      </p>
+    </div>
+  }
+</main>

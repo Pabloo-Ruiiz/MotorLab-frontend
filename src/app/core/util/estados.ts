@@ -42,6 +42,13 @@ export function esEstadoFinal(estado: EstadoOrden): boolean {
   return ESTADOS_FINALES.includes(estado);
 }
 
+// El mecánico ha marcado la reparación como finalizada: desde aquí existe el presupuesto definitivo
+export const ESTADOS_REPARACION_FINALIZADA: EstadoOrden[] = ['listo', 'entregado'];
+
+export function esReparacionFinalizada(estado: EstadoOrden): boolean {
+  return ESTADOS_REPARACION_FINALIZADA.includes(estado);
+}
+
 // Estados que el rol puede elegir a continuación mediante PATCH /estado
 export function siguientesEstados(estado: EstadoOrden, rol: Rol): EstadoOrden[] {
   const transiciones = TRANSICIONES[estado];
