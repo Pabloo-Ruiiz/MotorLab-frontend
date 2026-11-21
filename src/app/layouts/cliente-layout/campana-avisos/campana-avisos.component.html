@@ -106,7 +106,7 @@
       }
     </div>
 
-    <a class="panel__pie" routerLink="/cliente/avisos" (click)="cerrar(false)">
+    <a class="panel__pie" [routerLink]="rutaAvisos()" (click)="cerrar(false)">
       Ver todos los avisos
       <svg
         width="16"

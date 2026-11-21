@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   ElementRef,
   inject,
@@ -12,6 +13,7 @@ import { Router, RouterLink } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
 
 import type { Notificacion } from '@core/models';
+import { AuthService } from '@core/services/auth.service';
 import { NotificacionesContadorService } from '@core/services/notificaciones-contador.service';
 import { NotificacionesService } from '@core/services/notificaciones.service';
 import { FechaHoraPipe } from '@shared/pipes/fecha-hora.pipe';
@@ -68,6 +70,7 @@ export class CampanaAvisosComponent {
   private readonly notificaciones = inject(NotificacionesService);
   private readonly contador = inject(NotificacionesContadorService);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elemento = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly boton = viewChild.required<ElementRef<HTMLButtonElement>>('boton');
@@ -86,6 +89,11 @@ export class CampanaAvisosComponent {
   protected readonly ahora = signal(Date.now());
 
   protected readonly transcurrido = tiempoTranscurrido;
+
+  // La campana se usa en la vista del cliente y en la del taller (administrador)
+  protected readonly rutaAvisos = computed(() =>
+    this.auth.rol() === 'cliente' ? '/cliente/avisos' : '/taller/avisos',
+  );
 
   protected alternar(): void {
     if (this.abierto()) {
@@ -156,6 +164,6 @@ export class CampanaAvisosComponent {
   }
 
   private irAAvisos(id: number): void {
-    void this.router.navigate(['/cliente/avisos'], { queryParams: { aviso: id } });
+    void this.router.navigate([this.rutaAvisos()], { queryParams: { aviso: id } });
   }
 }
