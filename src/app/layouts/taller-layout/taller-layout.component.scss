@@ -15,7 +15,9 @@
   z-index: 1;
 }
 
+// Por encima de las pestañas: el desplegable de la campana se abre sobre ellas
 .cabecera {
+  z-index: 2;
   display: flex;
   grid-row: 1;
   grid-column: 1;
@@ -27,6 +29,12 @@
     calc(var(--mo-esp-16) + env(safe-area-inset-left));
   border-bottom: 1px solid var(--mo-linea);
   background-color: var(--mo-blanco);
+}
+
+.cabecera__acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--mo-esp-4);
 }
 
 .cabecera__salir {

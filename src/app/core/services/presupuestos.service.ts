@@ -69,6 +69,11 @@ export class PresupuestosService {
     return this.http.post<SesionPago>(`${this.url}/${id}/pago`, null);
   }
 
+  // Al volver de Stripe: el backend pregunta a Stripe si el cobro se ha completado
+  verificarPago(id: number): Observable<void> {
+    return this.http.post<void>(`${this.url}/${id}/pago/verificacion`, null);
+  }
+
   // El cliente pagará en el taller al recoger el vehículo
   elegirEfectivo(id: number): Observable<void> {
     return this.http.post<void>(`${this.url}/${id}/pago/efectivo`, null);

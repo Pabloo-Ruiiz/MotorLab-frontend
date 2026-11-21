@@ -12,6 +12,8 @@ import {
   VisorFotoComponent
 } from '@shared/components/visor-foto/visor-foto.component';
 
+import { CampanaAvisosComponent } from '../cliente-layout/campana-avisos/campana-avisos.component';
+
 interface Opcion {
   ruta: string;
   texto: string;
@@ -66,6 +68,7 @@ const OPCIONES_MECANICO: readonly Opcion[] = [
   selector: 'app-taller-layout',
   imports: [
     AvatarComponent,
+    CampanaAvisosComponent,
     LogoComponent,
     RouterOutlet,
     RouterLink,

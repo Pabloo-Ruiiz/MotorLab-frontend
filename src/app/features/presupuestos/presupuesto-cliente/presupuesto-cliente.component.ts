@@ -183,12 +183,29 @@ export class PresupuestoClienteComponent {
 
   // El pago solo se da por hecho cuando el backend lo confirma, nunca por volver con ?pago=ok
   private esperarConfirmacionDelPago(presupuesto: Presupuesto): void {
-    const pendiente =
-      this.vueltaDelPago === 'ok' && presupuesto.estado === 'autorizado' && presupuesto.pagadoEn === null;
-    this.confirmandoPago.set(pendiente);
-    if (pendiente && this.comprobacionesPago < MAX_COMPROBACIONES_PAGO) {
+    if (this.vueltaDelPago !== 'ok' || presupuesto.estado !== 'autorizado') {
+      return;
+    }
+
+    if (presupuesto.pagadoEn !== null) {
+      if (this.confirmandoPago()) {
+        this.confirmandoPago.set(false);
+        this.toast.exito('Pago realizado correctamente. ¡Gracias!');
+      }
+      return;
+    }
+
+    this.confirmandoPago.set(true);
+    if (this.comprobacionesPago < MAX_COMPROBACIONES_PAGO) {
+      // La primera comprobación es inmediata; las siguientes esperan por si Stripe tarda en cobrar
+      const espera = this.comprobacionesPago === 0 ? 0 : ESPERA_CONFIRMACION_MS;
       this.comprobacionesPago++;
-      setTimeout(() => this.recarga.next(), ESPERA_CONFIRMACION_MS);
+      setTimeout(() => {
+        this.presupuestos
+          .verificarPago(presupuesto.id)
+          .pipe(catchError(() => of(undefined)))
+          .subscribe(() => this.recarga.next());
+      }, espera);
     }
   }
 
@@ -197,6 +214,8 @@ export class PresupuestoClienteComponent {
   }
 
   protected reintentar(): void {
+    // «Actualizar» en el aviso del pago vuelve a preguntar a Stripe
+    this.comprobacionesPago = 0;
     this.cargando.set(true);
     this.errorCarga.set(null);
     this.recarga.next();
